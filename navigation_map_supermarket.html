@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniGoal Navigation Map - Supermarket Environment</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent-blue: #58a6ff;
+    --accent-blue-dark: #1f6feb;
+    --accent-red: #f85149;
+    --accent-red-dark: #da3633;
+    --accent-green: #3fb950;
+    --accent-green-dark: #238636;
+    --accent-purple: #d2a8ff;
+    --accent-orange: #f0883e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  .header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent-blue);
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .header-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .badge-red { background: #2d0d0d; border-color: var(--accent-red); color: var(--accent-red); }
+  .badge-blue { background: #0d1d30; border-color: var(--accent-blue); color: var(--accent-blue); }
+  .badge-green { background: #0d2d0d; border-color: var(--accent-green); color: var(--accent-green); }
+  .badge-purple { background: #1c1333; border-color: var(--accent-purple); color: var(--accent-purple); }
+
+  .main-container {
+    display: flex;
+    height: calc(100vh - 70px);
+  }
+
+  @media (max-width: 1000px) {
+    .main-container { flex-direction: column; height: auto; }
+    #graph-container { height: 60vh !important; min-height: 400px !important; }
+  }
+
+  #graph-container {
+    flex: 1;
+    border-right: 1px solid var(--border);
+    position: relative;
+    min-height: 600px;
+    width: 100%;
+    height: calc(100vh - 70px);
+  }
+
+  .graph-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-line {
+    width: 20px;
+    height: 3px;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+
+  .sidebar {
+    width: 380px;
+    min-width: 380px;
+    max-width: 380px;
+    background: var(--bg-secondary);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-section {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .section-header:hover { background: var(--bg-tertiary); }
+
+  .section-header .arrow {
+    transition: transform 0.2s;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+
+  .section-content {
+    padding: 0 16px 14px 16px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .section-content.hidden { display: none; }
+
+  /* Navigation Panel */
+  .nav-route {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .nav-route-header {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .nav-route-header:hover { background: var(--bg-tertiary); }
+
+  .nav-route-header .goal-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nav-steps { padding: 0 14px 12px 14px; }
+
+  .nav-steps.hidden { display: none; }
+
+  .nav-step {
+    position: relative;
+    padding: 8px 0 8px 24px;
+    font-size: 12px;
+    border-left: 2px solid var(--border);
+    margin-left: 4px;
+  }
+
+  .nav-step:last-child { border-left-color: transparent; }
+
+  .nav-step::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    border: 2px solid var(--bg-primary);
+  }
+
+  .nav-step:last-child::before { background: var(--accent-green); }
+
+  .nav-step .step-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .nav-step .step-detail {
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .step-shared {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 3px;
+  }
+
+  .obj-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .obj-tag.highlight { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+  /* Zone detail panel */
+  #zone-detail {
+    padding: 14px 16px;
+  }
+
+  #zone-detail h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: var(--accent-blue);
+  }
+
+  .zone-detail-empty {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .detail-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+
+  .detail-row .label { color: var(--text-secondary); }
+  .detail-row .value { color: var(--text-primary); font-weight: 500; }
+
+  .detail-obj-list {
+    margin-top: 8px;
+  }
+
+  .detail-obj-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 40px;
+    gap: 8px;
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    align-items: center;
+  }
+
+  .detail-obj-row .obj-name { color: var(--text-primary); }
+
+  .conf-bar {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent-blue);
+  }
+
+  .detail-photos {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .photo-chip {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+
+  /* Detection summary table */
+  .det-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .det-table th {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+  }
+
+  .det-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+    color: var(--text-primary);
+  }
+
+  .det-table tr:hover td { background: rgba(56,139,253,0.05); }
+
+  .det-table .num { text-align: right; font-family: monospace; }
+
+  /* Zone details section */
+  .zone-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .zone-card-header {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .zone-card-header:hover { background: var(--bg-tertiary); }
+
+  .zone-card-body { padding: 8px 12px 10px; font-size: 11px; }
+  .zone-card-body.hidden { display: none; }
+
+  .zone-obj-grid {
+    display: grid;
+    grid-template-columns: 1fr 55px 35px;
+    gap: 2px 8px;
+    font-size: 11px;
+  }
+
+  .zone-obj-grid .head {
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  /* Stats footer */
+  .stats-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: monospace;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+  .start-badge {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--accent-red-dark);
+    color: #fff;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .goal-badge-inline {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  .goal-badge-fridge { background: #0d1d30; color: var(--accent-blue); }
+  .goal-badge-fire { background: #0d2d0d; color: var(--accent-green); }
+
+  .at-start-note {
+    font-size: 11px;
+    color: var(--accent-green);
+    padding: 8px 14px;
+    background: #0d2d0d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid var(--accent-green-dark);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>UniGoal Topological Navigation Map</h1>
+    <div class="subtitle">Fully automatic from GroundingDINO SwinT OGC detections &mdash; no hardcoded zones or edges</div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-red">START: Zone 0 (Sofa Area)</span>
+    <span class="badge badge-blue">GOAL: refrigerator</span>
+    <span class="badge badge-green">GOAL: fire extinguisher</span>
+    <span class="badge badge-purple">192 photos &rarr; 13 zones</span>
+  </div>
+</div>
+
+<div class="main-container">
+  <div id="graph-container">
+    <div class="graph-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Start (YOU ARE HERE)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue-dark)"></div> Refrigerator zone</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green-dark)"></div> Fire extinguisher zone</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div> Both goals</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bg-tertiary);border:1px solid #484f58"></div> Other zone</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--accent-blue)"></div> Navigation path</div>
+      <div class="legend-item"><div class="legend-line" style="background:#484f58"></div> Shared-object edge</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <!-- Zone Detail (click a node) -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Selected Zone Details</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="zone-detail">
+        <div class="zone-detail-empty">Click a node on the map to see zone details</div>
+      </div>
+    </div>
+
+    <!-- Navigation Panel -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Navigation Routes</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="nav-panel"></div>
+    </div>
+
+    <!-- Detection Summary -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Detection Summary (All Objects)</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="detection-summary"></div>
+    </div>
+
+    <!-- Zone Details (all zones) -->
+    <div class="sidebar-section">
+      <div class="section-header collapsed" onclick="toggleSection(this)">
+        <span>All Zones Detail</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content hidden" id="all-zones"></div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-footer">
+  <div class="stat-item">Model: <span class="stat-value">GroundingDINO SwinT OGC</span></div>
+  <div class="stat-item">Box threshold: <span class="stat-value">0.30</span></div>
+  <div class="stat-item">Text threshold: <span class="stat-value">0.25</span></div>
+  <div class="stat-item">Photos: <span class="stat-value" id="stat-photos">56</span></div>
+  <div class="stat-item">Zones: <span class="stat-value" id="stat-zones">13</span></div>
+  <div class="stat-item">Edges: <span class="stat-value" id="stat-edges">24</span></div>
+  <div class="stat-item">Object types: <span class="stat-value" id="stat-objtypes">13</span></div>
+  <div class="stat-item">Jaccard threshold: <span class="stat-value">0.25</span></div>
+</div>
+
+<script>
+// =====================================================================
+// EMBEDDED DATA from generate_topomap.py pipeline
+// =====================================================================
+const DATA = {"zones": {"0": {"label": "Zone 0\nBathroom Restroom Area\n(41 photos)", "photos": ["C1_20260325_110814.jpg", "C1_20260325_110830.jpg", "C1_20260325_110850.jpg", "C1_20260325_110956.jpg", "C1_20260325_111001.jpg", "C1_20260325_111005.jpg", "C1_20260325_111008.jpg", "C1_20260325_111013.jpg", "C1_20260325_111033.jpg", "C1_20260325_111037.jpg", "C1_20260325_111042.jpg", "C1_20260325_111045.jpg", "C1_20260325_111049.jpg", "C1_20260325_111053.jpg", "C1_20260325_111059.jpg", "C1_20260325_112140.jpg", "C1_20260325_112147.jpg", "C1_20260325_112209.jpg", "C1_20260325_112215.jpg", "C1_20260325_112220.jpg", "C1_20260325_112248.jpg", "C1_20260325_112251.jpg", "C1_20260325_112254.jpg", "C1_20260325_112258.jpg", "C1_20260325_112303.jpg", "C1_20260325_112339.jpg", "C1_20260325_112343.jpg", "C1_20260325_112346.jpg", "C1_20260325_112351.jpg", "C1_20260325_112632.jpg", "C1_20260325_112635.jpg", "C1_20260325_112651.jpg", "C1_20260325_112740.jpg", "C1_20260325_112745.jpg", "C1_20260325_112750.jpg", "C1_20260325_112800.jpg", "C1_20260325_112810.jpg", "C1_20260325_112828.jpg", "C1_20260325_112845.jpg", "C1_20260325_112850.jpg", "C1_20260325_112905.jpg"], "photo_range": "C1_20260325_110814.jpg-C1_20260325_112905.jpg", "all_objects": [["bathroom restroom", 0.572], ["water dispenser", 0.563], ["coffee machine water dispenser", 0.552], ["refrigerator", 0.511], ["sign", 0.492], ["cabinet", 0.479], ["stairs", 0.467], ["chair sofa", 0.467], ["refrigerator elevator", 0.412], ["cabinet refrigerator", 0.385], ["chair", 0.375], ["desk", 0.346], ["door", 0.342], ["table desk", 0.332], ["window", 0.328]], "obj_count": {"bathroom restroom": 47, "sign": 59, "cabinet": 24, "table desk": 3, "refrigerator": 8, "water dispenser": 14, "window": 2, "cabinet refrigerator": 2, "coffee machine water dispenser": 1, "door": 5, "refrigerator elevator": 1, "stairs": 8, "chair sofa": 1, "chair": 1, "desk": 1}}, "1": {"label": "Zone 1\nTable Desk Area\n(2 photos)", "photos": ["C1_20260325_112911.jpg", "C1_20260325_112920.jpg"], "photo_range": "C1_20260325_112911.jpg-C1_20260325_112920.jpg", "all_objects": [["bathroom restroom", 0.541], ["table desk", 0.39], ["sign", 0.342], ["cabinet", 0.336], ["water dispenser", 0.304]], "obj_count": {"bathroom restroom": 2, "cabinet": 1, "table desk": 1, "sign": 1, "water dispenser": 1}}, "2": {"label": "Zone 2\nRefrigerator Area\n(13 photos)", "photos": ["C1_20260325_112927.jpg", "C1_20260325_112934.jpg", "C1_20260325_112939.jpg", "C1_20260325_112947.jpg", "C1_20260325_112952.jpg", "C1_20260325_112956.jpg", "C1_20260325_113505.jpg", "C1_20260325_113509.jpg", "C1_20260325_113513.jpg", "C1_20260325_113525.jpg", "C1_20260325_113537.jpg", "C1_20260325_113542.jpg", "C1_20260325_113547.jpg"], "photo_range": "C1_20260325_112927.jpg-C1_20260325_113547.jpg", "all_objects": [["refrigerator", 0.675], ["bathroom restroom", 0.579], ["sign", 0.478], ["stairs", 0.467], ["door", 0.451], ["water dispenser", 0.45], ["cabinet", 0.415], ["window", 0.382], ["printer water dispenser", 0.356], ["cabinet refrigerator", 0.325], ["desk", 0.322]], "obj_count": {"bathroom restroom": 14, "printer water dispenser": 1, "cabinet": 7, "water dispenser": 9, "cabinet refrigerator": 1, "stairs": 3, "sign": 7, "desk": 1, "refrigerator": 8, "window": 4, "door": 4}}, "3": {"label": "Zone 3\nWindow Area\n(3 photos)", "photos": ["C1_20260325_113635.jpg", "C1_20260325_113640.jpg", "C1_20260325_113659.jpg"], "photo_range": "C1_20260325_113635.jpg-C1_20260325_113659.jpg", "all_objects": [["window", 0.545], ["bathroom restroom", 0.52], ["water dispenser", 0.415], ["chair sofa", 0.35], ["door refrigerator elevator", 0.323], ["cabinet", 0.308]], "obj_count": {"bathroom restroom": 4, "door refrigerator elevator": 1, "window": 2, "water dispenser": 1, "chair sofa": 1, "cabinet": 1}}, "4": {"label": "Zone 4\nStairs Area\n(13 photos)", "photos": ["C1_20260325_113704.jpg", "C1_20260325_113709.jpg", "C1_20260325_113714.jpg", "C1_20260325_113718.jpg", "C1_20260325_113724.jpg", "C1_20260325_113729.jpg", "C1_20260325_113739.jpg", "C1_20260325_113745.jpg", "C1_20260325_113807.jpg", "C1_20260325_113813.jpg", "C1_20260325_113830.jpg", "C1_20260325_113841.jpg", "C1_20260325_113849.jpg"], "photo_range": "C1_20260325_113704.jpg-C1_20260325_113849.jpg", "all_objects": [["bathroom restroom", 0.556], ["cabinet", 0.388], ["table desk", 0.384], ["stairs", 0.369], ["sign", 0.353], ["water dispenser", 0.347], ["door elevator", 0.343], ["refrigerator", 0.335], ["door", 0.327]], "obj_count": {"bathroom restroom": 13, "cabinet": 13, "stairs": 4, "door": 1, "table desk": 2, "water dispenser": 2, "sign": 3, "refrigerator": 1, "door elevator": 1}}, "5": {"label": "Zone 5\nWater Dispenser Area\n(6 photos)", "photos": ["C1_20260325_113854.jpg", "C1_20260325_113859.jpg", "C1_20260325_113908.jpg", "C1_20260325_113913.jpg", "C1_20260325_113918.jpg", "C1_20260325_113923.jpg"], "photo_range": "C1_20260325_113854.jpg-C1_20260325_113923.jpg", "all_objects": [["bathroom restroom", 0.534], ["cabinet", 0.38], ["water dispenser", 0.377], ["stairs", 0.356], ["fire extinguisher", 0.311], ["refrigerator", 0.307]], "obj_count": {"bathroom restroom": 7, "water dispenser": 1, "cabinet": 3, "fire extinguisher": 1, "refrigerator": 2, "stairs": 2}}, "6": {"label": "Zone 6\nSign Area\n(2 photos)", "photos": ["C1_20260325_113927.jpg", "C1_20260325_113931.jpg"], "photo_range": "C1_20260325_113927.jpg-C1_20260325_113931.jpg", "all_objects": [["bathroom restroom", 0.525], ["sign", 0.449], ["refrigerator", 0.344], ["water dispenser", 0.343], ["fire extinguisher", 0.323]], "obj_count": {"bathroom restroom": 2, "sign": 5, "refrigerator": 1, "water dispenser": 1, "fire extinguisher": 1}}, "7": {"label": "Zone 7\nCabinet Area\n(49 photos)", "photos": ["C1_IMG_5932.jpg", "C1_IMG_5933.jpg", "C1_IMG_5934.jpg", "C1_IMG_5935.jpg", "C1_IMG_5940.jpg", "C1_IMG_5941.jpg", "C1_IMG_5942.jpg", "C1_IMG_5946.jpg", "C1_IMG_5947.jpg", "C1_IMG_5948.jpg", "C2_IMG_5786.jpg", "C2_IMG_5787.jpg", "C2_IMG_5788.jpg", "C2_IMG_5789.jpg", "C2_IMG_5790.jpg", "C2_IMG_5791.jpg", "C2_IMG_5792.jpg", "C2_IMG_5793.jpg", "C2_IMG_5794.jpg", "C2_IMG_5795.jpg", "C2_IMG_5796.jpg", "C2_IMG_5797.jpg", "C2_IMG_5798.jpg", "C2_IMG_5799.jpg", "C2_IMG_5800.jpg", "C2_IMG_5801.jpg", "C2_IMG_5802.jpg", "C2_IMG_5803.jpg", "C2_IMG_5804.jpg", "C2_IMG_5805.jpg", "C2_IMG_5806.jpg", "C2_IMG_5807.jpg", "C2_IMG_5808.jpg", "C2_IMG_5809.jpg", "C2_IMG_5810.jpg", "C2_IMG_5811.jpg", "C2_IMG_5812.jpg", "C3_20260325_112632.jpg", "C3_20260325_112635.jpg", "C3_20260325_112651.jpg", "C3_20260325_112740.jpg", "C3_20260325_112745.jpg", "C3_20260325_112750.jpg", "C3_20260325_112800.jpg", "C3_20260325_112810.jpg", "C3_20260325_112828.jpg", "C3_20260325_112845.jpg", "C3_20260325_112850.jpg", "C3_20260325_112905.jpg"], "photo_range": "C1_IMG_5932.jpg-C3_20260325_112905.jpg", "all_objects": [["refrigerator", 0.595], ["water dispenser", 0.563], ["cabinet", 0.556], ["bathroom restroom", 0.554], ["fire extinguisher", 0.554], ["door", 0.51], ["stairs", 0.467], ["sign", 0.465], ["door elevator", 0.453], ["door refrigerator", 0.378], ["plant", 0.37], ["cabinet desk", 0.367], ["desk", 0.339], ["table desk", 0.327], ["window", 0.311]], "obj_count": {"bathroom restroom": 52, "plant": 1, "cabinet desk": 1, "cabinet": 76, "refrigerator": 20, "water dispenser": 12, "door": 8, "sign": 30, "door refrigerator": 1, "fire extinguisher": 1, "door elevator": 8, "desk": 1, "window": 1, "stairs": 4, "table desk": 1}}, "8": {"label": "Zone 8\n(2 photos)", "photos": ["C3_20260325_112911.jpg", "C3_20260325_112920.jpg"], "photo_range": "C3_20260325_112911.jpg-C3_20260325_112920.jpg", "all_objects": [["bathroom restroom", 0.541], ["table desk", 0.39], ["sign", 0.342], ["cabinet", 0.336], ["water dispenser", 0.304]], "obj_count": {"bathroom restroom": 2, "cabinet": 1, "table desk": 1, "sign": 1, "water dispenser": 1}}, "9": {"label": "Zone 9\n(37 photos)", "photos": ["C3_20260325_112927.jpg", "C3_20260325_112934.jpg", "C3_20260325_112939.jpg", "C3_20260325_112947.jpg", "C3_20260325_112952.jpg", "C3_20260325_112956.jpg", "C4_IMG_5932.jpg", "C4_IMG_5933.jpg", "C4_IMG_5934.jpg", "C4_IMG_5935.jpg", "C4_IMG_5940.jpg", "C4_IMG_5941.jpg", "C4_IMG_5942.jpg", "C4_IMG_5946.jpg", "C4_IMG_5947.jpg", "C4_IMG_5948.jpg", "C5_20260325_112140.jpg", "C5_20260325_112147.jpg", "C5_20260325_112209.jpg", "C5_20260325_112215.jpg", "C5_20260325_112220.jpg", "C5_20260325_112248.jpg", "C5_20260325_112251.jpg", "C5_20260325_112254.jpg", "C5_20260325_112258.jpg", "C5_20260325_112303.jpg", "C5_20260325_112339.jpg", "C5_20260325_112343.jpg", "C5_20260325_112346.jpg", "C5_20260325_112351.jpg", "C6_20260325_113505.jpg", "C6_20260325_113509.jpg", "C6_20260325_113513.jpg", "C6_20260325_113525.jpg", "C6_20260325_113537.jpg", "C6_20260325_113542.jpg", "C6_20260325_113547.jpg"], "photo_range": "C3_20260325_112927.jpg-C6_20260325_113547.jpg", "all_objects": [["refrigerator", 0.675], ["bathroom restroom", 0.579], ["cabinet", 0.52], ["sign", 0.492], ["stairs", 0.467], ["chair sofa", 0.467], ["door", 0.451], ["water dispenser", 0.45], ["window", 0.382], ["chair", 0.375], ["plant", 0.37], ["cabinet desk", 0.367], ["printer water dispenser", 0.356], ["desk", 0.346], ["cabinet refrigerator", 0.325]], "obj_count": {"bathroom restroom": 38, "printer water dispenser": 1, "cabinet": 32, "water dispenser": 19, "cabinet refrigerator": 1, "stairs": 6, "sign": 40, "desk": 2, "refrigerator": 18, "plant": 1, "cabinet desk": 1, "door": 6, "chair sofa": 1, "chair": 1, "window": 4}}, "10": {"label": "Zone 10\nChair Sofa Area\n(3 photos)", "photos": ["C6_20260325_113635.jpg", "C6_20260325_113640.jpg", "C6_20260325_113659.jpg"], "photo_range": "C6_20260325_113635.jpg-C6_20260325_113659.jpg", "all_objects": [["window", 0.545], ["bathroom restroom", 0.52], ["water dispenser", 0.415], ["chair sofa", 0.35], ["door refrigerator elevator", 0.323], ["cabinet", 0.308]], "obj_count": {"bathroom restroom": 4, "door refrigerator elevator": 1, "window": 2, "water dispenser": 1, "chair sofa": 1, "cabinet": 1}}, "11": {"label": "Zone 11\n(13 photos)", "photos": ["C6_20260325_113704.jpg", "C6_20260325_113709.jpg", "C6_20260325_113714.jpg", "C6_20260325_113718.jpg", "C6_20260325_113724.jpg", "C6_20260325_113729.jpg", "C6_20260325_113739.jpg", "C6_20260325_113745.jpg", "C6_20260325_113807.jpg", "C6_20260325_113813.jpg", "C6_20260325_113830.jpg", "C6_20260325_113841.jpg", "C6_20260325_113849.jpg"], "photo_range": "C6_20260325_113704.jpg-C6_20260325_113849.jpg", "all_objects": [["bathroom restroom", 0.556], ["cabinet", 0.388], ["table desk", 0.384], ["stairs", 0.369], ["sign", 0.353], ["water dispenser", 0.347], ["door elevator", 0.343], ["refrigerator", 0.335], ["door", 0.327]], "obj_count": {"bathroom restroom": 13, "cabinet": 13, "stairs": 4, "door": 1, "table desk": 2, "water dispenser": 2, "sign": 3, "refrigerator": 1, "door elevator": 1}}, "12": {"label": "Zone 12\nFire Extinguisher Area\n(6 photos)", "photos": ["C6_20260325_113854.jpg", "C6_20260325_113859.jpg", "C6_20260325_113908.jpg", "C6_20260325_113913.jpg", "C6_20260325_113918.jpg", "C6_20260325_113923.jpg"], "photo_range": "C6_20260325_113854.jpg-C6_20260325_113923.jpg", "all_objects": [["bathroom restroom", 0.534], ["cabinet", 0.38], ["water dispenser", 0.377], ["stairs", 0.356], ["fire extinguisher", 0.311], ["refrigerator", 0.307]], "obj_count": {"bathroom restroom": 7, "water dispenser": 1, "cabinet": 3, "fire extinguisher": 1, "refrigerator": 2, "stairs": 2}}, "13": {"label": "Zone 13\n(2 photos)", "photos": ["C6_20260325_113927.jpg", "C6_20260325_113931.jpg"], "photo_range": "C6_20260325_113927.jpg-C6_20260325_113931.jpg", "all_objects": [["bathroom restroom", 0.525], ["sign", 0.449], ["refrigerator", 0.344], ["water dispenser", 0.343], ["fire extinguisher", 0.323]], "obj_count": {"bathroom restroom": 2, "sign": 5, "refrigerator": 1, "water dispenser": 1, "fire extinguisher": 1}}}, "edges": [{"from": 0, "to": 1, "shared": ["bathroom restroom", "cabinet", "sign", "table desk", "water dispenser"]}, {"from": 1, "to": 2, "shared": ["bathroom restroom", "cabinet", "sign", "water dispenser"]}, {"from": 2, "to": 3, "shared": ["bathroom restroom", "cabinet", "water dispenser", "window"]}, {"from": 3, "to": 4, "shared": ["bathroom restroom", "cabinet", "water dispenser"]}, {"from": 4, "to": 5, "shared": ["bathroom restroom", "cabinet", "refrigerator", "stairs", "water dispenser"]}, {"from": 5, "to": 6, "shared": ["bathroom restroom", "fire extinguisher", "refrigerator", "water dispenser"]}, {"from": 6, "to": 7, "shared": ["bathroom restroom", "fire extinguisher", "refrigerator", "sign", "water dispenser"]}, {"from": 7, "to": 8, "shared": ["bathroom restroom", "cabinet", "sign", "table desk", "water dispenser"]}, {"from": 8, "to": 9, "shared": ["bathroom restroom", "cabinet", "sign", "water dispenser"]}, {"from": 9, "to": 10, "shared": ["bathroom restroom", "cabinet", "chair sofa", "water dispenser", "window"]}, {"from": 10, "to": 11, "shared": ["bathroom restroom", "cabinet", "water dispenser"]}, {"from": 11, "to": 12, "shared": ["bathroom restroom", "cabinet", "refrigerator", "stairs", "water dispenser"]}, {"from": 12, "to": 13, "shared": ["bathroom restroom", "fire extinguisher", "refrigerator", "water dispenser"]}, {"from": 0, "to": 2, "shared": ["cabinet refrigerator", "desk", "door", "stairs", "window"]}, {"from": 0, "to": 9, "shared": ["cabinet refrigerator", "chair", "chair sofa", "desk", "door", "stairs", "window"]}, {"from": 2, "to": 9, "shared": ["cabinet refrigerator", "desk", "door", "printer water dispenser", "stairs", "window"]}, {"from": 3, "to": 10, "shared": ["chair sofa", "door refrigerator elevator", "window"]}, {"from": 4, "to": 7, "shared": ["door", "door elevator", "stairs", "table desk"]}, {"from": 4, "to": 11, "shared": ["door", "door elevator", "stairs", "table desk"]}, {"from": 5, "to": 12, "shared": ["fire extinguisher", "stairs"]}, {"from": 7, "to": 9, "shared": ["cabinet desk", "desk", "door", "plant", "stairs", "window"]}, {"from": 7, "to": 11, "shared": ["door", "door elevator", "stairs", "table desk"]}], "goal_zones": {"0": {"refrigerator": 0.511, "stairs": 0.467}, "2": {"refrigerator": 0.675, "stairs": 0.467}, "7": {"refrigerator": 0.595, "fire extinguisher": 0.554, "elevator": 0.453, "stairs": 0.467}, "9": {"refrigerator": 0.675, "stairs": 0.467}}, "start_zone": 0, "goals": ["refrigerator", "fire extinguisher", "stairs", "elevator"], "navigation": {"0": {"path": ["0"], "steps": []}, "2": {"path": ["0", "2"], "steps": [{"from": 0, "from_label": "Zone 0 | Bathroom Restroom Area | (41 photos)", "to": 2, "to_label": "Zone 2 | Refrigerator Area | (13 photos)", "shared": ["cabinet refrigerator", "desk", "door", "stairs", "window"], "next_objects": [["refrigerator", 0.675], ["bathroom restroom", 0.579], ["sign", 0.478], ["stairs", 0.467], ["door", 0.451]], "next_photos": ["C1_20260325_112927.jpg", "C1_20260325_112934.jpg", "C1_20260325_112939.jpg", "C1_20260325_112947.jpg", "C1_20260325_112952.jpg"]}]}, "7": {"path": ["0", "9", "7"], "steps": [{"from": 0, "from_label": "Zone 0 | Bathroom Restroom Area | (41 photos)", "to": 9, "to_label": "Zone 9 | (37 photos)", "shared": ["cabinet refrigerator", "chair", "chair sofa", "desk", "door", "stairs", "window"], "next_objects": [["refrigerator", 0.675], ["bathroom restroom", 0.579], ["cabinet", 0.52], ["sign", 0.492], ["stairs", 0.467]], "next_photos": ["C3_20260325_112927.jpg", "C3_20260325_112934.jpg", "C3_20260325_112939.jpg", "C3_20260325_112947.jpg", "C3_20260325_112952.jpg"]}, {"from": 9, "from_label": "Zone 9 | (37 photos)", "to": 7, "to_label": "Zone 7 | Cabinet Area | (49 photos)", "shared": ["cabinet desk", "desk", "door", "plant", "stairs", "window"], "next_objects": [["refrigerator", 0.595], ["water dispenser", 0.563], ["cabinet", 0.556], ["bathroom restroom", 0.554], ["fire extinguisher", 0.554]], "next_photos": ["C1_IMG_5932.jpg", "C1_IMG_5933.jpg", "C1_IMG_5934.jpg", "C1_IMG_5935.jpg", "C1_IMG_5940.jpg"]}]}, "9": {"path": ["0", "9"], "steps": [{"from": 0, "from_label": "Zone 0 | Bathroom Restroom Area | (41 photos)", "to": 9, "to_label": "Zone 9 | (37 photos)", "shared": ["cabinet refrigerator", "chair", "chair sofa", "desk", "door", "stairs", "window"], "next_objects": [["refrigerator", 0.675], ["bathroom restroom", 0.579], ["cabinet", 0.52], ["sign", 0.492], ["stairs", 0.467]], "next_photos": ["C3_20260325_112927.jpg", "C3_20260325_112934.jpg", "C3_20260325_112939.jpg", "C3_20260325_112947.jpg", "C3_20260325_112952.jpg"]}]}}};
+
+// =====================================================================
+// UI HELPERS
+// =====================================================================
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const content = header.nextElementSibling;
+  content.classList.toggle('hidden');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function zoneName(zid) {
+  const z = DATA.zones[String(zid)];
+  if (!z) return 'Zone ' + zid;
+  return z.label.split('\n').filter(l => l.trim()).join(' - ');
+}
+
+function zoneShortName(zid) {
+  const z = DATA.zones[String(zid)];
+  if (!z) return 'Z' + zid;
+  const lines = z.label.split('\n');
+  return lines.length > 1 ? lines[1] || lines[0] : lines[0];
+}
+
+// =====================================================================
+// BUILD VIS.JS GRAPH
+// =====================================================================
+function getNodeColor(zid) {
+  const sid = String(zid);
+  const isStart = zid === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[sid];
+  const hasFridge = goalInfo && goalInfo['refrigerator'];
+  const hasFire = goalInfo && goalInfo['fire extinguisher'];
+
+  if (isStart) return { background: '#f85149', border: '#ff7b72', highlight: { background: '#ff7b72', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFridge && hasFire) return { background: '#f0883e', border: '#ffab70', highlight: { background: '#ffab70', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFridge) return { background: '#1f6feb', border: '#58a6ff', highlight: { background: '#58a6ff', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFire) return { background: '#238636', border: '#3fb950', highlight: { background: '#3fb950', border: '#fff' }, font: { color: '#fff' } };
+  return { background: '#21262d', border: '#484f58', highlight: { background: '#30363d', border: '#8b949e' }, font: { color: '#c9d1d9' } };
+}
+
+// Collect navigation path edges
+const navPathEdges = new Set();
+for (const [target, navData] of Object.entries(DATA.navigation)) {
+  const path = navData.path.map(Number);
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = Math.min(path[i], path[i+1]);
+    const b = Math.max(path[i], path[i+1]);
+    navPathEdges.add(a + '-' + b);
+  }
+}
+
+const nodes = new vis.DataSet();
+for (const [zid, zone] of Object.entries(DATA.zones)) {
+  const id = parseInt(zid);
+  const colors = getNodeColor(id);
+  const lines = zone.label.split('\n');
+  let label = lines[0];
+  if (lines.length > 1 && lines[1]) label += '\n' + lines[1];
+
+  const isStart = id === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[zid];
+
+  let title = '<b>' + escapeHtml(zoneName(id)) + '</b><br>';
+  if (isStart) title += '<span style="color:#f85149">YOU ARE HERE</span><br>';
+  if (goalInfo) {
+    for (const [g, s] of Object.entries(goalInfo)) {
+      title += '<span style="color:#58a6ff">' + escapeHtml(g) + ': ' + s.toFixed(3) + '</span><br>';
+    }
+  }
+  title += '<br>Photos: ' + zone.photos.length + '<br>';
+  title += 'Objects: ' + zone.all_objects.map(o => o[0] + ' (' + o[1].toFixed(2) + ')').join(', ');
+
+  nodes.add({
+    id: id,
+    label: label,
+    title: title,
+    color: colors,
+    font: { ...colors.font, size: 12, face: 'system-ui', multi: true },
+    size: isStart ? 35 : (goalInfo ? 30 : 25),
+    shape: 'dot',
+    borderWidth: isStart ? 3 : 2,
+    borderWidthSelected: 4,
+  });
+}
+
+const edges = new vis.DataSet();
+for (const edge of DATA.edges) {
+  const key = Math.min(edge.from, edge.to) + '-' + Math.max(edge.from, edge.to);
+  const isNav = navPathEdges.has(key);
+  const sharedText = edge.shared.length <= 3 ? edge.shared.join(', ') : edge.shared.slice(0,3).join(', ') + ' +' + (edge.shared.length - 3);
+
+  edges.add({
+    from: edge.from,
+    to: edge.to,
+    label: sharedText,
+    title: 'Shared: ' + edge.shared.join(', '),
+    color: { color: isNav ? '#58a6ff' : '#484f58', highlight: '#8b949e', opacity: isNav ? 0.9 : 0.4 },
+    width: isNav ? 3 : 1.5,
+    dashes: isNav ? [8, 4] : false,
+    font: { color: isNav ? '#58a6ff' : '#6e7681', size: 9, strokeWidth: 3, strokeColor: '#0d1117', face: 'system-ui' },
+    smooth: { type: 'continuous' },
+  });
+}
+
+const container = document.getElementById('graph-container');
+const network = new vis.Network(container, { nodes, edges }, {
+  physics: {
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: { gravitationalConstant: -120, centralGravity: 0.008, springLength: 180, springConstant: 0.04, damping: 0.6 },
+    stabilization: { iterations: 300 },
+  },
+  interaction: { hover: true, tooltipDelay: 200, zoomView: true, dragView: true },
+  layout: { improvedLayout: true },
+  nodes: { shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 8 } },
+  edges: { shadow: false },
+});
+
+// Fit graph to container after stabilization
+network.once('stabilizationIterationsDone', function() {
+  network.fit({ animation: { duration: 500 } });
+});
+// Also fit on window resize
+window.addEventListener('resize', function() { network.fit(); });
+
+// =====================================================================
+// CLICK NODE -> SHOW ZONE DETAIL
+// =====================================================================
+network.on('click', function(params) {
+  const panel = document.getElementById('zone-detail');
+  if (params.nodes.length === 0) {
+    panel.innerHTML = '<div class="zone-detail-empty">Click a node on the map to see zone details</div>';
+    return;
+  }
+  const zid = params.nodes[0];
+  const zone = DATA.zones[String(zid)];
+  if (!zone) return;
+
+  const isStart = zid === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[String(zid)];
+
+  let html = '<h3>' + escapeHtml(zoneName(zid));
+  if (isStart) html += ' <span class="start-badge">YOU ARE HERE</span>';
+  if (goalInfo && goalInfo['refrigerator']) html += ' <span class="goal-badge-inline goal-badge-fridge">FRIDGE ' + goalInfo['refrigerator'].toFixed(3) + '</span>';
+  if (goalInfo && goalInfo['fire extinguisher']) html += ' <span class="goal-badge-inline goal-badge-fire">FIRE EXT ' + goalInfo['fire extinguisher'].toFixed(3) + '</span>';
+  html += '</h3>';
+
+  html += '<div class="detail-grid">';
+  html += '<div class="detail-row"><span class="label">Photos</span><span class="value">' + zone.photos.length + '</span></div>';
+  html += '<div class="detail-row"><span class="label">Range</span><span class="value" style="font-family:monospace;font-size:11px">' + escapeHtml(zone.photo_range) + '</span></div>';
+  html += '</div>';
+
+  // Objects table
+  html += '<div class="detail-obj-list">';
+  html += '<div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Detected Objects</div>';
+  for (const [name, score] of zone.all_objects) {
+    const count = zone.obj_count[name] || 0;
+    const pct = Math.round(score * 100);
+    const isGoalObj = (name.includes('refrigerator') || name.includes('extinguisher'));
+    const barColor = isGoalObj ? 'var(--accent-green)' : 'var(--accent-blue)';
+    html += '<div class="detail-obj-row">';
+    html += '<span class="obj-name"' + (isGoalObj ? ' style="color:var(--accent-green);font-weight:600"' : '') + '>' + escapeHtml(name) + ' <span style="color:var(--text-muted)">&times;' + count + '</span></span>';
+    html += '<div class="conf-bar"><div class="conf-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
+    html += '<span style="color:var(--text-secondary);font-size:10px;text-align:right">' + score.toFixed(3) + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Photos
+  html += '<div style="margin-top:10px;font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px">Photo Files</div>';
+  html += '<div class="detail-photos">';
+  for (const p of zone.photos) {
+    const isStartPhoto = (p === 'IMG_1434.jpg');
+    html += '<span class="photo-chip"' + (isStartPhoto ? ' style="border-color:var(--accent-red);color:var(--accent-red)"' : '') + '>' + p + '</span>';
+  }
+  html += '</div>';
+
+  panel.innerHTML = html;
+});
+
+// =====================================================================
+// BUILD NAVIGATION PANEL
+// =====================================================================
+function buildNavPanel() {
+  const panel = document.getElementById('nav-panel');
+  let html = '';
+
+  // Group nav routes by goal
+  const bestRoutes = {};
+  for (const [targetZid, navData] of Object.entries(DATA.navigation)) {
+    const goalInfo = DATA.goal_zones[targetZid];
+    if (!goalInfo) continue;
+    for (const goal of Object.keys(goalInfo)) {
+      if (!bestRoutes[goal] || navData.path.length < bestRoutes[goal].pathLen) {
+        bestRoutes[goal] = { targetZid, navData, score: goalInfo[goal], pathLen: navData.path.length };
+      }
+    }
+  }
+
+  // Show "already at start" note if start zone is a goal
+  if (DATA.goal_zones[String(DATA.start_zone)]) {
+    const gInfo = DATA.goal_zones[String(DATA.start_zone)];
+    html += '<div class="at-start-note">Your start zone already contains: ' +
+      Object.entries(gInfo).map(([g,s]) => g + ' (' + s.toFixed(3) + ')').join(', ') + '</div>';
+  }
+
+  // Build a route card per navigation target
+  for (const [targetZid, navData] of Object.entries(DATA.navigation)) {
+    if (navData.steps.length === 0) continue; // skip "already here"
+    const goalInfo = DATA.goal_zones[targetZid];
+    if (!goalInfo) continue;
+
+    const goalNames = Object.keys(goalInfo);
+    const isFridge = goalNames.some(g => g === 'refrigerator');
+    const isFire = goalNames.some(g => g === 'fire extinguisher');
+    const dotColor = (isFridge && isFire) ? 'var(--accent-orange)' : isFridge ? 'var(--accent-blue)' : 'var(--accent-green)';
+
+    const goalLabel = goalNames.map(g => g + ' (' + goalInfo[g].toFixed(3) + ')').join(' + ');
+    const routeId = 'route-' + targetZid;
+
+    html += '<div class="nav-route">';
+    html += '<div class="nav-route-header" onclick="document.getElementById(\'' + routeId + '\').classList.toggle(\'hidden\')">';
+    html += '<div class="goal-icon" style="background:' + dotColor + '"></div>';
+    html += '<span>' + escapeHtml(zoneName(parseInt(targetZid))) + '</span>';
+    html += '<span style="margin-left:auto;font-size:10px;color:var(--text-muted)">' + navData.steps.length + ' step' + (navData.steps.length > 1 ? 's' : '') + '</span>';
+    html += '</div>';
+    html += '<div class="nav-steps" id="' + routeId + '">';
+    html += '<div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">Goal: ' + escapeHtml(goalLabel) + '</div>';
+
+    for (let i = 0; i < navData.steps.length; i++) {
+      const step = navData.steps[i];
+      html += '<div class="nav-step">';
+      html += '<div class="step-label">' + escapeHtml(step.from_label.split(' | ').slice(0,2).join(' - ')) + ' &rarr; ' + escapeHtml(step.to_label.split(' | ').slice(0,2).join(' - ')) + '</div>';
+      html += '<div class="step-detail">';
+      html += '<div>Look for shared objects:</div>';
+      html += '<div class="step-shared">' + step.shared.map(s => '<span class="obj-tag highlight">' + escapeHtml(s) + '</span>').join('') + '</div>';
+      html += '<div style="margin-top:4px">You will see: ' + step.next_objects.map(o => '<span class="obj-tag">' + escapeHtml(o[0]) + ' ' + o[1].toFixed(2) + '</span>').join(' ') + '</div>';
+      html += '<div style="margin-top:3px;color:var(--text-muted)">Photos: ' + step.next_photos.join(', ') + '</div>';
+      html += '</div></div>';
+    }
+    html += '</div></div>';
+  }
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// BUILD DETECTION SUMMARY TABLE
+// =====================================================================
+function buildDetectionSummary() {
+  const panel = document.getElementById('detection-summary');
+  let html = '<table class="det-table"><thead><tr>';
+  html += '<th>Object</th><th class="num">Photos</th><th class="num">Instances</th><th class="num">Best Conf</th><th>Best Photo</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const det of DATA.detection_summary) {
+    const isGoal = det.label.includes('refrigerator') || det.label.includes('extinguisher');
+    const style = isGoal ? ' style="color:var(--accent-green);font-weight:600"' : '';
+    html += '<tr>';
+    html += '<td' + style + '>' + escapeHtml(det.label) + '</td>';
+    html += '<td class="num">' + det.photo_count + '</td>';
+    html += '<td class="num">' + det.total_instances + '</td>';
+    html += '<td class="num">' + det.best_confidence.toFixed(3) + '</td>';
+    html += '<td style="font-family:monospace;font-size:11px">' + det.best_photo + '</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// BUILD ALL ZONES DETAIL
+// =====================================================================
+function buildAllZones() {
+  const panel = document.getElementById('all-zones');
+  let html = '';
+
+  for (const [zid, zone] of Object.entries(DATA.zones)) {
+    const isStart = parseInt(zid) === DATA.start_zone;
+    const goalInfo = DATA.goal_zones[zid];
+    const borderColor = isStart ? 'var(--accent-red)' : goalInfo ? 'var(--accent-blue)' : 'var(--border)';
+    const cardId = 'zone-card-' + zid;
+
+    html += '<div class="zone-card" style="border-color:' + borderColor + '">';
+    html += '<div class="zone-card-header" onclick="document.getElementById(\'' + cardId + '\').classList.toggle(\'hidden\')">';
+    html += '<span>' + escapeHtml(zoneName(parseInt(zid)));
+    if (isStart) html += ' <span class="start-badge">START</span>';
+    html += '</span>';
+    html += '<span style="font-size:10px;color:var(--text-muted)">' + zone.photos.length + ' photos, ' + zone.all_objects.length + ' objects</span>';
+    html += '</div>';
+
+    html += '<div class="zone-card-body hidden" id="' + cardId + '">';
+    html += '<div style="margin-bottom:6px;color:var(--text-muted);font-size:10px">Range: ' + escapeHtml(zone.photo_range) + '</div>';
+
+    if (goalInfo) {
+      html += '<div style="margin-bottom:6px">';
+      for (const [g, s] of Object.entries(goalInfo)) {
+        const c = g === 'refrigerator' ? 'goal-badge-fridge' : 'goal-badge-fire';
+        html += '<span class="goal-badge-inline ' + c + '">' + escapeHtml(g) + ': ' + s.toFixed(3) + '</span> ';
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="zone-obj-grid">';
+    html += '<div class="head">Object</div><div class="head" style="text-align:right">Conf</div><div class="head" style="text-align:right">Cnt</div>';
+    for (const [name, score] of zone.all_objects) {
+      const count = zone.obj_count[name] || 0;
+      const isGoalObj = (name.includes('refrigerator') || name.includes('extinguisher'));
+      html += '<div' + (isGoalObj ? ' style="color:var(--accent-green);font-weight:600"' : '') + '>' + escapeHtml(name) + '</div>';
+      html += '<div style="text-align:right;font-family:monospace;color:var(--text-secondary)">' + score.toFixed(3) + '</div>';
+      html += '<div style="text-align:right;font-family:monospace;color:var(--text-muted)">' + count + '</div>';
+    }
+    html += '</div>';
+
+    html += '<div style="margin-top:6px"><span style="color:var(--text-secondary);font-size:10px">Photos: </span>';
+    html += zone.photos.map(p => '<span class="photo-chip">' + p + '</span>').join(' ');
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// UPDATE STATS
+// =====================================================================
+function updateStats() {
+  document.getElementById('stat-photos').textContent = DATA.total_photos;
+  document.getElementById('stat-zones').textContent = Object.keys(DATA.zones).length;
+  document.getElementById('stat-edges').textContent = DATA.edges.length;
+  document.getElementById('stat-objtypes').textContent = DATA.detection_summary.length;
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+buildNavPanel();
+buildDetectionSummary();
+buildAllZones();
+updateStats();
+</script>
+</body>
+</html>

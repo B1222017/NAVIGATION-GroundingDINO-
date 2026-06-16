@@ -1,0 +1,65 @@
+{
+  "test_info": {
+    "description": "OCR comparison test on CSIE office photos. Text extracted by visual inspection of photos, simulating EasyOCR output.",
+    "date": "2026-05-20",
+    "photos_analyzed": 6
+  },
+  "photos": [
+    {
+      "filename": "IMG_1436.jpg",
+      "zone": "Zone 2 - Sofa/Kitchen Area",
+      "gd_only": "refrigerator(0.62), cabinet(0.595), cabinet(0.522), fire_ext(0.52), cabinet(0.514)",
+      "ocr_texts": ["thermostat display", "sensor label"],
+      "ocr_place_hints": [],
+      "improvement": "minimal"
+    },
+    {
+      "filename": "IMG_1438.jpg",
+      "zone": "Zone 1 - Fire Ext Area",
+      "gd_only": "cabinet(0.68), cabinet(0.648), cabinet(0.496), fire_ext(0.456), refrigerator(0.448)",
+      "ocr_texts": ["InnoServe", "espresso machine label", "door sign"],
+      "ocr_place_hints": ["InnoServe"],
+      "improvement": "moderate"
+    },
+    {
+      "filename": "IMG_1447.jpg",
+      "zone": "Zone 5 - Refrigerator Area",
+      "gd_only": "refrigerator(0.777), cabinet(0.559), printer(0.554), cabinet(0.537), desk(0.518)",
+      "ocr_texts": ["numbered mailbox labels", "water dispenser brand"],
+      "ocr_place_hints": ["mailbox area"],
+      "improvement": "moderate"
+    },
+    {
+      "filename": "IMG_1453.jpg",
+      "zone": "Zone 6 - Printer/Office Area",
+      "gd_only": "chair(0.798), refrigerator(0.788), plant(0.663), cabinet(0.562), cabinet(0.556)",
+      "ocr_texts": ["CSIE bulletin board", "department notices", "posters", "printer label", "trophy labels"],
+      "ocr_place_hints": ["CSIE", "department office"],
+      "improvement": "critical"
+    },
+    {
+      "filename": "IMG_1469.jpg",
+      "zone": "Zone 9 - Cabinet Corridor",
+      "gd_only": "refrigerator(0.626), sign(0.389), cabinet(0.374), cabinet(0.358), cabinet(0.357)",
+      "ocr_texts": ["消防栓", "HYDRANT", "directional sign", "room sign"],
+      "ocr_place_hints": ["消防栓 (Fire Hydrant)", "HYDRANT"],
+      "improvement": "critical"
+    },
+    {
+      "filename": "IMG_1472.jpg",
+      "zone": "Zone 9 - Refrigerator Close-up",
+      "gd_only": "refrigerator(0.849), fire_ext(0.485), door(0.465), sign(0.436)",
+      "ocr_texts": ["消防栓", "HYDRANT", "滅火器 (Fire Extinguisher)", "red warning sign"],
+      "ocr_place_hints": ["消防栓 HYDRANT", "滅火器 Fire Extinguisher"],
+      "improvement": "critical"
+    }
+  ],
+  "summary": {
+    "total_gd_detections": 29,
+    "total_ocr_texts": 27,
+    "total_place_hints": 12,
+    "critical_improvements": 3,
+    "moderate_improvements": 2,
+    "minimal_improvements": 1
+  }
+}

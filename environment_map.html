@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UniGoal Navigation - GroundingDINO Object Detection Map</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px}
+  h1{text-align:center;color:#58a6ff;font-size:22px}
+  h2{color:#58a6ff;margin:24px 0 12px;border-bottom:1px solid #21262d;padding-bottom:6px;font-size:16px}
+  h3{color:#79c0ff;margin:8px 0;font-size:14px}
+  .subtitle{text-align:center;color:#8b949e;font-size:13px;margin-bottom:20px}
+  .container{max-width:1300px;margin:0 auto}
+
+  /* ZONE MAP */
+  .zone-map{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+  .zone{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;position:relative}
+  .zone-title{font-weight:bold;font-size:12px;margin-bottom:6px}
+  .zone-photos{font-size:10px;color:#8b949e}
+  .zone-objects{font-size:10px;margin-top:6px}
+  .zone-current{border:2px solid #f85149;background:#1c1417}
+  .zone-fridge{border:2px solid #58a6ff;background:#0d1d30}
+  .zone-has-fridge::after{content:"FRIDGE";position:absolute;top:4px;right:6px;background:#58a6ff;color:#0d1117;font-size:9px;font-weight:bold;padding:2px 6px;border-radius:4px}
+  .fridge-score{color:#58a6ff;font-weight:bold;font-size:13px}
+  .score-bar{height:6px;background:#21262d;border-radius:3px;margin:4px 0;overflow:hidden}
+  .score-fill{height:100%;border-radius:3px}
+
+  /* DETECTION TABLE */
+  table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+  th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #21262d}
+  th{color:#58a6ff;font-size:11px;text-transform:uppercase}
+  tr:hover{background:#161b22}
+
+  /* NAVIGATION */
+  .nav-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0}
+  .step{margin:6px 0;padding:4px 0 4px 24px;position:relative;font-size:13px;border-left:2px solid #30363d}
+  .step::before{content:"";position:absolute;left:-5px;top:10px;width:8px;height:8px;border-radius:50%;background:#58a6ff}
+  .step-current::before{background:#f85149}
+  .step-fridge::before{background:#3fb950}
+
+  /* OBJECT RELATION GRAPH */
+  .relation-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .rel-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px}
+  .rel-arrow{color:#58a6ff;font-size:16px}
+
+  /* PHOTO CHAIN */
+  .chain{display:flex;overflow-x:auto;gap:8px;padding:8px 0}
+  .chain-item{flex:0 0 auto;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;text-align:center;min-width:120px;font-size:10px}
+  .chain-item-fridge{border-color:#58a6ff;background:#0d1d30}
+  .chain-score{font-size:14px;font-weight:bold;display:block;margin:4px 0}
+  .chain-arrow{flex:0 0 auto;display:flex;align-items:center;color:#484f58;font-size:18px}
+
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  .panel{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+  .panel-full{grid-column:1/-1}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:bold;margin:2px}
+  .badge-high{background:#0d2d4a;color:#58a6ff}
+  .badge-med{background:#2d2a00;color:#e3b341}
+  .badge-low{background:#2d1b1b;color:#f85149}
+  .badge-obj{background:#1c2333;color:#d2a8ff;border:1px solid #30363d}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>UniGoal Navigation Map — GroundingDINO Object Detection</h1>
+<p class="subtitle">CSIE Department Office (資訊工程學系 系辦) | Model: GroundingDINO SwinT OGC | Device: CPU | 56 photos processed</p>
+
+<!-- ============================================================ -->
+<h2>1. Navigation: From Sofa to All Refrigerators</h2>
+<p style="color:#8b949e;font-size:12px;margin-bottom:12px">GroundingDINO detected "refrigerator" in <strong>16 unique photos</strong> across 6 zones. 10 detections above 0.5 confidence. Below are the navigation paths from your current position.</p>
+
+<div class="panels">
+<div class="panel">
+  <h3>Path A: Coffee Station Mini-Fridge (~10m)</h3>
+  <p style="font-size:11px;color:#8b949e;margin-bottom:8px">GroundingDINO scores: IMG_1436 (0.624), IMG_1438 (0.457), IMG_1439 (0.623)</p>
+  <div class="step step-current">YOU ARE HERE — Main Lobby, sitting on sofa (IMG_1434-1435)</div>
+  <div class="step">Turn LEFT, face the left wall with wooden cabinets</div>
+  <div class="step">Walk ~10m toward the coffee machine area</div>
+  <div class="step step-fridge">ARRIVED — Mini-fridge is UNDER the counter below the espresso machine. GroundingDINO detected it at score 0.624 with bounding box covering the lower-left area of IMG_1436.</div>
+  <div style="margin-top:8px">
+    <span class="badge badge-obj">espresso machine</span>
+    <span class="badge badge-obj">cabinet(0.68)</span>
+    <span class="badge badge-obj">fire extinguisher(0.63)</span>
+  </div>
+</div>
+
+<div class="panel">
+  <h3>Path B: White Full-Size Fridge (~40m)</h3>
+  <p style="font-size:11px;color:#8b949e;margin-bottom:8px">GroundingDINO best score: IMG_1472 (0.854) — highest confidence detection in the entire scan</p>
+  <div class="step step-current">YOU ARE HERE — Main Lobby, sitting on sofa</div>
+  <div class="step">Turn LEFT, walk toward coffee station</div>
+  <div class="step">Pass coffee station, continue into Professor Corridor A</div>
+  <div class="step">Continue straight into Filing Cabinet corridor (glass-front cabinets on left)</div>
+  <div class="step step-fridge">Walk to DEAD END — White fridge at end. Score 0.854, box 1965x4057px (fills most of frame). Fire hydrant on right wall.</div>
+  <div style="margin-top:8px">
+    <span class="badge badge-obj">fire extinguisher(0.72)</span>
+    <span class="badge badge-obj">cabinet(0.59)</span>
+  </div>
+</div>
+</div>
+
+<div class="panel-full nav-box">
+  <h3>Path C: Admin Area "Refrigerator" — GroundingDINO says YES (0.802), but it's a Water Dispenser</h3>
+  <p style="font-size:12px">GroundingDINO detected "refrigerator" in IMG_1447 (score=0.789) and IMG_1453 (score=0.802). However, <strong>the bounding box size in IMG_1453 is only 326x718px</strong> — much smaller than the full-size fridge in IMG_1472 (1965x4057px). Visual inspection confirms this is a <strong>water dispenser (飲水機)</strong>, not a refrigerator. The model confuses tall silver appliances. This is a known GroundingDINO limitation with similar-shaped objects.</p>
+  <p style="font-size:12px;color:#e3b341;margin-top:6px">This demonstrates why UniGoal uses VLM decision-making on top of GroundingDINO — the VLM can distinguish between a fridge and water dispenser using contextual clues.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Zone Map — GroundingDINO Detections Per Zone</h2>
+
+<div class="zone-map">
+
+<div class="zone zone-current" style="grid-column:1/3">
+  <div class="zone-title">Node 1: MAIN LOBBY (YOU ARE HERE)</div>
+  <div class="zone-photos">IMG_1434, 1435, 1448, 1449, 1486, 1487</div>
+  <div class="zone-objects">
+    <span class="badge badge-obj">sofa(0.91)</span>
+    <span class="badge badge-obj">plant(0.85)</span>
+    <span class="badge badge-obj">cabinet(0.62)</span>
+    <span class="badge badge-obj">printer(0.70)</span>
+    <span class="badge badge-obj">door(0.78)</span>
+  </div>
+</div>
+
+<div class="zone" style="grid-column:3/5">
+  <div class="zone-title">Node 0: ENTRANCE</div>
+  <div class="zone-photos">IMG_1432, 1433</div>
+  <div class="zone-objects">
+    <span class="badge badge-obj">door(0.63)</span>
+    <span class="badge badge-obj">chair sofa(0.64)</span>
+    <span class="badge badge-obj">cabinet(0.47)</span>
+  </div>
+</div>
+
+<div class="zone zone-fridge zone-has-fridge" style="grid-column:1/2">
+  <div class="zone-title">Node 2: COFFEE STATION</div>
+  <div class="zone-photos">IMG_1436, 1437, 1438, 1439</div>
+  <div class="fridge-score">Fridge: max 0.624</div>
+  <div class="score-bar"><div class="score-fill" style="width:62%;background:#58a6ff"></div></div>
+  <div class="zone-objects">
+    <span class="badge badge-high">refrigerator(0.62)</span>
+    <span class="badge badge-obj">cabinet(0.68)</span>
+    <span class="badge badge-obj">fire ext.(0.63)</span>
+  </div>
+</div>
+
+<div class="zone">
+  <div class="zone-title">Node 3: CHAIR OFFICE</div>
+  <div class="zone-photos">IMG_1442, 1443, 1444</div>
+  <div class="zone-objects">
+    <span class="badge badge-low">refrigerator(0.40)</span>
+    <span class="badge badge-obj">door(0.72)</span>
+    <span class="badge badge-obj">sign(0.47)</span>
+  </div>
+  <div style="font-size:10px;color:#f85149;margin-top:4px">Low score — likely detecting distant mini-fridge</div>
+</div>
+
+<div class="zone zone-fridge" style="grid-column:3/5">
+  <div class="zone-title">Node 4: ADMIN AREA</div>
+  <div class="zone-photos">IMG_1440, 1447, 1450-1453</div>
+  <div class="fridge-score">Fridge: max 0.802 (FALSE POSITIVE — water dispenser)</div>
+  <div class="score-bar"><div class="score-fill" style="width:80%;background:#e3b341"></div></div>
+  <div class="zone-objects">
+    <span class="badge badge-med">refrigerator(0.80)*</span>
+    <span class="badge badge-obj">chair(0.80)</span>
+    <span class="badge badge-obj">plant(0.67)</span>
+    <span class="badge badge-obj">desk(0.63)</span>
+  </div>
+  <div style="font-size:10px;color:#e3b341;margin-top:4px">*Water dispenser misidentified as fridge</div>
+</div>
+
+<div class="zone">
+  <div class="zone-title">Node 5: CORRIDOR A</div>
+  <div class="zone-photos">IMG_1441, 1445, 1446</div>
+  <div class="zone-objects">
+    <span class="badge badge-obj">door(0.75)</span>
+    <span class="badge badge-obj">sign(0.64)</span>
+    <span class="badge badge-obj">fire ext.(0.50)</span>
+  </div>
+</div>
+
+<div class="zone" style="grid-column:2/4">
+  <div class="zone-title">Node 6: CORRIDOR B</div>
+  <div class="zone-photos">IMG_1454-1465</div>
+  <div class="zone-objects">
+    <span class="badge badge-obj">door(0.75)</span>
+    <span class="badge badge-obj">sign(0.72)</span>
+    <span class="badge badge-obj">fire ext.(0.90)</span>
+  </div>
+</div>
+
+<div class="zone">
+  <div class="zone-title">Node 7: CABINET CORRIDOR</div>
+  <div class="zone-photos">IMG_1466-1468, 1470-1471</div>
+  <div class="zone-objects">
+    <span class="badge badge-low">refrigerator(0.37)</span>
+    <span class="badge badge-obj">cabinet(0.60)</span>
+    <span class="badge badge-obj">sign(0.42)</span>
+  </div>
+  <div style="font-size:10px;color:#8b949e;margin-top:4px">Distant fridge visible at end of corridor</div>
+</div>
+
+<div class="zone zone-fridge zone-has-fridge" style="grid-column:1/3">
+  <div class="zone-title">Node 8: REFRIGERATOR AREA (DEAD END)</div>
+  <div class="zone-photos">IMG_1469, 1472</div>
+  <div class="fridge-score">Fridge: max 0.854 — HIGHEST CONFIDENCE</div>
+  <div class="score-bar"><div class="score-fill" style="width:85%;background:#3fb950"></div></div>
+  <div class="zone-objects">
+    <span class="badge badge-high">refrigerator(0.854)</span>
+    <span class="badge badge-obj">fire ext.(0.72)</span>
+    <span class="badge badge-obj">cabinet(0.53)</span>
+  </div>
+  <div style="font-size:10px;color:#3fb950;margin-top:4px">Full-size white 2-door refrigerator, bounding box 1965x4057px</div>
+</div>
+
+<div class="zone" style="grid-column:3/5">
+  <div class="zone-title">Node 9: CORRIDOR C (BACK)</div>
+  <div class="zone-photos">IMG_1473-1485</div>
+  <div class="fridge-score">Fridge: distant views (0.45-0.64)</div>
+  <div class="score-bar"><div class="score-fill" style="width:55%;background:#e3b341"></div></div>
+  <div class="zone-objects">
+    <span class="badge badge-med">refrigerator(0.64)</span>
+    <span class="badge badge-obj">door(0.68)</span>
+    <span class="badge badge-obj">sign(0.53)</span>
+    <span class="badge badge-obj">fire ext.(0.56)</span>
+  </div>
+  <div style="font-size:10px;color:#8b949e;margin-top:4px">9 photos see the fridge from far away down the corridor</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Refrigerator Detection Chain — How GroundingDINO Tracks the Object</h2>
+<p style="color:#8b949e;font-size:12px;margin-bottom:12px">As you walk from the sofa toward the fridge, GroundingDINO's confidence and bounding box size change. Small box = far away, large box = close. This is how UniGoal knows you're getting closer.</p>
+
+<h3>Chain A: Coffee Station Mini-Fridge</h3>
+<div class="chain">
+  <div class="chain-item"><strong>IMG_1434</strong><br>Lobby (start)<br><span class="chain-score" style="color:#8b949e">no fridge</span>sofa(0.87)</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1436</strong><br>Coffee area<br><span class="chain-score" style="color:#58a6ff">0.624</span>box: 580x3056px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1438</strong><br>At counter<br><span class="chain-score" style="color:#e3b341">0.457</span>box: 607x1478px<br><span style="font-size:9px">partially hidden</span></div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1439</strong><br>Past counter<br><span class="chain-score" style="color:#58a6ff">0.623</span>box: 633x2022px</div>
+</div>
+
+<h3>Chain B: Full-Size White Fridge (highest confidence path)</h3>
+<div class="chain">
+  <div class="chain-item"><strong>IMG_1434</strong><br>Lobby (start)<br><span class="chain-score" style="color:#8b949e">no fridge</span></div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item"><strong>IMG_1441</strong><br>Corridor A<br><span class="chain-score" style="color:#8b949e">no fridge</span>door, sign</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1466</strong><br>Cabinet start<br><span class="chain-score" style="color:#f85149">0.367</span>box: 116x1081px<br><span style="font-size:9px">tiny=very far</span></div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1469</strong><br>Getting closer<br><span class="chain-score" style="color:#58a6ff">0.634</span>box: 181x1896px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge" style="border-color:#3fb950"><strong>IMG_1472</strong><br>AT THE FRIDGE<br><span class="chain-score" style="color:#3fb950">0.854</span>box: 1965x4057px<br><span style="font-size:9px;color:#3fb950">ARRIVED</span></div>
+</div>
+
+<h3>Chain C: Distant views from Corridor C (approaching from behind)</h3>
+<div class="chain">
+  <div class="chain-item chain-item-fridge"><strong>IMG_1475</strong><br>Far end<br><span class="chain-score" style="color:#f85149">0.450</span>90x256px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1477</strong><br>Closer<br><span class="chain-score" style="color:#58a6ff">0.620</span>122x325px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1480</strong><br>Closer<br><span class="chain-score" style="color:#58a6ff">0.552</span>133x371px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge"><strong>IMG_1482</strong><br>Approaching<br><span class="chain-score" style="color:#58a6ff">0.636</span>153x444px</div>
+  <div class="chain-arrow">&rarr;</div>
+  <div class="chain-item chain-item-fridge" style="border-color:#3fb950"><strong>IMG_1472</strong><br>ARRIVED<br><span class="chain-score" style="color:#3fb950">0.854</span>1965x4057px</div>
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Object Relationship Graph — How GroundingDINO Links Photos</h2>
+<p style="color:#8b949e;font-size:12px;margin-bottom:12px">Photos are connected when they share detected objects. Higher similarity = more shared objects = likely nearby locations. This is how UniGoal builds the topological map.</p>
+
+<div class="panels">
+<div class="panel">
+  <h3>Objects That Co-occur With Refrigerator</h3>
+  <table>
+    <tr><th>Co-occurring Object</th><th>Times Together</th><th>Relationship</th></tr>
+    <tr><td><span class="badge badge-obj">cabinet</span></td><td>14 photos</td><td>Fridges are always near cabinets/counters</td></tr>
+    <tr><td><span class="badge badge-obj">fire extinguisher</span></td><td>11 photos</td><td>Safety equipment near appliances</td></tr>
+    <tr><td><span class="badge badge-obj">door</span></td><td>8 photos</td><td>Corridor context</td></tr>
+    <tr><td><span class="badge badge-obj">sign</span></td><td>6 photos</td><td>Office signage in corridor</td></tr>
+    <tr><td><span class="badge badge-obj">chair</span></td><td>3 photos</td><td>Admin area furniture</td></tr>
+    <tr><td><span class="badge badge-obj">plant</span></td><td>2 photos</td><td>Lobby/admin decor</td></tr>
+    <tr><td><span class="badge badge-obj">desk</span></td><td>2 photos</td><td>Admin workspace</td></tr>
+    <tr><td><span class="badge badge-obj">printer</span></td><td>1 photo</td><td>Office equipment area</td></tr>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px"><strong>Key insight:</strong> "cabinet + fire extinguisher + refrigerator" is the strongest co-occurrence pattern — this combination reliably indicates a fridge location.</p>
+</div>
+
+<div class="panel">
+  <h3>Photo Similarity Scores (fridge photos only)</h3>
+  <table>
+    <tr><th>Photo A</th><th>Photo B</th><th>Similarity</th><th>Shared Objects</th></tr>
+    <tr><td>IMG_1469</td><td>IMG_1472</td><td><strong style="color:#3fb950">0.750</strong></td><td>refrigerator, fire ext., cabinet</td></tr>
+    <tr><td>IMG_1438</td><td>IMG_1439</td><td><strong style="color:#58a6ff">0.600</strong></td><td>refrigerator, cabinet, door</td></tr>
+    <tr><td>IMG_1436</td><td>IMG_1438</td><td>0.500</td><td>refrigerator, cabinet</td></tr>
+    <tr><td>IMG_1436</td><td>IMG_1439</td><td>0.500</td><td>refrigerator, cabinet</td></tr>
+    <tr><td>IMG_1447</td><td>IMG_1453</td><td>0.333</td><td>refrigerator, cabinet</td></tr>
+    <tr><td>IMG_1466</td><td>IMG_1469</td><td>0.333</td><td>refrigerator, cabinet</td></tr>
+  </table>
+  <p style="font-size:11px;color:#8b949e;margin-top:8px"><strong>How UniGoal uses this:</strong> High similarity between consecutive photos = same area. IMG_1469→1472 (sim=0.75) confirms these are the same fridge getting closer.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2>5. All GroundingDINO Detections — Complete Data</h2>
+
+<div class="panel-full nav-box">
+  <h3>Detection Summary by Photo (refrigerator photos highlighted)</h3>
+  <table>
+    <tr><th>Photo</th><th>Zone</th><th>Fridge Score</th><th>Fridge Box (px)</th><th>Other Objects</th><th>Interpretation</th></tr>
+    <tr style="background:#0d1d30"><td><strong>IMG_1436</strong></td><td>Coffee Station</td><td class="fridge-score">0.624</td><td>580 x 3056</td><td>fire ext.(0.74), cabinet(0.59)</td><td>Mini-fridge under counter, medium confidence</td></tr>
+    <tr style="background:#0d1d30"><td><strong>IMG_1438</strong></td><td>Coffee Station</td><td style="color:#e3b341">0.457</td><td>607 x 1478</td><td>cabinet(0.68)</td><td>Partially occluded by counter</td></tr>
+    <tr style="background:#0d1d30"><td><strong>IMG_1439</strong></td><td>Coffee Station</td><td class="fridge-score">0.623</td><td>633 x 2022</td><td>fire ext.(0.76), cabinet(0.54)</td><td>Seen from further angle</td></tr>
+    <tr><td>IMG_1442</td><td>Chair Office</td><td style="color:#f85149">0.395</td><td>555 x 2461</td><td>door(0.72)</td><td>Distant view of coffee area fridge</td></tr>
+    <tr style="background:#2d2a00"><td><strong>IMG_1447</strong></td><td>Admin Area</td><td style="color:#e3b341">0.789</td><td>528 x 1394</td><td>cabinet(0.57), printer(0.56)</td><td>FALSE POSITIVE — water dispenser</td></tr>
+    <tr style="background:#2d2a00"><td><strong>IMG_1453</strong></td><td>Admin Area</td><td style="color:#e3b341">0.802</td><td>326 x 718</td><td>chair(0.80), plant(0.67)</td><td>FALSE POSITIVE — water dispenser</td></tr>
+    <tr><td>IMG_1466</td><td>Cabinet Corridor</td><td style="color:#f85149">0.367</td><td>116 x 1081</td><td>sign(0.42), cabinet(0.38)</td><td>Fridge visible far down corridor</td></tr>
+    <tr style="background:#0d1d30"><td><strong>IMG_1469</strong></td><td>Fridge Area</td><td class="fridge-score">0.634</td><td>181 x 1896</td><td>fire ext.(0.76), cabinet(0.54)</td><td>Approaching the white fridge</td></tr>
+    <tr style="background:#0d2d0d"><td><strong>IMG_1472</strong></td><td>Fridge Area</td><td style="color:#3fb950;font-size:16px"><strong>0.854</strong></td><td><strong>1965 x 4057</strong></td><td>fire ext.(0.72)</td><td>RIGHT IN FRONT — full frame</td></tr>
+    <tr><td>IMG_1475</td><td>Corridor C</td><td style="color:#f85149">0.450</td><td>90 x 256</td><td>door(0.50), cabinet(0.37)</td><td>Distant view from back corridor</td></tr>
+    <tr><td>IMG_1476</td><td>Corridor C</td><td style="color:#f85149">0.465</td><td>113 x 305</td><td>table desk(0.52), door(0.48)</td><td>Distant view</td></tr>
+    <tr><td>IMG_1477</td><td>Corridor C</td><td class="fridge-score">0.620</td><td>122 x 325</td><td>door(0.68), sign(0.49)</td><td>Visible at end of corridor</td></tr>
+    <tr><td>IMG_1478</td><td>Corridor C</td><td class="fridge-score">0.583</td><td>112 x 339</td><td>door(0.58), sign(0.43)</td><td>Visible at end of corridor</td></tr>
+    <tr><td>IMG_1480</td><td>Corridor C</td><td class="fridge-score">0.552</td><td>133 x 371</td><td>door(0.64)</td><td>Getting closer from back</td></tr>
+    <tr><td>IMG_1481</td><td>Corridor C</td><td style="color:#f85149">0.429</td><td>263 x 428</td><td>door(0.62), sign(0.40)</td><td>Partially visible</td></tr>
+    <tr><td>IMG_1482</td><td>Corridor C</td><td class="fridge-score">0.636</td><td>153 x 444</td><td>door(0.58)</td><td>End of corridor in view</td></tr>
+    <tr><td>IMG_1483</td><td>Corridor C</td><td style="color:#f85149">0.480</td><td>178 x 517</td><td>door(0.68), sign(0.53)</td><td>Two fridge-like detections</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<h2>6. How the Map Was Built (GroundingDINO Pipeline)</h2>
+
+<div class="panels">
+<div class="panel panel-full">
+<div style="font-size:12px;line-height:1.8">
+<strong>Step 1 — Goal Decomposition:</strong> Input "find refrigerator" → detection classes: <code>refrigerator, door, cabinet, chair, table, desk, sofa, sign, fire extinguisher, plant, printer</code><br>
+<strong>Step 2 — GroundingDINO Detection:</strong> Each photo sent to GroundingDINO SwinT with text prompt <code>"refrigerator . door . cabinet . ..."</code> → returns bounding boxes + confidence scores (threshold: box=0.30, text=0.25, top 5 kept)<br>
+<strong>Step 3 — Object Indexing:</strong> Build reverse index: for each object type, list all photos where it appears with scores<br>
+<strong>Step 4 — Photo Connections:</strong> Consecutive photos compared by Jaccard similarity of detected object sets. High similarity = same area.<br>
+<strong>Step 5 — Zone Assignment:</strong> Photos grouped into zones by sequence and shared objects. Each zone becomes a node in the topological map.<br>
+<strong>Step 6 — Navigation Path:</strong> Shortest path from current zone (Main Lobby, node 1) to target zones (Coffee Station node 2, Fridge Area node 8) using NetworkX.<br>
+<strong>Step 7 — Confidence Tracking:</strong> As user walks toward the fridge, bounding box grows larger and score increases → UniGoal interprets growing box as "getting closer" and triggers ARRIVED when score > threshold and box fills >40% of frame.
+</div>
+</div>
+</div>
+
+<p style="text-align:center;color:#484f58;margin-top:24px;font-size:11px">
+  Generated by UniGoal batch_mapper.py | Model: GroundingDINO SwinT OGC (662MB) | PyTorch 2.4.1 CPU | 56 photos | Detection time: ~60 min
+</p>
+
+</div>
+</body>
+</html>

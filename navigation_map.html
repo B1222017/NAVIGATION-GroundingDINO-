@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniGoal Navigation Map - GroundingDINO Topological Map</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent-blue: #58a6ff;
+    --accent-blue-dark: #1f6feb;
+    --accent-red: #f85149;
+    --accent-red-dark: #da3633;
+    --accent-green: #3fb950;
+    --accent-green-dark: #238636;
+    --accent-purple: #d2a8ff;
+    --accent-orange: #f0883e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  .header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent-blue);
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .header-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .badge-red { background: #2d0d0d; border-color: var(--accent-red); color: var(--accent-red); }
+  .badge-blue { background: #0d1d30; border-color: var(--accent-blue); color: var(--accent-blue); }
+  .badge-green { background: #0d2d0d; border-color: var(--accent-green); color: var(--accent-green); }
+  .badge-purple { background: #1c1333; border-color: var(--accent-purple); color: var(--accent-purple); }
+
+  .main-container {
+    display: flex;
+    height: calc(100vh - 70px);
+  }
+
+  @media (max-width: 1000px) {
+    .main-container { flex-direction: column; height: auto; }
+    #graph-container { height: 60vh !important; min-height: 400px !important; }
+  }
+
+  #graph-container {
+    flex: 1;
+    border-right: 1px solid var(--border);
+    position: relative;
+    min-height: 600px;
+    width: 100%;
+    height: calc(100vh - 70px);
+  }
+
+  .graph-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-line {
+    width: 20px;
+    height: 3px;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+
+  .sidebar {
+    width: 380px;
+    min-width: 380px;
+    max-width: 380px;
+    background: var(--bg-secondary);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-section {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .section-header:hover { background: var(--bg-tertiary); }
+
+  .section-header .arrow {
+    transition: transform 0.2s;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+
+  .section-content {
+    padding: 0 16px 14px 16px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .section-content.hidden { display: none; }
+
+  /* Navigation Panel */
+  .nav-route {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .nav-route-header {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .nav-route-header:hover { background: var(--bg-tertiary); }
+
+  .nav-route-header .goal-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nav-steps { padding: 0 14px 12px 14px; }
+
+  .nav-steps.hidden { display: none; }
+
+  .nav-step {
+    position: relative;
+    padding: 8px 0 8px 24px;
+    font-size: 12px;
+    border-left: 2px solid var(--border);
+    margin-left: 4px;
+  }
+
+  .nav-step:last-child { border-left-color: transparent; }
+
+  .nav-step::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    border: 2px solid var(--bg-primary);
+  }
+
+  .nav-step:last-child::before { background: var(--accent-green); }
+
+  .nav-step .step-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .nav-step .step-detail {
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .step-shared {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 3px;
+  }
+
+  .obj-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .obj-tag.highlight { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+  /* Zone detail panel */
+  #zone-detail {
+    padding: 14px 16px;
+  }
+
+  #zone-detail h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: var(--accent-blue);
+  }
+
+  .zone-detail-empty {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .detail-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+
+  .detail-row .label { color: var(--text-secondary); }
+  .detail-row .value { color: var(--text-primary); font-weight: 500; }
+
+  .detail-obj-list {
+    margin-top: 8px;
+  }
+
+  .detail-obj-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 40px;
+    gap: 8px;
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    align-items: center;
+  }
+
+  .detail-obj-row .obj-name { color: var(--text-primary); }
+
+  .conf-bar {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent-blue);
+  }
+
+  .detail-photos {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .photo-chip {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+
+  /* Detection summary table */
+  .det-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .det-table th {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+  }
+
+  .det-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+    color: var(--text-primary);
+  }
+
+  .det-table tr:hover td { background: rgba(56,139,253,0.05); }
+
+  .det-table .num { text-align: right; font-family: monospace; }
+
+  /* Zone details section */
+  .zone-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .zone-card-header {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .zone-card-header:hover { background: var(--bg-tertiary); }
+
+  .zone-card-body { padding: 8px 12px 10px; font-size: 11px; }
+  .zone-card-body.hidden { display: none; }
+
+  .zone-obj-grid {
+    display: grid;
+    grid-template-columns: 1fr 55px 35px;
+    gap: 2px 8px;
+    font-size: 11px;
+  }
+
+  .zone-obj-grid .head {
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  /* Stats footer */
+  .stats-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: monospace;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+  .start-badge {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--accent-red-dark);
+    color: #fff;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .goal-badge-inline {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  .goal-badge-fridge { background: #0d1d30; color: var(--accent-blue); }
+  .goal-badge-fire { background: #0d2d0d; color: var(--accent-green); }
+
+  .at-start-note {
+    font-size: 11px;
+    color: var(--accent-green);
+    padding: 8px 14px;
+    background: #0d2d0d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid var(--accent-green-dark);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>UniGoal Topological Navigation Map</h1>
+    <div class="subtitle">Fully automatic from GroundingDINO SwinT OGC detections &mdash; no hardcoded zones or edges</div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-red">START: Zone 0 (Sofa Area)</span>
+    <span class="badge badge-blue">GOAL: refrigerator</span>
+    <span class="badge badge-green">GOAL: fire extinguisher</span>
+    <span class="badge badge-purple">56 photos &rarr; 13 zones</span>
+  </div>
+</div>
+
+<div class="main-container">
+  <div id="graph-container">
+    <div class="graph-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Start (YOU ARE HERE)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue-dark)"></div> Refrigerator zone</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green-dark)"></div> Fire extinguisher zone</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div> Both goals</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--bg-tertiary);border:1px solid #484f58"></div> Other zone</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--accent-blue)"></div> Navigation path</div>
+      <div class="legend-item"><div class="legend-line" style="background:#484f58"></div> Shared-object edge</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <!-- Zone Detail (click a node) -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Selected Zone Details</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="zone-detail">
+        <div class="zone-detail-empty">Click a node on the map to see zone details</div>
+      </div>
+    </div>
+
+    <!-- Navigation Panel -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Navigation Routes</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="nav-panel"></div>
+    </div>
+
+    <!-- Detection Summary -->
+    <div class="sidebar-section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span>Detection Summary (All Objects)</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content" id="detection-summary"></div>
+    </div>
+
+    <!-- Zone Details (all zones) -->
+    <div class="sidebar-section">
+      <div class="section-header collapsed" onclick="toggleSection(this)">
+        <span>All Zones Detail</span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-content hidden" id="all-zones"></div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-footer">
+  <div class="stat-item">Model: <span class="stat-value">GroundingDINO SwinT OGC</span></div>
+  <div class="stat-item">Box threshold: <span class="stat-value">0.30</span></div>
+  <div class="stat-item">Text threshold: <span class="stat-value">0.25</span></div>
+  <div class="stat-item">Photos: <span class="stat-value" id="stat-photos">56</span></div>
+  <div class="stat-item">Zones: <span class="stat-value" id="stat-zones">13</span></div>
+  <div class="stat-item">Edges: <span class="stat-value" id="stat-edges">24</span></div>
+  <div class="stat-item">Object types: <span class="stat-value" id="stat-objtypes">13</span></div>
+  <div class="stat-item">Jaccard threshold: <span class="stat-value">0.25</span></div>
+</div>
+
+<script>
+// =====================================================================
+// EMBEDDED DATA from generate_topomap.py pipeline
+// =====================================================================
+const DATA = {
+  "zones": {
+    "0": {
+      "label": "Zone 0\nSofa Area\n(6 photos)",
+      "photos": ["IMG_1432.jpg","IMG_1433.jpg","IMG_1434.jpg","IMG_1435.jpg","IMG_1436.jpg","IMG_1437.jpg"],
+      "photo_range": "IMG_1432.jpg-IMG_1437.jpg",
+      "all_objects": [["sofa",0.766],["plant",0.738],["extinguisher fire extinguisher",0.689],["refrigerator",0.62],["chair sofa",0.61],["cabinet",0.595],["door",0.592],["desk",0.569]],
+      "obj_count": {"plant":6,"desk":2,"chair sofa":2,"cabinet":10,"door":3,"extinguisher fire extinguisher":3,"sofa":3,"refrigerator":1}
+    },
+    "1": {
+      "label": "Zone 1\nExtinguisher Fire Extinguisher Area\n(2 photos)",
+      "photos": ["IMG_1438.jpg","IMG_1439.jpg"],
+      "photo_range": "IMG_1438.jpg-IMG_1439.jpg",
+      "all_objects": [["cabinet",0.68],["extinguisher fire extinguisher",0.645],["refrigerator",0.621]],
+      "obj_count": {"cabinet":6,"extinguisher fire extinguisher":2,"refrigerator":2}
+    },
+    "2": {
+      "label": "Zone 2\nPlant Area\n(2 photos)",
+      "photos": ["IMG_1440.jpg","IMG_1441.jpg"],
+      "photo_range": "IMG_1440.jpg-IMG_1441.jpg",
+      "all_objects": [["sofa",0.883],["plant",0.823],["chair",0.753],["door",0.649],["cabinet",0.625],["extinguisher fire extinguisher",0.415],["printer",0.308]],
+      "obj_count": {"sofa":1,"plant":1,"chair":1,"door":2,"cabinet":2,"extinguisher fire extinguisher":2,"printer":1}
+    },
+    "3": {
+      "label": "Zone 3\nChair Area\n(2 photos)",
+      "photos": ["IMG_1442.jpg","IMG_1443.jpg"],
+      "photo_range": "IMG_1442.jpg-IMG_1443.jpg",
+      "all_objects": [["sofa",0.895],["door",0.703],["chair",0.653],["sign",0.463],["table desk",0.403],["refrigerator",0.345]],
+      "obj_count": {"door":2,"sign":2,"table desk":1,"refrigerator":1,"sofa":1,"chair":3}
+    },
+    "4": {
+      "label": "Zone 4\nDoor Area\n(2 photos)",
+      "photos": ["IMG_1444.jpg","IMG_1445.jpg"],
+      "photo_range": "IMG_1444.jpg-IMG_1445.jpg",
+      "all_objects": [["door",0.526],["sign",0.521],["extinguisher fire extinguisher",0.511]],
+      "obj_count": {"extinguisher fire extinguisher":2,"sign":3,"door":2}
+    },
+    "5": {
+      "label": "Zone 5\nRefrigerator Area\n(3 photos)",
+      "photos": ["IMG_1446.jpg","IMG_1447.jpg","IMG_1448.jpg"],
+      "photo_range": "IMG_1446.jpg-IMG_1448.jpg",
+      "all_objects": [["sofa",0.808],["refrigerator",0.777],["plant",0.768],["chair",0.722],["cabinet",0.611],["printer",0.583],["desk",0.518]],
+      "obj_count": {"sofa":2,"chair":4,"refrigerator":1,"cabinet":4,"printer":2,"desk":1,"plant":1}
+    },
+    "6": {
+      "label": "Zone 6\n(5 photos)",
+      "photos": ["IMG_1449.jpg","IMG_1450.jpg","IMG_1451.jpg","IMG_1452.jpg","IMG_1453.jpg"],
+      "photo_range": "IMG_1449.jpg-IMG_1453.jpg",
+      "all_objects": [["sofa",0.906],["plant",0.84],["chair",0.798],["refrigerator",0.788],["door",0.77],["cabinet",0.645],["desk",0.611],["table desk",0.405]],
+      "obj_count": {"door":4,"sofa":4,"cabinet":7,"table desk":1,"desk":3,"plant":3,"chair":2,"refrigerator":1}
+    },
+    "7": {
+      "label": "Zone 7\nSign Area\n(7 photos)",
+      "photos": ["IMG_1454.jpg","IMG_1455.jpg","IMG_1456.jpg","IMG_1457.jpg","IMG_1458.jpg","IMG_1459.jpg","IMG_1460.jpg"],
+      "photo_range": "IMG_1454.jpg-IMG_1460.jpg",
+      "all_objects": [["extinguisher fire extinguisher",0.822],["sign",0.694],["chair",0.636],["door",0.635],["sofa",0.583],["desk",0.561],["cabinet",0.536]],
+      "obj_count": {"extinguisher fire extinguisher":3,"sofa":1,"door":9,"cabinet":3,"sign":8,"chair":2,"desk":1}
+    },
+    "8": {
+      "label": "Zone 8\nChair Sofa Area\n(6 photos)",
+      "photos": ["IMG_1461.jpg","IMG_1462.jpg","IMG_1463.jpg","IMG_1464.jpg","IMG_1465.jpg","IMG_1466.jpg"],
+      "photo_range": "IMG_1461.jpg-IMG_1466.jpg",
+      "all_objects": [["door",0.685],["sign",0.503],["chair sofa",0.429],["cabinet",0.38],["refrigerator",0.366],["extinguisher fire extinguisher",0.346]],
+      "obj_count": {"door":6,"sign":5,"extinguisher fire extinguisher":1,"chair sofa":1,"cabinet":2,"refrigerator":1}
+    },
+    "9": {
+      "label": "Zone 9\nCabinet Area\n(7 photos)",
+      "photos": ["IMG_1467.jpg","IMG_1468.jpg","IMG_1469.jpg","IMG_1470.jpg","IMG_1471.jpg","IMG_1472.jpg","IMG_1473.jpg"],
+      "photo_range": "IMG_1467.jpg-IMG_1473.jpg",
+      "all_objects": [["refrigerator",0.849],["extinguisher fire extinguisher",0.485],["sign",0.476],["door",0.465],["cabinet",0.445]],
+      "obj_count": {"extinguisher fire extinguisher":2,"cabinet":15,"refrigerator":2,"sign":5,"door":5}
+    },
+    "10": {
+      "label": "Zone 10\nTable Desk Area\n(10 photos)",
+      "photos": ["IMG_1474.jpg","IMG_1475.jpg","IMG_1476.jpg","IMG_1477.jpg","IMG_1478.jpg","IMG_1479.jpg","IMG_1480.jpg","IMG_1481.jpg","IMG_1482.jpg","IMG_1483.jpg"],
+      "photo_range": "IMG_1474.jpg-IMG_1483.jpg",
+      "all_objects": [["extinguisher fire extinguisher",0.721],["cabinet",0.674],["refrigerator",0.624],["door",0.594],["table desk",0.509],["sign",0.424],["desk",0.362],["cabinet desk",0.358]],
+      "obj_count": {"extinguisher fire extinguisher":8,"door":12,"cabinet":10,"refrigerator":10,"cabinet desk":2,"table desk":2,"sign":5,"desk":1}
+    },
+    "11": {
+      "label": "Zone 11\n(2 photos)",
+      "photos": ["IMG_1484.jpg","IMG_1485.jpg"],
+      "photo_range": "IMG_1484.jpg-IMG_1485.jpg",
+      "all_objects": [["door",0.648],["sign",0.573],["extinguisher fire extinguisher",0.572]],
+      "obj_count": {"door":2,"sign":3,"extinguisher fire extinguisher":4}
+    },
+    "12": {
+      "label": "Zone 12\nPrinter Area\n(2 photos)",
+      "photos": ["IMG_1486.jpg","IMG_1487.jpg"],
+      "photo_range": "IMG_1486.jpg-IMG_1487.jpg",
+      "all_objects": [["plant",0.781],["chair",0.72],["sofa",0.694],["printer",0.686],["cabinet",0.603],["desk",0.6]],
+      "obj_count": {"plant":2,"chair":2,"printer":1,"desk":1,"cabinet":3,"sofa":1}
+    }
+  },
+  "edges": [
+    {"from":0,"to":1,"shared":["cabinet","extinguisher fire extinguisher","refrigerator"]},
+    {"from":1,"to":2,"shared":["cabinet","extinguisher fire extinguisher"]},
+    {"from":2,"to":3,"shared":["chair","door","sofa"]},
+    {"from":3,"to":4,"shared":["door","sign"]},
+    {"from":4,"to":5,"shared":["adjacent"]},
+    {"from":5,"to":6,"shared":["cabinet","chair","desk","plant","refrigerator","sofa"]},
+    {"from":6,"to":7,"shared":["cabinet","chair","desk","door","sofa"]},
+    {"from":7,"to":8,"shared":["cabinet","door","extinguisher fire extinguisher","sign"]},
+    {"from":8,"to":9,"shared":["cabinet","door","extinguisher fire extinguisher","refrigerator","sign"]},
+    {"from":9,"to":10,"shared":["cabinet","door","extinguisher fire extinguisher","refrigerator","sign"]},
+    {"from":10,"to":11,"shared":["door","extinguisher fire extinguisher","sign"]},
+    {"from":11,"to":12,"shared":["adjacent"]},
+    {"from":0,"to":5,"shared":["desk","plant","sofa"]},
+    {"from":0,"to":6,"shared":["desk","plant","sofa"]},
+    {"from":0,"to":12,"shared":["desk","plant","sofa"]},
+    {"from":2,"to":5,"shared":["chair","plant","printer","sofa"]},
+    {"from":2,"to":6,"shared":["chair","plant","sofa"]},
+    {"from":2,"to":12,"shared":["chair","plant","printer","sofa"]},
+    {"from":3,"to":6,"shared":["chair","sofa","table desk"]},
+    {"from":3,"to":7,"shared":["chair","sign","sofa"]},
+    {"from":5,"to":7,"shared":["chair","desk","sofa"]},
+    {"from":5,"to":12,"shared":["chair","desk","plant","printer","sofa"]},
+    {"from":6,"to":12,"shared":["chair","desk","plant","sofa"]},
+    {"from":7,"to":12,"shared":["chair","desk","sofa"]}
+  ],
+  "goal_zones": {
+    "0": {"fire extinguisher":0.689,"refrigerator":0.62},
+    "1": {"fire extinguisher":0.645,"refrigerator":0.621},
+    "4": {"fire extinguisher":0.511},
+    "5": {"refrigerator":0.777},
+    "6": {"refrigerator":0.788},
+    "7": {"fire extinguisher":0.822},
+    "9": {"fire extinguisher":0.485,"refrigerator":0.849},
+    "10": {"fire extinguisher":0.721,"refrigerator":0.624},
+    "11": {"fire extinguisher":0.572}
+  },
+  "start_zone": 0,
+  "goals": ["refrigerator","fire extinguisher"],
+  "navigation": {
+    "0": {"path":["0"],"steps":[]},
+    "1": {"path":["0","1"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":1,"to_label":"Zone 1 | Extinguisher Fire Extinguisher Area | (2 photos)","shared":["cabinet","extinguisher fire extinguisher","refrigerator"],"next_objects":[["cabinet",0.68],["extinguisher fire extinguisher",0.645],["refrigerator",0.621]],"next_photos":["IMG_1438.jpg","IMG_1439.jpg"]}]},
+    "4": {"path":["0","5","4"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":5,"to_label":"Zone 5 | Refrigerator Area | (3 photos)","shared":["desk","plant","sofa"],"next_objects":[["sofa",0.808],["refrigerator",0.777],["plant",0.768],["chair",0.722],["cabinet",0.611]],"next_photos":["IMG_1446.jpg","IMG_1447.jpg","IMG_1448.jpg"]},{"from":5,"from_label":"Zone 5 | Refrigerator Area | (3 photos)","to":4,"to_label":"Zone 4 | Door Area | (2 photos)","shared":["adjacent"],"next_objects":[["door",0.526],["sign",0.521],["extinguisher fire extinguisher",0.511]],"next_photos":["IMG_1444.jpg","IMG_1445.jpg"]}]},
+    "5": {"path":["0","5"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":5,"to_label":"Zone 5 | Refrigerator Area | (3 photos)","shared":["desk","plant","sofa"],"next_objects":[["sofa",0.808],["refrigerator",0.777],["plant",0.768],["chair",0.722],["cabinet",0.611]],"next_photos":["IMG_1446.jpg","IMG_1447.jpg","IMG_1448.jpg"]}]},
+    "6": {"path":["0","6"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":6,"to_label":"Zone 6 | (5 photos)","shared":["desk","plant","sofa"],"next_objects":[["sofa",0.906],["plant",0.84],["chair",0.798],["refrigerator",0.788],["door",0.77]],"next_photos":["IMG_1449.jpg","IMG_1450.jpg","IMG_1451.jpg","IMG_1452.jpg","IMG_1453.jpg"]}]},
+    "7": {"path":["0","6","7"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":6,"to_label":"Zone 6 | (5 photos)","shared":["desk","plant","sofa"],"next_objects":[["sofa",0.906],["plant",0.84],["chair",0.798],["refrigerator",0.788],["door",0.77]],"next_photos":["IMG_1449.jpg","IMG_1450.jpg","IMG_1451.jpg","IMG_1452.jpg","IMG_1453.jpg"]},{"from":6,"from_label":"Zone 6 | (5 photos)","to":7,"to_label":"Zone 7 | Sign Area | (7 photos)","shared":["cabinet","chair","desk","door","sofa"],"next_objects":[["extinguisher fire extinguisher",0.822],["sign",0.694],["chair",0.636],["door",0.635],["sofa",0.583]],"next_photos":["IMG_1454.jpg","IMG_1455.jpg","IMG_1456.jpg","IMG_1457.jpg","IMG_1458.jpg","IMG_1459.jpg","IMG_1460.jpg"]}]},
+    "9": {"path":["0","6","7","8","9"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":6,"to_label":"Zone 6 | (5 photos)","shared":["desk","plant","sofa"],"next_objects":[["sofa",0.906],["plant",0.84],["chair",0.798],["refrigerator",0.788],["door",0.77]],"next_photos":["IMG_1449.jpg","IMG_1450.jpg","IMG_1451.jpg","IMG_1452.jpg","IMG_1453.jpg"]},{"from":6,"from_label":"Zone 6 | (5 photos)","to":7,"to_label":"Zone 7 | Sign Area | (7 photos)","shared":["cabinet","chair","desk","door","sofa"],"next_objects":[["extinguisher fire extinguisher",0.822],["sign",0.694],["chair",0.636],["door",0.635],["sofa",0.583]],"next_photos":["IMG_1454.jpg","IMG_1455.jpg","IMG_1456.jpg","IMG_1457.jpg","IMG_1458.jpg","IMG_1459.jpg","IMG_1460.jpg"]},{"from":7,"from_label":"Zone 7 | Sign Area | (7 photos)","to":8,"to_label":"Zone 8 | Chair Sofa Area | (6 photos)","shared":["cabinet","door","extinguisher fire extinguisher","sign"],"next_objects":[["door",0.685],["sign",0.503],["chair sofa",0.429],["cabinet",0.38],["refrigerator",0.366]],"next_photos":["IMG_1461.jpg","IMG_1462.jpg","IMG_1463.jpg","IMG_1464.jpg","IMG_1465.jpg","IMG_1466.jpg"]},{"from":8,"from_label":"Zone 8 | Chair Sofa Area | (6 photos)","to":9,"to_label":"Zone 9 | Cabinet Area | (7 photos)","shared":["cabinet","door","extinguisher fire extinguisher","refrigerator","sign"],"next_objects":[["refrigerator",0.849],["extinguisher fire extinguisher",0.485],["sign",0.476],["door",0.465],["cabinet",0.445]],"next_photos":["IMG_1467.jpg","IMG_1468.jpg","IMG_1469.jpg","IMG_1470.jpg","IMG_1471.jpg","IMG_1472.jpg","IMG_1473.jpg"]}]},
+    "10": {"path":["0","12","11","10"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":12,"to_label":"Zone 12 | Printer Area | (2 photos)","shared":["desk","plant","sofa"],"next_objects":[["plant",0.781],["chair",0.72],["sofa",0.694],["printer",0.686],["cabinet",0.603]],"next_photos":["IMG_1486.jpg","IMG_1487.jpg"]},{"from":12,"from_label":"Zone 12 | Printer Area | (2 photos)","to":11,"to_label":"Zone 11 | (2 photos)","shared":["adjacent"],"next_objects":[["door",0.648],["sign",0.573],["extinguisher fire extinguisher",0.572]],"next_photos":["IMG_1484.jpg","IMG_1485.jpg"]},{"from":11,"from_label":"Zone 11 | (2 photos)","to":10,"to_label":"Zone 10 | Table Desk Area | (10 photos)","shared":["door","extinguisher fire extinguisher","sign"],"next_objects":[["extinguisher fire extinguisher",0.721],["cabinet",0.674],["refrigerator",0.624],["door",0.594],["table desk",0.509]],"next_photos":["IMG_1474.jpg","IMG_1475.jpg","IMG_1476.jpg","IMG_1477.jpg","IMG_1478.jpg","IMG_1479.jpg","IMG_1480.jpg","IMG_1481.jpg","IMG_1482.jpg","IMG_1483.jpg"]}]},
+    "11": {"path":["0","12","11"],"steps":[{"from":0,"from_label":"Zone 0 | Sofa Area | (6 photos)","to":12,"to_label":"Zone 12 | Printer Area | (2 photos)","shared":["desk","plant","sofa"],"next_objects":[["plant",0.781],["chair",0.72],["sofa",0.694],["printer",0.686],["cabinet",0.603]],"next_photos":["IMG_1486.jpg","IMG_1487.jpg"]},{"from":12,"from_label":"Zone 12 | Printer Area | (2 photos)","to":11,"to_label":"Zone 11 | (2 photos)","shared":["adjacent"],"next_objects":[["door",0.648],["sign",0.573],["extinguisher fire extinguisher",0.572]],"next_photos":["IMG_1484.jpg","IMG_1485.jpg"]}]}
+  },
+  "detection_summary": [
+    {"label":"cabinet","total_instances":62,"photo_count":37,"best_confidence":0.68,"best_photo":"IMG_1438.jpg"},
+    {"label":"door","total_instances":47,"photo_count":37,"best_confidence":0.77,"best_photo":"IMG_1450.jpg"},
+    {"label":"sign","total_instances":31,"photo_count":25,"best_confidence":0.694,"best_photo":"IMG_1455.jpg"},
+    {"label":"extinguisher fire extinguisher","total_instances":27,"photo_count":23,"best_confidence":0.822,"best_photo":"IMG_1454.jpg"},
+    {"label":"refrigerator","total_instances":19,"photo_count":18,"best_confidence":0.849,"best_photo":"IMG_1472.jpg"},
+    {"label":"chair","total_instances":14,"photo_count":9,"best_confidence":0.798,"best_photo":"IMG_1453.jpg"},
+    {"label":"plant","total_instances":13,"photo_count":12,"best_confidence":0.84,"best_photo":"IMG_1451.jpg"},
+    {"label":"sofa","total_instances":13,"photo_count":12,"best_confidence":0.906,"best_photo":"IMG_1451.jpg"},
+    {"label":"desk","total_instances":9,"photo_count":8,"best_confidence":0.611,"best_photo":"IMG_1452.jpg"},
+    {"label":"printer","total_instances":4,"photo_count":4,"best_confidence":0.686,"best_photo":"IMG_1486.jpg"},
+    {"label":"table desk","total_instances":4,"photo_count":4,"best_confidence":0.509,"best_photo":"IMG_1476.jpg"},
+    {"label":"chair sofa","total_instances":3,"photo_count":3,"best_confidence":0.61,"best_photo":"IMG_1433.jpg"},
+    {"label":"cabinet desk","total_instances":2,"photo_count":2,"best_confidence":0.358,"best_photo":"IMG_1478.jpg"}
+  ],
+  "total_photos": 56
+};
+
+// =====================================================================
+// UI HELPERS
+// =====================================================================
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const content = header.nextElementSibling;
+  content.classList.toggle('hidden');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function zoneName(zid) {
+  const z = DATA.zones[String(zid)];
+  if (!z) return 'Zone ' + zid;
+  return z.label.split('\n').filter(l => l.trim()).join(' - ');
+}
+
+function zoneShortName(zid) {
+  const z = DATA.zones[String(zid)];
+  if (!z) return 'Z' + zid;
+  const lines = z.label.split('\n');
+  return lines.length > 1 ? lines[1] || lines[0] : lines[0];
+}
+
+// =====================================================================
+// BUILD VIS.JS GRAPH
+// =====================================================================
+function getNodeColor(zid) {
+  const sid = String(zid);
+  const isStart = zid === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[sid];
+  const hasFridge = goalInfo && goalInfo['refrigerator'];
+  const hasFire = goalInfo && goalInfo['fire extinguisher'];
+
+  if (isStart) return { background: '#f85149', border: '#ff7b72', highlight: { background: '#ff7b72', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFridge && hasFire) return { background: '#f0883e', border: '#ffab70', highlight: { background: '#ffab70', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFridge) return { background: '#1f6feb', border: '#58a6ff', highlight: { background: '#58a6ff', border: '#fff' }, font: { color: '#fff' } };
+  if (hasFire) return { background: '#238636', border: '#3fb950', highlight: { background: '#3fb950', border: '#fff' }, font: { color: '#fff' } };
+  return { background: '#21262d', border: '#484f58', highlight: { background: '#30363d', border: '#8b949e' }, font: { color: '#c9d1d9' } };
+}
+
+// Collect navigation path edges
+const navPathEdges = new Set();
+for (const [target, navData] of Object.entries(DATA.navigation)) {
+  const path = navData.path.map(Number);
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = Math.min(path[i], path[i+1]);
+    const b = Math.max(path[i], path[i+1]);
+    navPathEdges.add(a + '-' + b);
+  }
+}
+
+const nodes = new vis.DataSet();
+for (const [zid, zone] of Object.entries(DATA.zones)) {
+  const id = parseInt(zid);
+  const colors = getNodeColor(id);
+  const lines = zone.label.split('\n');
+  let label = lines[0];
+  if (lines.length > 1 && lines[1]) label += '\n' + lines[1];
+
+  const isStart = id === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[zid];
+
+  let title = '<b>' + escapeHtml(zoneName(id)) + '</b><br>';
+  if (isStart) title += '<span style="color:#f85149">YOU ARE HERE</span><br>';
+  if (goalInfo) {
+    for (const [g, s] of Object.entries(goalInfo)) {
+      title += '<span style="color:#58a6ff">' + escapeHtml(g) + ': ' + s.toFixed(3) + '</span><br>';
+    }
+  }
+  title += '<br>Photos: ' + zone.photos.length + '<br>';
+  title += 'Objects: ' + zone.all_objects.map(o => o[0] + ' (' + o[1].toFixed(2) + ')').join(', ');
+
+  nodes.add({
+    id: id,
+    label: label,
+    title: title,
+    color: colors,
+    font: { ...colors.font, size: 12, face: 'system-ui', multi: true },
+    size: isStart ? 35 : (goalInfo ? 30 : 25),
+    shape: 'dot',
+    borderWidth: isStart ? 3 : 2,
+    borderWidthSelected: 4,
+  });
+}
+
+const edges = new vis.DataSet();
+for (const edge of DATA.edges) {
+  const key = Math.min(edge.from, edge.to) + '-' + Math.max(edge.from, edge.to);
+  const isNav = navPathEdges.has(key);
+  const sharedText = edge.shared.length <= 3 ? edge.shared.join(', ') : edge.shared.slice(0,3).join(', ') + ' +' + (edge.shared.length - 3);
+
+  edges.add({
+    from: edge.from,
+    to: edge.to,
+    label: sharedText,
+    title: 'Shared: ' + edge.shared.join(', '),
+    color: { color: isNav ? '#58a6ff' : '#484f58', highlight: '#8b949e', opacity: isNav ? 0.9 : 0.4 },
+    width: isNav ? 3 : 1.5,
+    dashes: isNav ? [8, 4] : false,
+    font: { color: isNav ? '#58a6ff' : '#6e7681', size: 9, strokeWidth: 3, strokeColor: '#0d1117', face: 'system-ui' },
+    smooth: { type: 'continuous' },
+  });
+}
+
+const container = document.getElementById('graph-container');
+const network = new vis.Network(container, { nodes, edges }, {
+  physics: {
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: { gravitationalConstant: -120, centralGravity: 0.008, springLength: 180, springConstant: 0.04, damping: 0.6 },
+    stabilization: { iterations: 300 },
+  },
+  interaction: { hover: true, tooltipDelay: 200, zoomView: true, dragView: true },
+  layout: { improvedLayout: true },
+  nodes: { shadow: { enabled: true, color: 'rgba(0,0,0,0.3)', size: 8 } },
+  edges: { shadow: false },
+});
+
+// Fit graph to container after stabilization
+network.once('stabilizationIterationsDone', function() {
+  network.fit({ animation: { duration: 500 } });
+});
+// Also fit on window resize
+window.addEventListener('resize', function() { network.fit(); });
+
+// =====================================================================
+// CLICK NODE -> SHOW ZONE DETAIL
+// =====================================================================
+network.on('click', function(params) {
+  const panel = document.getElementById('zone-detail');
+  if (params.nodes.length === 0) {
+    panel.innerHTML = '<div class="zone-detail-empty">Click a node on the map to see zone details</div>';
+    return;
+  }
+  const zid = params.nodes[0];
+  const zone = DATA.zones[String(zid)];
+  if (!zone) return;
+
+  const isStart = zid === DATA.start_zone;
+  const goalInfo = DATA.goal_zones[String(zid)];
+
+  let html = '<h3>' + escapeHtml(zoneName(zid));
+  if (isStart) html += ' <span class="start-badge">YOU ARE HERE</span>';
+  if (goalInfo && goalInfo['refrigerator']) html += ' <span class="goal-badge-inline goal-badge-fridge">FRIDGE ' + goalInfo['refrigerator'].toFixed(3) + '</span>';
+  if (goalInfo && goalInfo['fire extinguisher']) html += ' <span class="goal-badge-inline goal-badge-fire">FIRE EXT ' + goalInfo['fire extinguisher'].toFixed(3) + '</span>';
+  html += '</h3>';
+
+  html += '<div class="detail-grid">';
+  html += '<div class="detail-row"><span class="label">Photos</span><span class="value">' + zone.photos.length + '</span></div>';
+  html += '<div class="detail-row"><span class="label">Range</span><span class="value" style="font-family:monospace;font-size:11px">' + escapeHtml(zone.photo_range) + '</span></div>';
+  html += '</div>';
+
+  // Objects table
+  html += '<div class="detail-obj-list">';
+  html += '<div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Detected Objects</div>';
+  for (const [name, score] of zone.all_objects) {
+    const count = zone.obj_count[name] || 0;
+    const pct = Math.round(score * 100);
+    const isGoalObj = (name.includes('refrigerator') || name.includes('extinguisher'));
+    const barColor = isGoalObj ? 'var(--accent-green)' : 'var(--accent-blue)';
+    html += '<div class="detail-obj-row">';
+    html += '<span class="obj-name"' + (isGoalObj ? ' style="color:var(--accent-green);font-weight:600"' : '') + '>' + escapeHtml(name) + ' <span style="color:var(--text-muted)">&times;' + count + '</span></span>';
+    html += '<div class="conf-bar"><div class="conf-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
+    html += '<span style="color:var(--text-secondary);font-size:10px;text-align:right">' + score.toFixed(3) + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Photos
+  html += '<div style="margin-top:10px;font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px">Photo Files</div>';
+  html += '<div class="detail-photos">';
+  for (const p of zone.photos) {
+    const isStartPhoto = (p === 'IMG_1434.jpg');
+    html += '<span class="photo-chip"' + (isStartPhoto ? ' style="border-color:var(--accent-red);color:var(--accent-red)"' : '') + '>' + p + '</span>';
+  }
+  html += '</div>';
+
+  panel.innerHTML = html;
+});
+
+// =====================================================================
+// BUILD NAVIGATION PANEL
+// =====================================================================
+function buildNavPanel() {
+  const panel = document.getElementById('nav-panel');
+  let html = '';
+
+  // Group nav routes by goal
+  const bestRoutes = {};
+  for (const [targetZid, navData] of Object.entries(DATA.navigation)) {
+    const goalInfo = DATA.goal_zones[targetZid];
+    if (!goalInfo) continue;
+    for (const goal of Object.keys(goalInfo)) {
+      if (!bestRoutes[goal] || navData.path.length < bestRoutes[goal].pathLen) {
+        bestRoutes[goal] = { targetZid, navData, score: goalInfo[goal], pathLen: navData.path.length };
+      }
+    }
+  }
+
+  // Show "already at start" note if start zone is a goal
+  if (DATA.goal_zones[String(DATA.start_zone)]) {
+    const gInfo = DATA.goal_zones[String(DATA.start_zone)];
+    html += '<div class="at-start-note">Your start zone already contains: ' +
+      Object.entries(gInfo).map(([g,s]) => g + ' (' + s.toFixed(3) + ')').join(', ') + '</div>';
+  }
+
+  // Build a route card per navigation target
+  for (const [targetZid, navData] of Object.entries(DATA.navigation)) {
+    if (navData.steps.length === 0) continue; // skip "already here"
+    const goalInfo = DATA.goal_zones[targetZid];
+    if (!goalInfo) continue;
+
+    const goalNames = Object.keys(goalInfo);
+    const isFridge = goalNames.some(g => g === 'refrigerator');
+    const isFire = goalNames.some(g => g === 'fire extinguisher');
+    const dotColor = (isFridge && isFire) ? 'var(--accent-orange)' : isFridge ? 'var(--accent-blue)' : 'var(--accent-green)';
+
+    const goalLabel = goalNames.map(g => g + ' (' + goalInfo[g].toFixed(3) + ')').join(' + ');
+    const routeId = 'route-' + targetZid;
+
+    html += '<div class="nav-route">';
+    html += '<div class="nav-route-header" onclick="document.getElementById(\'' + routeId + '\').classList.toggle(\'hidden\')">';
+    html += '<div class="goal-icon" style="background:' + dotColor + '"></div>';
+    html += '<span>' + escapeHtml(zoneName(parseInt(targetZid))) + '</span>';
+    html += '<span style="margin-left:auto;font-size:10px;color:var(--text-muted)">' + navData.steps.length + ' step' + (navData.steps.length > 1 ? 's' : '') + '</span>';
+    html += '</div>';
+    html += '<div class="nav-steps" id="' + routeId + '">';
+    html += '<div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">Goal: ' + escapeHtml(goalLabel) + '</div>';
+
+    for (let i = 0; i < navData.steps.length; i++) {
+      const step = navData.steps[i];
+      html += '<div class="nav-step">';
+      html += '<div class="step-label">' + escapeHtml(step.from_label.split(' | ').slice(0,2).join(' - ')) + ' &rarr; ' + escapeHtml(step.to_label.split(' | ').slice(0,2).join(' - ')) + '</div>';
+      html += '<div class="step-detail">';
+      html += '<div>Look for shared objects:</div>';
+      html += '<div class="step-shared">' + step.shared.map(s => '<span class="obj-tag highlight">' + escapeHtml(s) + '</span>').join('') + '</div>';
+      html += '<div style="margin-top:4px">You will see: ' + step.next_objects.map(o => '<span class="obj-tag">' + escapeHtml(o[0]) + ' ' + o[1].toFixed(2) + '</span>').join(' ') + '</div>';
+      html += '<div style="margin-top:3px;color:var(--text-muted)">Photos: ' + step.next_photos.join(', ') + '</div>';
+      html += '</div></div>';
+    }
+    html += '</div></div>';
+  }
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// BUILD DETECTION SUMMARY TABLE
+// =====================================================================
+function buildDetectionSummary() {
+  const panel = document.getElementById('detection-summary');
+  let html = '<table class="det-table"><thead><tr>';
+  html += '<th>Object</th><th class="num">Photos</th><th class="num">Instances</th><th class="num">Best Conf</th><th>Best Photo</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const det of DATA.detection_summary) {
+    const isGoal = det.label.includes('refrigerator') || det.label.includes('extinguisher');
+    const style = isGoal ? ' style="color:var(--accent-green);font-weight:600"' : '';
+    html += '<tr>';
+    html += '<td' + style + '>' + escapeHtml(det.label) + '</td>';
+    html += '<td class="num">' + det.photo_count + '</td>';
+    html += '<td class="num">' + det.total_instances + '</td>';
+    html += '<td class="num">' + det.best_confidence.toFixed(3) + '</td>';
+    html += '<td style="font-family:monospace;font-size:11px">' + det.best_photo + '</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// BUILD ALL ZONES DETAIL
+// =====================================================================
+function buildAllZones() {
+  const panel = document.getElementById('all-zones');
+  let html = '';
+
+  for (const [zid, zone] of Object.entries(DATA.zones)) {
+    const isStart = parseInt(zid) === DATA.start_zone;
+    const goalInfo = DATA.goal_zones[zid];
+    const borderColor = isStart ? 'var(--accent-red)' : goalInfo ? 'var(--accent-blue)' : 'var(--border)';
+    const cardId = 'zone-card-' + zid;
+
+    html += '<div class="zone-card" style="border-color:' + borderColor + '">';
+    html += '<div class="zone-card-header" onclick="document.getElementById(\'' + cardId + '\').classList.toggle(\'hidden\')">';
+    html += '<span>' + escapeHtml(zoneName(parseInt(zid)));
+    if (isStart) html += ' <span class="start-badge">START</span>';
+    html += '</span>';
+    html += '<span style="font-size:10px;color:var(--text-muted)">' + zone.photos.length + ' photos, ' + zone.all_objects.length + ' objects</span>';
+    html += '</div>';
+
+    html += '<div class="zone-card-body hidden" id="' + cardId + '">';
+    html += '<div style="margin-bottom:6px;color:var(--text-muted);font-size:10px">Range: ' + escapeHtml(zone.photo_range) + '</div>';
+
+    if (goalInfo) {
+      html += '<div style="margin-bottom:6px">';
+      for (const [g, s] of Object.entries(goalInfo)) {
+        const c = g === 'refrigerator' ? 'goal-badge-fridge' : 'goal-badge-fire';
+        html += '<span class="goal-badge-inline ' + c + '">' + escapeHtml(g) + ': ' + s.toFixed(3) + '</span> ';
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="zone-obj-grid">';
+    html += '<div class="head">Object</div><div class="head" style="text-align:right">Conf</div><div class="head" style="text-align:right">Cnt</div>';
+    for (const [name, score] of zone.all_objects) {
+      const count = zone.obj_count[name] || 0;
+      const isGoalObj = (name.includes('refrigerator') || name.includes('extinguisher'));
+      html += '<div' + (isGoalObj ? ' style="color:var(--accent-green);font-weight:600"' : '') + '>' + escapeHtml(name) + '</div>';
+      html += '<div style="text-align:right;font-family:monospace;color:var(--text-secondary)">' + score.toFixed(3) + '</div>';
+      html += '<div style="text-align:right;font-family:monospace;color:var(--text-muted)">' + count + '</div>';
+    }
+    html += '</div>';
+
+    html += '<div style="margin-top:6px"><span style="color:var(--text-secondary);font-size:10px">Photos: </span>';
+    html += zone.photos.map(p => '<span class="photo-chip">' + p + '</span>').join(' ');
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+  panel.innerHTML = html;
+}
+
+// =====================================================================
+// UPDATE STATS
+// =====================================================================
+function updateStats() {
+  document.getElementById('stat-photos').textContent = DATA.total_photos;
+  document.getElementById('stat-zones').textContent = Object.keys(DATA.zones).length;
+  document.getElementById('stat-edges').textContent = DATA.edges.length;
+  document.getElementById('stat-objtypes').textContent = DATA.detection_summary.length;
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+buildNavPanel();
+buildDetectionSummary();
+buildAllZones();
+updateStats();
+</script>
+</body>
+</html>

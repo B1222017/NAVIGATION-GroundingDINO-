@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系辦 Navigation Zone Map</title>
+<style>
+  :root {
+    --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
+    --text:#c9d1d9;--text2:#8b949e;--blue:#58a6ff;--red:#f85149;
+    --green:#3fb950;--orange:#f0883e;--purple:#d2a8ff;--yellow:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;}
+  .container{max-width:1520px;margin:0 auto;}
+  .header{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .header h1{font-size:22px;color:var(--blue);}
+  .header p{font-size:13px;color:var(--text2);margin-top:4px;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;margin:2px;}
+  .badge-green{background:#0d2d0d;border:1px solid var(--green);color:var(--green);}
+  .badge-blue{background:#0d1d30;border:1px solid var(--blue);color:var(--blue);}
+  .badge-red{background:#2d0d0d;border:1px solid var(--red);color:var(--red);}
+  .badge-orange{background:#2d1a0d;border:1px solid var(--orange);color:var(--orange);}
+  .map-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;overflow-x:auto;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div>
+    <h1>系辦 Department Office — Topological Navigation Map</h1>
+    <p>146 photos · 13 zones · 17 edges · GroundingDINO SwinT OGC · Jaccard clustering (threshold 0.25)</p>
+  </div>
+  <div>
+    <span class="badge badge-blue">Date: 2026-06-08</span>
+    <span class="badge badge-green">Location: 系辦</span>
+    <span class="badge badge-red">Start: Zone 0</span>
+    <span class="badge badge-orange">TARGET 1: Fire Ext · TARGET 2: Printer</span>
+  </div>
+</div>
+
+<div class="map-wrap">
+<svg viewBox="0 0 1520 980" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:1100px;display:block">
+  <defs>
+    <marker id="arr-gray" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#484f58"/>
+    </marker>
+    <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#58a6ff"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#3fb950"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1520" height="980" fill="#0d1117" rx="10"/>
+  <!-- Floor boundary -->
+  <rect x="20" y="20" width="1480" height="940" fill="none" stroke="#21262d" stroke-width="1.5" rx="8" stroke-dasharray="6 4"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ALL EDGES (gray background lines) -->
+  <!-- Sequential edges -->
+  <line x1="909" y1="216" x2="509" y2="117" stroke="#30363d" stroke-width="1.5"/><!-- 0-1 -->
+  <line x1="509" y1="117" x2="848" y2="80"  stroke="#30363d" stroke-width="1.5"/><!-- 1-2 -->
+  <line x1="848" y1="80"  x2="670" y2="180" stroke="#30363d" stroke-width="1.5"/><!-- 2-3 -->
+  <line x1="670" y1="180" x2="276" y2="211" stroke="#30363d" stroke-width="1.5"/><!-- 3-4 -->
+  <line x1="276" y1="211" x2="100" y2="295" stroke="#30363d" stroke-width="1.5"/><!-- 4-5 -->
+  <line x1="100" y1="295" x2="562" y2="292" stroke="#30363d" stroke-width="1.5"/><!-- 5-6 -->
+  <line x1="562" y1="292" x2="718" y2="396" stroke="#30363d" stroke-width="1.5"/><!-- 6-7 -->
+  <line x1="718" y1="396" x2="862" y2="494" stroke="#30363d" stroke-width="1.5"/><!-- 7-8 -->
+  <line x1="862" y1="494" x2="1000" y2="592" stroke="#30363d" stroke-width="1.5"/><!-- 8-9 -->
+  <line x1="1000" y1="592" x2="1135" y2="688" stroke="#30363d" stroke-width="1.5"/><!-- 9-10 -->
+  <line x1="1135" y1="688" x2="1267" y2="784" stroke="#30363d" stroke-width="1.5"/><!-- 10-11 -->
+  <line x1="1267" y1="784" x2="1400" y2="880" stroke="#30363d" stroke-width="1.5"/><!-- 11-12 -->
+  <!-- Shortcut edges -->
+  <line x1="909" y1="216" x2="670" y2="180" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5 3"/><!-- 0-3 -->
+  <line x1="909" y1="216" x2="562" y2="292" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5 3"/><!-- 0-6 -->
+  <line x1="509" y1="117" x2="276" y2="211" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5 3"/><!-- 1-4 -->
+  <line x1="670" y1="180" x2="562" y2="292" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5 3"/><!-- 3-6 -->
+  <line x1="276" y1="211" x2="562" y2="292" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5 3"/><!-- 4-6 -->
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- NAVIGATION PATH — Step 1: Z0→Z1 (find fire extinguisher) -->
+  <path d="M 834 195 C 700 150 620 130 584 117" fill="none" stroke="#3fb950" stroke-width="3" stroke-dasharray="10 5" marker-end="url(#arr-green)">
+    <animate attributeName="stroke-dashoffset" values="0;-30" dur="1.8s" repeatCount="indefinite"/>
+  </path>
+  <text x="720" y="138" fill="#3fb950" font-size="13" font-weight="bold" text-anchor="middle">Step 1</text>
+
+  <!-- NAVIGATION PATH — Step 2: Z1→Z4 (find printer) -->
+  <path d="M 434 135 C 360 175 320 195 351 211" fill="none" stroke="#58a6ff" stroke-width="3" stroke-dasharray="10 5" marker-end="url(#arr-blue)">
+    <animate attributeName="stroke-dashoffset" values="0;-30" dur="1.8s" repeatCount="indefinite"/>
+  </path>
+  <text x="380" y="160" fill="#58a6ff" font-size="13" font-weight="bold" text-anchor="middle">Step 2</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ZONES -->
+
+  <!-- Zone 0 — START (red) -->
+  <g transform="translate(909,216)">
+    <rect x="-78" y="-50" width="156" height="100" rx="10" fill="#2d0d0d" stroke="#f85149" stroke-width="2.5"/>
+    <text y="-24" text-anchor="middle" fill="#f85149" font-size="14" font-weight="bold">Zone 0</text>
+    <text y="-8"  text-anchor="middle" fill="#c9d1d9" font-size="11">Sofa + Fire Ext Area</text>
+    <text y="7"   text-anchor="middle" fill="#8b949e" font-size="10">IMG_1432–IMG_1445 (14 photos)</text>
+    <text y="21"  text-anchor="middle" fill="#8b949e" font-size="9">sofa(0.91) | plant(0.83) | fire_ext(0.83) | chair(0.77)</text>
+    <text y="38"  text-anchor="middle" fill="#f85149" font-size="11" font-weight="bold">START POSITION</text>
+    <!-- pulse dot -->
+    <circle cx="0" cy="-2" r="5" fill="#f85149" stroke="#ff7b72" stroke-width="2">
+      <animate attributeName="r" values="5;9;5" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Zone 1 — TARGET 1: Fire Extinguisher (green) -->
+  <g transform="translate(509,117)">
+    <rect x="-78" y="-50" width="156" height="100" rx="10" fill="#0d2d0d" stroke="#3fb950" stroke-width="2.5"/>
+    <text y="-24" text-anchor="middle" fill="#3fb950" font-size="14" font-weight="bold">Zone 1</text>
+    <text y="-8"  text-anchor="middle" fill="#c9d1d9" font-size="11">Fire Ext. + Sofa Area</text>
+    <text y="7"   text-anchor="middle" fill="#8b949e" font-size="10">IMG_1446–IMG_1460 (15 photos)</text>
+    <text y="22"  text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">FIRE_EXT: 0.90</text>
+    <text y="37"  text-anchor="middle" fill="#f85149" font-size="10">(TARGET 1)</text>
+    <!-- target circle -->
+    <circle cx="0" cy="-2" r="10" fill="#3fb950" stroke="#fff" stroke-width="2" opacity="0"/>
+  </g>
+  <circle cx="509" cy="67" r="10" fill="#3fb950" stroke="#fff" stroke-width="2"/>
+  <text x="509" y="71" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">1</text>
+
+  <!-- Zone 2 — Door Area (gray) -->
+  <g transform="translate(848,80)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#8b949e" font-size="13" font-weight="bold">Zone 2</text>
+    <text y="-6"  text-anchor="middle" fill="#8b949e" font-size="10">Door Area</text>
+    <text y="8"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1461–IMG_1466 (6 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">door(0.76) | sign(0.55) | fire_ext(0.36)</text>
+  </g>
+
+  <!-- Zone 3 — Fire Ext + Cabinet (dark blue tint) -->
+  <g transform="translate(670,180)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#0d1a2d" stroke="#58a6ff" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="bold">Zone 3</text>
+    <text y="-6"  text-anchor="middle" fill="#c9d1d9" font-size="10">Fire Ext + Cabinet Area</text>
+    <text y="8"   text-anchor="middle" fill="#8b949e" font-size="9">IMG_1467–IMG_1485 (19 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#58a6ff" font-size="9">fire_ext(0.79) | door(0.76) | cabinet(0.65)</text>
+  </g>
+
+  <!-- Zone 4 — TARGET 2: Printer (blue) -->
+  <g transform="translate(276,211)">
+    <rect x="-78" y="-50" width="156" height="100" rx="10" fill="#0d1d30" stroke="#58a6ff" stroke-width="2.5"/>
+    <text y="-24" text-anchor="middle" fill="#58a6ff" font-size="14" font-weight="bold">Zone 4</text>
+    <text y="-8"  text-anchor="middle" fill="#c9d1d9" font-size="11">Sofa + Plant + Printer Area</text>
+    <text y="7"   text-anchor="middle" fill="#8b949e" font-size="10">IMG_1486–IMG_1525 (37 photos)</text>
+    <text y="22"  text-anchor="middle" fill="#58a6ff" font-size="11" font-weight="bold">PRINTER: 0.72</text>
+    <text y="37"  text-anchor="middle" fill="#f85149" font-size="10">(TARGET 2)</text>
+  </g>
+  <circle cx="276" cy="161" r="10" fill="#58a6ff" stroke="#fff" stroke-width="2"/>
+  <text x="276" y="165" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">2</text>
+
+  <!-- Zone 5 — Sofa+FireExt (small, gray) -->
+  <g transform="translate(100,295)">
+    <rect x="-72" y="-42" width="144" height="84" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-20" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="bold">Zone 5</text>
+    <text y="-5"  text-anchor="middle" fill="#8b949e" font-size="10">Sofa Transition</text>
+    <text y="9"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1526–IMG_1527 (2 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">sofa(0.91) | fire_ext(0.85) | plant(0.74)</text>
+  </g>
+
+  <!-- Zone 6 — Chair + Cabinet (gray) -->
+  <g transform="translate(562,292)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#8b949e" font-size="13" font-weight="bold">Zone 6</text>
+    <text y="-6"  text-anchor="middle" fill="#8b949e" font-size="10">Chair + Cabinet Area</text>
+    <text y="8"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1528–IMG_1654 (19 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">chair(0.83) | door(0.73) | cabinet(0.71)</text>
+  </g>
+
+  <!-- Zone 7 — Sofa + Printer (purple tint) -->
+  <g transform="translate(718,396)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#1c1333" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#d2a8ff" font-size="13" font-weight="bold">Zone 7</text>
+    <text y="-6"  text-anchor="middle" fill="#c9d1d9" font-size="10">Sofa + Printer Area</text>
+    <text y="8"   text-anchor="middle" fill="#8b949e" font-size="9">IMG_1655–IMG_1656 (2 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#d2a8ff" font-size="9">sofa(0.84) | printer(0.70) | fire_ext(0.69)</text>
+  </g>
+
+  <!-- Zone 8 — Fire Ext + Sofa + Chair (orange tint) -->
+  <g transform="translate(862,494)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#211a0d" stroke="#f0883e" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#f0883e" font-size="13" font-weight="bold">Zone 8</text>
+    <text y="-6"  text-anchor="middle" fill="#c9d1d9" font-size="10">Fire Ext + Sofa Area</text>
+    <text y="8"   text-anchor="middle" fill="#8b949e" font-size="9">IMG_1657–IMG_1661 (5 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#f0883e" font-size="9">fire_ext(0.85) | sofa(0.80) | chair(0.77)</text>
+  </g>
+
+  <!-- Zone 9 — Sofa + Fire Ext + Plant (green tint) -->
+  <g transform="translate(1000,592)">
+    <rect x="-75" y="-45" width="150" height="90" rx="8" fill="#0d2219" stroke="#3fb950" stroke-width="1.5"/>
+    <text y="-22" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="bold">Zone 9</text>
+    <text y="-6"  text-anchor="middle" fill="#c9d1d9" font-size="10">Sofa + Fire Ext Area</text>
+    <text y="8"   text-anchor="middle" fill="#8b949e" font-size="9">IMG_1662–IMG_1676 (15 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#3fb950" font-size="9">sofa(0.90) | fire_ext(0.85) | plant(0.84)</text>
+  </g>
+
+  <!-- Zone 10 — Door + Sofa (gray) -->
+  <g transform="translate(1135,688)">
+    <rect x="-72" y="-42" width="144" height="84" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-20" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="bold">Zone 10</text>
+    <text y="-5"  text-anchor="middle" fill="#8b949e" font-size="10">Door + Sofa Area</text>
+    <text y="9"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1677–IMG_1679 (3 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">door(0.82) | sofa(0.76) | chair(0.70)</text>
+  </g>
+
+  <!-- Zone 11 — Chair + Plant (gray) -->
+  <g transform="translate(1267,784)">
+    <rect x="-72" y="-42" width="144" height="84" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-20" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="bold">Zone 11</text>
+    <text y="-5"  text-anchor="middle" fill="#8b949e" font-size="10">Chair + Plant Area</text>
+    <text y="9"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1680–IMG_1685 (6 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">chair(0.76) | plant(0.74) | cabinet(0.69)</text>
+  </g>
+
+  <!-- Zone 12 — End: Sofa + Plant (gray) -->
+  <g transform="translate(1400,880)">
+    <rect x="-72" y="-42" width="144" height="84" rx="8" fill="#21262d" stroke="#484f58" stroke-width="1.5"/>
+    <text y="-20" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="bold">Zone 12</text>
+    <text y="-5"  text-anchor="middle" fill="#8b949e" font-size="10">Sofa + Plant Area</text>
+    <text y="9"   text-anchor="middle" fill="#6e7681" font-size="9">IMG_1686–IMG_1688 (3 photos)</text>
+    <text y="24"  text-anchor="middle" fill="#6e7681" font-size="9">sofa(0.85) | plant(0.82) | door(0.65)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- LEGEND -->
+  <rect x="36" y="720" width="248" height="200" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="50" y="744" fill="#58a6ff" font-size="13" font-weight="bold">Legend</text>
+
+  <circle cx="58" cy="764" r="6" fill="#f85149"/>
+  <text x="72" y="768" fill="#c9d1d9" font-size="11">Start: Sofa + Fire Ext (Zone 0)</text>
+
+  <circle cx="58" cy="786" r="6" fill="#3fb950"/>
+  <text x="72" y="790" fill="#c9d1d9" font-size="11">Target 1: Fire Extinguisher 0.90</text>
+
+  <circle cx="58" cy="808" r="6" fill="#58a6ff"/>
+  <text x="72" y="812" fill="#c9d1d9" font-size="11">Target 2: Printer 0.72</text>
+
+  <circle cx="58" cy="830" r="6" fill="#f0883e"/>
+  <text x="72" y="834" fill="#c9d1d9" font-size="11">Fire Ext hotspot (Zone 8, 0.85)</text>
+
+  <circle cx="58" cy="852" r="6" fill="#3fb950"/>
+  <text x="72" y="856" fill="#c9d1d9" font-size="11">Fire Ext hotspot (Zone 9, 0.85)</text>
+
+  <line x1="46" y1="874" x2="82" y2="874" stroke="#3fb950" stroke-width="2.5" stroke-dasharray="6 3"/>
+  <text x="90" y="878" fill="#c9d1d9" font-size="11">Step 1 Path</text>
+
+  <line x1="46" y1="896" x2="82" y2="896" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="6 3"/>
+  <text x="90" y="900" fill="#c9d1d9" font-size="11">Step 2 Path</text>
+
+  <line x1="46" y1="912" x2="82" y2="912" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="90" y="916" fill="#8b949e" font-size="11">Shortcut edge</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- STATS BOX (bottom right) -->
+  <rect x="1166" y="36" width="320" height="160" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="1180" y="58" fill="#58a6ff" font-size="13" font-weight="bold">Detection Stats (146 photos)</text>
+
+  <text x="1180" y="78"  fill="#c9d1d9" font-size="11">office:         139 det / 138 photos  avg 58.4%</text>
+  <text x="1180" y="95"  fill="#c9d1d9" font-size="11">door:           132 det / 100 photos  avg 49.6%</text>
+  <text x="1180" y="112" fill="#c9d1d9" font-size="11">cabinet:        110 det /  72 photos  avg 50.6%</text>
+  <text x="1180" y="129" fill="#3fb950" font-size="11" font-weight="bold">fire ext:    56 det /  48 photos  best 90.4%</text>
+  <text x="1180" y="146" fill="#c9d1d9" font-size="11">sofa:            56 det /  49 photos  best 92.1%</text>
+  <text x="1180" y="163" fill="#c9d1d9" font-size="11">plant:           43 det /  36 photos  best 91.5%</text>
+  <text x="1180" y="180" fill="#58a6ff" font-size="11" font-weight="bold">printer:      4 det /   4 photos  best 72.3%</text>
+
+  <!-- Total label -->
+  <text x="760" y="950" text-anchor="middle" fill="#484f58" font-size="11">
+    UniGoal 系辦 Navigation Map · 13 zones · 17 edges · GroundingDINO SwinT OGC + Jaccard clustering · 2026-06-08
+  </text>
+</svg>
+</div>
+
+</div>
+</body>
+</html>
