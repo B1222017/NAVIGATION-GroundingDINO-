@@ -9,7 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # repo/weights checkout needed. Downloaded once and cached under
 # ~/.cache/huggingface/hub. "tiny" backbone is CPU-friendly.
 GROUNDINGDINO_MODEL_ID = os.environ.get(
-    "GROUNDINGDINO_MODEL_ID", "IDEA-Research/grounding-dino-tiny"
+    "GROUNDINGDINO_MODEL_ID", "IDEA-Research/grounding-dino-base"
 )
 
 _LOCAL_MODELS = PROJECT_ROOT / "models"
