@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniGoal Supermarket Floor Plan</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text2: #8b949e;
+    --blue: #58a6ff;
+    --red: #f85149;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --purple: #d2a8ff;
+    --yellow: #e3b341;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+  }
+  .header h1 { font-size: 22px; color: var(--blue); margin-bottom: 4px; }
+  .header p { font-size: 13px; color: var(--text2); }
+
+  .main { display: flex; gap: 20px; padding: 20px; max-width: 1600px; margin: 0 auto; }
+
+  .floor-plan-container {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 80vh;
+    position: relative;
+  }
+
+  .sidebar {
+    width: 360px;
+    min-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sidebar-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .sidebar-card-header {
+    padding: 10px 14px;
+    background: var(--bg3);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .sidebar-card-header:hover { background: #2d333b; }
+  .sidebar-card-body { padding: 12px 14px; font-size: 12px; line-height: 1.7; }
+
+  /* Floor plan SVG area */
+  .floor-svg {
+    width: 100%;
+    height: 100%;
+    min-height: 70vh;
+  }
+
+  /* Aisle styling */
+  .aisle {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .aisle:hover rect { filter: brightness(1.3); }
+  .aisle:hover text { fill: #fff !important; }
+
+  .aisle-rect {
+    rx: 4;
+    ry: 4;
+    stroke-width: 1.5;
+  }
+
+  .section-label {
+    font-size: 11px;
+    fill: var(--text2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Selected aisle */
+  .aisle.selected rect {
+    stroke-width: 3 !important;
+    filter: brightness(1.4) !important;
+  }
+
+  /* Navigation path */
+  .nav-path {
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 3;
+    stroke-dasharray: 8 4;
+    opacity: 0.8;
+    animation: dash 1s linear infinite;
+  }
+  @keyframes dash { to { stroke-dashoffset: -12; } }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+  .legend-box { width: 16px; height: 12px; border-radius: 2px; }
+
+  /* Detail panel */
+  .detail-title { font-size: 18px; color: var(--blue); margin-bottom: 8px; }
+  .detail-sub { color: var(--text2); font-size: 11px; margin-bottom: 6px; }
+  .detail-products { display: flex; flex-wrap: wrap; gap: 4px; }
+  .product-tag {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .product-tag.highlight { background: #0d2d0d; border-color: var(--green); color: var(--green); }
+
+  /* Nav instruction */
+  .nav-step {
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--blue);
+    font-size: 12px;
+  }
+  .nav-step .step-num {
+    color: var(--blue);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .you-are-here {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (max-width: 1100px) {
+    .main { flex-direction: column; }
+    .sidebar { width: 100%; min-width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>UniGoal Supermarket Floor Plan</h1>
+  <p>Interactive layout built from GroundingDINO photo analysis | 192 photos across 18 aisles | Click any aisle for details</p>
+</div>
+
+<div class="main">
+  <div class="floor-plan-container">
+    <svg class="floor-svg" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background -->
+      <rect x="0" y="0" width="900" height="620" fill="#0d1117" rx="8"/>
+
+      <!-- Store outline -->
+      <rect x="30" y="30" width="840" height="560" fill="none" stroke="#30363d" stroke-width="2" rx="8"/>
+
+      <!-- ENTRANCE (bottom) -->
+      <rect x="350" y="575" width="200" height="30" fill="#1f6feb" rx="4"/>
+      <text x="450" y="595" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">ENTRANCE / EXIT</text>
+
+      <!-- Checkout area -->
+      <rect x="280" y="530" width="340" height="35" fill="#21262d" stroke="#484f58" stroke-width="1" rx="4"/>
+      <text x="450" y="553" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600">CHECKOUT COUNTERS</text>
+
+      <!-- YOU ARE HERE marker -->
+      <g class="you-are-here" id="youAreHere" transform="translate(120, 510)">
+        <circle cx="0" cy="0" r="12" fill="#f85149" stroke="#ff7b72" stroke-width="2"/>
+        <text x="16" y="4" fill="#f85149" font-size="10" font-weight="bold">YOU ARE HERE</text>
+      </g>
+
+      <!-- Promotional / bulk items area (center front) -->
+      <rect x="180" y="465" width="540" height="50" fill="#1c1c2e" stroke="#30363d" stroke-width="1" rx="4"/>
+      <text x="450" y="495" text-anchor="middle" fill="#8b949e" font-size="10">Promotional Displays / Bulk Water & Beverages</text>
+
+      <!-- ============ AISLES (Left to Right) ============ -->
+
+      <!-- Aisle 1 -->
+      <g class="aisle" data-aisle="1" onclick="selectAisle(1)">
+        <rect class="aisle-rect" x="60" y="120" width="42" height="320" fill="#2d1a0d" stroke="#f0883e"/>
+        <text x="81" y="115" text-anchor="middle" fill="#f0883e" font-size="12" font-weight="bold">1</text>
+        <text x="81" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,81,285)">Nuts / Jerky / Seaweed</text>
+      </g>
+
+      <!-- Aisle 2 -->
+      <g class="aisle" data-aisle="2" onclick="selectAisle(2)">
+        <rect class="aisle-rect" x="108" y="120" width="42" height="320" fill="#0d2d1a" stroke="#3fb950"/>
+        <text x="129" y="115" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">2</text>
+        <text x="129" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,129,285)">Tea / Soda / Coffee / Juice</text>
+      </g>
+
+      <!-- Aisle 3 -->
+      <g class="aisle" data-aisle="3" onclick="selectAisle(3)">
+        <rect class="aisle-rect" x="156" y="120" width="42" height="320" fill="#2d0d1a" stroke="#d2a8ff"/>
+        <text x="177" y="115" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="bold">3</text>
+        <text x="177" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,177,285)">Candy / Chocolate</text>
+      </g>
+
+      <!-- Aisle 4 -->
+      <g class="aisle" data-aisle="4" onclick="selectAisle(4)">
+        <rect class="aisle-rect" x="204" y="120" width="42" height="320" fill="#1a1a2d" stroke="#58a6ff"/>
+        <text x="225" y="115" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="bold">4</text>
+        <text x="225" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,225,285)">Diapers / Tissues / Supplies</text>
+      </g>
+
+      <!-- Aisle 5 -->
+      <g class="aisle" data-aisle="5" onclick="selectAisle(5)">
+        <rect class="aisle-rect" x="252" y="120" width="42" height="320" fill="#1a2d1a" stroke="#3fb950"/>
+        <text x="273" y="115" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">5</text>
+        <text x="273" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,273,285)">Snacks / Biscuits</text>
+      </g>
+
+      <!-- Aisle 6 -->
+      <g class="aisle" data-aisle="6" onclick="selectAisle(6)">
+        <rect class="aisle-rect" x="300" y="120" width="42" height="320" fill="#2d2d0d" stroke="#e3b341"/>
+        <text x="321" y="115" text-anchor="middle" fill="#e3b341" font-size="12" font-weight="bold">6</text>
+        <text x="321" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,321,285)">Instant Noodles</text>
+      </g>
+
+      <!-- Aisle 7 -->
+      <g class="aisle" data-aisle="7" onclick="selectAisle(7)">
+        <rect class="aisle-rect" x="348" y="120" width="42" height="320" fill="#2d1a0d" stroke="#f0883e"/>
+        <text x="369" y="115" text-anchor="middle" fill="#f0883e" font-size="12" font-weight="bold">7</text>
+        <text x="369" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,369,285)">Chips / Snacks</text>
+      </g>
+
+      <!-- Aisle 8 -->
+      <g class="aisle" data-aisle="8" onclick="selectAisle(8)">
+        <rect class="aisle-rect" x="396" y="120" width="42" height="320" fill="#1a1a2d" stroke="#58a6ff"/>
+        <text x="417" y="115" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="bold">8</text>
+        <text x="417" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,417,285)">Clothing / Laundry</text>
+      </g>
+
+      <!-- Aisle 9 -->
+      <g class="aisle" data-aisle="9" onclick="selectAisle(9)">
+        <rect class="aisle-rect" x="444" y="120" width="42" height="320" fill="#0d2d1a" stroke="#3fb950"/>
+        <text x="465" y="115" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">9</text>
+        <text x="465" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,465,285)">Beverages / Drinks</text>
+      </g>
+
+      <!-- Aisle 10 -->
+      <g class="aisle" data-aisle="10" onclick="selectAisle(10)">
+        <rect class="aisle-rect" x="492" y="120" width="42" height="320" fill="#2d0d1a" stroke="#d2a8ff"/>
+        <text x="513" y="115" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="bold">10</text>
+        <text x="513" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,513,285)">Home / Cleaning / Mops</text>
+      </g>
+
+      <!-- Aisle 11 -->
+      <g class="aisle" data-aisle="11" onclick="selectAisle(11)">
+        <rect class="aisle-rect" x="540" y="120" width="42" height="320" fill="#1a2d1a" stroke="#3fb950"/>
+        <text x="561" y="115" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">11</text>
+        <text x="561" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,561,285)">Canned Food</text>
+      </g>
+
+      <!-- Aisle 12 -->
+      <g class="aisle" data-aisle="12" onclick="selectAisle(12)">
+        <rect class="aisle-rect" x="588" y="120" width="42" height="320" fill="#2d2d0d" stroke="#e3b341"/>
+        <text x="609" y="115" text-anchor="middle" fill="#e3b341" font-size="12" font-weight="bold">12</text>
+        <text x="609" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,609,285)">Cooking Oil / Seasoning</text>
+      </g>
+
+      <!-- Aisle 13 -->
+      <g class="aisle" data-aisle="13" onclick="selectAisle(13)">
+        <rect class="aisle-rect" x="636" y="120" width="42" height="320" fill="#2d1a0d" stroke="#f0883e"/>
+        <text x="657" y="115" text-anchor="middle" fill="#f0883e" font-size="12" font-weight="bold">13</text>
+        <text x="657" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,657,285)">Imported Food / Cookies</text>
+      </g>
+
+      <!-- Aisle 14 -->
+      <g class="aisle" data-aisle="14" onclick="selectAisle(14)">
+        <rect class="aisle-rect" x="684" y="120" width="42" height="320" fill="#1a1a2d" stroke="#58a6ff"/>
+        <text x="705" y="115" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="bold">14</text>
+        <text x="705" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,705,285)">Canned Food / Noodles</text>
+      </g>
+
+      <!-- Aisle 15 -->
+      <g class="aisle" data-aisle="15" onclick="selectAisle(15)">
+        <rect class="aisle-rect" x="732" y="120" width="42" height="320" fill="#2d0d0d" stroke="#f85149"/>
+        <text x="753" y="115" text-anchor="middle" fill="#f85149" font-size="12" font-weight="bold">15</text>
+        <text x="753" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,753,285)">Breakfast / Northern Food</text>
+      </g>
+
+      <!-- Aisle 16 -->
+      <g class="aisle" data-aisle="16" onclick="selectAisle(16)">
+        <rect class="aisle-rect" x="780" y="120" width="42" height="320" fill="#0d2d1a" stroke="#3fb950"/>
+        <text x="801" y="115" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">16</text>
+        <text x="801" y="285" text-anchor="middle" fill="#c9d1d9" font-size="7" transform="rotate(-90,801,285)">Rice / Grains / Noodles</text>
+      </g>
+
+      <!-- ============ BACK WALL SECTIONS ============ -->
+
+      <!-- Frozen Food (back wall, left-center) -->
+      <g class="aisle" data-aisle="frozen" onclick="selectAisle('frozen')">
+        <rect class="aisle-rect" x="200" y="50" width="250" height="55" fill="#0d1d30" stroke="#58a6ff" stroke-width="2"/>
+        <text x="325" y="75" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="bold">FROZEN FOOD</text>
+        <text x="325" y="90" text-anchor="middle" fill="#8b949e" font-size="9">Glass-door freezers</text>
+      </g>
+
+      <!-- Fresh / Produce (back wall, left) -->
+      <g class="aisle" data-aisle="fresh" onclick="selectAisle('fresh')">
+        <rect class="aisle-rect" x="40" y="50" width="150" height="55" fill="#0d2d0d" stroke="#3fb950" stroke-width="2"/>
+        <text x="115" y="75" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="bold">FRESH PRODUCE</text>
+        <text x="115" y="90" text-anchor="middle" fill="#8b949e" font-size="9">Fruits & Vegetables</text>
+      </g>
+
+      <!-- Dairy / Milk (back wall, right of frozen) -->
+      <g class="aisle" data-aisle="dairy" onclick="selectAisle('dairy')">
+        <rect class="aisle-rect" x="460" y="50" width="160" height="55" fill="#1c1333" stroke="#d2a8ff" stroke-width="2"/>
+        <text x="540" y="72" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="bold">DAIRY / MILK</text>
+        <text x="540" y="88" text-anchor="middle" fill="#8b949e" font-size="9">Refrigerated - Sweet Moment</text>
+      </g>
+
+      <!-- Aisle 17 / 18 area (back wall right) -->
+      <g class="aisle" data-aisle="17" onclick="selectAisle(17)">
+        <rect class="aisle-rect" x="630" y="50" width="70" height="55" fill="#2d0d1a" stroke="#d2a8ff"/>
+        <text x="665" y="72" text-anchor="middle" fill="#d2a8ff" font-size="11" font-weight="bold">17</text>
+        <text x="665" y="88" text-anchor="middle" fill="#8b949e" font-size="8">Hot Pot</text>
+      </g>
+
+      <g class="aisle" data-aisle="18" onclick="selectAisle(18)">
+        <rect class="aisle-rect" x="710" y="50" width="70" height="55" fill="#2d2d0d" stroke="#e3b341"/>
+        <text x="745" y="72" text-anchor="middle" fill="#e3b341" font-size="11" font-weight="bold">18</text>
+        <text x="745" y="88" text-anchor="middle" fill="#8b949e" font-size="8">Oil/Soy Sauce</text>
+      </g>
+
+      <!-- Wine / Beer section (back left near frozen) -->
+      <g class="aisle" data-aisle="wine" onclick="selectAisle('wine')">
+        <rect class="aisle-rect" x="40" y="120" width="14" height="180" fill="#2d0d2d" stroke="#d2a8ff" stroke-width="2"/>
+        <text x="47" y="215" text-anchor="middle" fill="#d2a8ff" font-size="7" transform="rotate(-90,47,215)">Wine / Beer / Alcohol</text>
+      </g>
+
+      <!-- DIA / Services (right wall) -->
+      <rect x="835" y="120" width="30" height="130" fill="#21262d" stroke="#484f58" rx="3"/>
+      <text x="850" y="190" text-anchor="middle" fill="#8b949e" font-size="7" transform="rotate(-90,850,190)">DIA Services</text>
+
+      <!-- Staff area (top right) -->
+      <rect x="790" y="50" width="75" height="55" fill="#21262d" stroke="#484f58" rx="4"/>
+      <text x="828" y="82" text-anchor="middle" fill="#6e7681" font-size="9">Staff</text>
+
+      <!-- Main walkway arrows -->
+      <line x1="81" y1="450" x2="801" y2="450" stroke="#30363d" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="450" y="462" text-anchor="middle" fill="#484f58" font-size="9">Main Walkway</text>
+
+      <line x1="450" y1="110" x2="450" y2="445" stroke="#30363d" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>
+
+    </svg>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box" style="background:#0d2d0d;border:1px solid #3fb950"></div> Food & Beverages</div>
+      <div class="legend-item"><div class="legend-box" style="background:#2d1a0d;border:1px solid #f0883e"></div> Snacks & Dried Goods</div>
+      <div class="legend-item"><div class="legend-box" style="background:#1a1a2d;border:1px solid #58a6ff"></div> Household & Supplies</div>
+      <div class="legend-item"><div class="legend-box" style="background:#0d1d30;border:1px solid #58a6ff"></div> Frozen / Refrigerated</div>
+      <div class="legend-item"><div class="legend-box" style="background:#1c1333;border:1px solid #d2a8ff"></div> Dairy & Specialty</div>
+      <div class="legend-item"><div class="legend-box" style="background:#f85149"></div> You Are Here</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <!-- Aisle Detail -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">
+        <span>Aisle Details</span>
+      </div>
+      <div class="sidebar-card-body" id="aisle-detail">
+        <div style="color:var(--text2);text-align:center;padding:20px 0">Click any aisle on the floor plan</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <span>Quick Navigation Guide</span>
+        <span>&#9660;</span>
+      </div>
+      <div class="sidebar-card-body">
+        <div style="font-weight:600;color:var(--blue);margin-bottom:8px">From Entrance:</div>
+        <div class="nav-step"><span class="step-num">Aisles 1-7</span> Snacks, nuts, drinks, chips (LEFT side)</div>
+        <div class="nav-step"><span class="step-num">Aisles 8-10</span> Household, cleaning, laundry (CENTER)</div>
+        <div class="nav-step"><span class="step-num">Aisles 11-14</span> Canned food, cooking, imported (RIGHT)</div>
+        <div class="nav-step"><span class="step-num">Aisles 15-18</span> Rice, grains, sauces (FAR RIGHT)</div>
+        <div class="nav-step" style="border-left-color:var(--green)"><span class="step-num" style="color:var(--green)">Back Wall</span> Fresh produce, frozen food, dairy/milk</div>
+        <div class="nav-step" style="border-left-color:var(--purple)"><span class="step-num" style="color:var(--purple)">Back Left</span> Wine, beer, alcohol section</div>
+      </div>
+    </div>
+
+    <!-- Store Info -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <span>Store Information</span>
+        <span>&#9660;</span>
+      </div>
+      <div class="sidebar-card-body" style="font-size:11px; color:var(--text2); line-height:2">
+        <div><strong style="color:var(--text)">Total Aisles:</strong> 18 numbered + specialty sections</div>
+        <div><strong style="color:var(--text)">Photos Analyzed:</strong> 192 (from 6 walking paths)</div>
+        <div><strong style="color:var(--text)">Detection Model:</strong> GroundingDINO SwinT OGC</div>
+        <div><strong style="color:var(--text)">Layout Type:</strong> Grid (parallel aisles)</div>
+        <div><strong style="color:var(--text)">Back Wall:</strong> Fresh produce, frozen, dairy, refrigerated</div>
+        <div><strong style="color:var(--text)">Entrance:</strong> Bottom center (with checkout)</div>
+      </div>
+    </div>
+
+    <!-- All Aisles List -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <span>All Aisles Directory</span>
+        <span>&#9660;</span>
+      </div>
+      <div class="sidebar-card-body" id="aisle-directory" style="max-height:400px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const AISLES = {
+  1:  { name: "Aisle 1", zh: "堅果 / 肉乾 / 海苔", en: "Nuts / Jerky / Seaweed", category: "Snacks & Dried Goods", products: ["Nuts", "Peanuts", "Jerky", "Dried meat", "Seaweed", "Rice crackers"] },
+  2:  { name: "Aisle 2", zh: "茶 / 汽水 / 咖啡 / 果汁", en: "Tea / Soda / Coffee / Juice", category: "Beverages", products: ["Green tea", "Black tea", "Soda", "Cola", "Coffee", "Fruit juice", "Mineral water"] },
+  3:  { name: "Aisle 3", zh: "糖果 / 巧克力", en: "Candy / Chocolate", category: "Sweets", products: ["Chocolate bars", "Gummy candy", "Hard candy", "Lollipops", "Chewing gum"] },
+  4:  { name: "Aisle 4", zh: "尿布 / 衛生紙 / 日用品", en: "Diapers / Tissues / Daily Supplies", category: "Household", products: ["Diapers", "Tissue paper", "Toilet paper", "Paper towels", "Wet wipes"] },
+  5:  { name: "Aisle 5", zh: "餅乾 / 零食", en: "Biscuits / Snacks", category: "Snacks", products: ["Cookies", "Crackers", "Wafers", "Biscuits", "Rice cakes"] },
+  6:  { name: "Aisle 6", zh: "泡麵 / 速食麵", en: "Instant Noodles", category: "Quick Meals", products: ["Cup noodles", "Instant ramen", "Instant soup", "Dried noodles"] },
+  7:  { name: "Aisle 7", zh: "洋芋片 / 零食", en: "Chips / Snacks", category: "Snacks", products: ["Potato chips", "Corn chips", "Puffs", "Prawn crackers", "Mixed snacks"] },
+  8:  { name: "Aisle 8", zh: "服飾 / 洗衣", en: "Clothing / Laundry", category: "Household", products: ["Laundry detergent", "Fabric softener", "Socks", "Underwear", "Hangers"] },
+  9:  { name: "Aisle 9", zh: "飲料", en: "Beverages / Drinks", category: "Beverages", products: ["Bottled water", "Sports drinks", "Energy drinks", "Beer", "Canned drinks"] },
+  10: { name: "Aisle 10", zh: "殺蟲劑 / 芳香劑 / 拖把 / 掃把 / 清潔用具", en: "Home Cleaning / Mops / Brooms", category: "Household", products: ["Insecticide", "Air freshener", "Mop", "Broom", "Cleaning spray", "Gloves"] },
+  11: { name: "Aisle 11", zh: "罐頭", en: "Canned Food", category: "Canned & Preserved", products: ["Canned fish", "Canned meat", "Canned vegetables", "Canned fruit", "Canned soup"] },
+  12: { name: "Aisle 12", zh: "食用油 / 調味料", en: "Cooking Oil / Seasoning", category: "Cooking", products: ["Vegetable oil", "Olive oil", "Sesame oil", "Soy sauce", "Vinegar", "Salt", "Sugar"] },
+  13: { name: "Aisle 13", zh: "進口食品 / 甜餅乾", en: "Imported Food / Cookies", category: "Imported", products: ["Imported snacks", "European cookies", "Japanese snacks", "Korean food"] },
+  14: { name: "Aisle 14", zh: "罐頭 / 進口食品 / 麵類食品", en: "Canned / Imported / Noodles", category: "Canned & Imported", products: ["Pasta", "Canned goods", "Imported sauces", "Dried noodles"] },
+  15: { name: "Aisle 15", zh: "早餐食品 / 麵北食", en: "Breakfast / Cereal", category: "Breakfast", products: ["Cereal", "Oatmeal", "Breakfast bars", "Jam", "Peanut butter", "Bread spread"] },
+  16: { name: "Aisle 16", zh: "米 / 穀物 / 麵類品 / 醬藏品", en: "Rice / Grains / Noodles", category: "Staples", products: ["White rice", "Brown rice", "Flour", "Dried noodles", "Vermicelli"] },
+  17: { name: "Aisle 17", zh: "醬料 / Hot Pot Sauce", en: "Hot Pot Sauce / Condiments", category: "Cooking", products: ["Hot pot base", "Dipping sauce", "Chili sauce", "BBQ sauce"] },
+  18: { name: "Aisle 18", zh: "油 / 醋 / 醬油", en: "Oil / Vinegar / Soy Sauce", category: "Cooking", products: ["Soy sauce", "Vinegar", "Oyster sauce", "Fish sauce", "Cooking wine"] },
+  frozen: { name: "Frozen Food", zh: "冷凍食品", en: "Frozen Food Section", category: "Frozen", products: ["Frozen dumplings", "Frozen vegetables", "Ice cream", "Frozen meat", "Frozen seafood", "Frozen pizza"] },
+  fresh: { name: "Fresh Produce", zh: "生鮮蔬果", en: "Fresh Fruits & Vegetables", category: "Fresh", products: ["Pineapple", "Bananas", "Apples", "Grapes", "Lettuce", "Tomatoes", "Onions", "Garlic"] },
+  dairy: { name: "Dairy / Milk", zh: "乳製品 / 鮮奶", en: "Dairy, Milk & Yogurt", category: "Refrigerated", products: ["Fresh milk", "Yogurt", "Cheese", "Butter", "Cream", "Soy milk", "Flavored milk"] },
+  wine: { name: "Wine & Beer", zh: "酒類", en: "Wine, Beer & Alcohol", category: "Alcohol", products: ["Red wine", "White wine", "Beer", "Taiwan Beer", "Sake", "Whisky", "Soju"] },
+};
+
+// Build directory
+const dirEl = document.getElementById('aisle-directory');
+let dirHtml = '';
+for (const [id, a] of Object.entries(AISLES)) {
+  const isNum = !isNaN(id);
+  dirHtml += `<div style="padding:4px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="selectAisle('${id}')">
+    <span style="color:var(--blue);font-weight:600;min-width:50px;display:inline-block">${a.name}</span>
+    <span style="color:var(--text)">${a.en}</span><br>
+    <span style="color:var(--text2);font-size:10px">${a.zh}</span>
+  </div>`;
+}
+dirEl.innerHTML = dirHtml;
+
+// Select aisle
+let selectedAisle = null;
+function selectAisle(id) {
+  // Remove previous selection
+  document.querySelectorAll('.aisle.selected').forEach(el => el.classList.remove('selected'));
+
+  // Add selection
+  const el = document.querySelector(`.aisle[data-aisle="${id}"]`);
+  if (el) el.classList.add('selected');
+
+  selectedAisle = id;
+  const a = AISLES[id];
+  if (!a) return;
+
+  const detail = document.getElementById('aisle-detail');
+  let html = `<div class="detail-title">${a.name}</div>`;
+  html += `<div class="detail-sub">${a.zh}</div>`;
+  html += `<div style="color:var(--text);font-size:13px;margin-bottom:10px">${a.en}</div>`;
+  html += `<div style="margin-bottom:8px"><span style="padding:2px 8px;border-radius:10px;font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--orange)">${a.category}</span></div>`;
+  html += `<div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">Products you'll find here:</div>`;
+  html += `<div class="detail-products">`;
+  for (const p of a.products) {
+    html += `<span class="product-tag">${p}</span>`;
+  }
+  html += `</div>`;
+
+  // Navigation from entrance
+  html += `<div style="margin-top:14px;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px">How to get here:</div>`;
+  const isNum = !isNaN(id);
+  if (isNum) {
+    const num = parseInt(id);
+    if (num <= 7) {
+      html += `<div class="nav-step">From entrance, walk forward. Aisle ${id} is on the <strong>left side</strong>.</div>`;
+    } else if (num <= 14) {
+      html += `<div class="nav-step">From entrance, walk forward past left aisles. Aisle ${id} is in the <strong>center-right area</strong>.</div>`;
+    } else {
+      html += `<div class="nav-step">From entrance, walk forward to the <strong>far right side</strong> of the store.</div>`;
+    }
+  } else if (id === 'frozen') {
+    html += `<div class="nav-step">Walk straight to the <strong>back wall</strong>. Frozen section is the glass-door freezers in the center-left.</div>`;
+  } else if (id === 'fresh') {
+    html += `<div class="nav-step">Walk straight to the <strong>back left corner</strong>. Fresh produce is before the frozen section.</div>`;
+  } else if (id === 'dairy') {
+    html += `<div class="nav-step">Walk to the <strong>back wall</strong>, past frozen food. Dairy fridge is between Aisles 17-18 ("Sweet Moment" sign).</div>`;
+  } else if (id === 'wine') {
+    html += `<div class="nav-step">Walk to the <strong>back left wall</strong>. Wine & beer shelves are along the left wall near frozen food.</div>`;
+  }
+
+  detail.innerHTML = html;
+}
+</script>
+</body>
+</html>
