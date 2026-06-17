@@ -1,0 +1,218 @@
+{
+  "step": 3,
+  "observations": [
+    {
+      "step": 1,
+      "photo": "IMG_1432.jpg",
+      "detections": [
+        {
+          "label": "plant",
+          "score": 0.624,
+          "box": [
+            2319.2,
+            2427.4,
+            2483.8,
+            2552.7
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "desk",
+          "score": 0.508,
+          "box": [
+            2280.4,
+            2543.9,
+            2506.0,
+            2766.7
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "sofa chair",
+          "score": 0.494,
+          "box": [
+            2628.7,
+            2452.5,
+            2973.7,
+            2778.8
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "bulletin board",
+          "score": 0.408,
+          "box": [
+            1537.8,
+            1722.3,
+            1794.5,
+            2628.0
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "cabinet counter",
+          "score": 0.392,
+          "box": [
+            2005.0,
+            2393.5,
+            2899.4,
+            2658.2
+          ],
+          "same_entity": false
+        }
+      ],
+      "user_text": "我剛走進系辦，要找到冰箱，請告訴我該往哪裡走",
+      "vlm_guidance": "您處於一條通往系辦主作業區的走廊，前方可以看到擺放了桌椅與櫥櫃的開闊空間。冰箱最可能位於盡頭靠牆、或是在任何一個大型儲物櫃（cabinet counter）旁的邊角處。請您直接向前走一步進入這個大廳區域，並留意周圍各個角落的牆面。",
+      "false_positive": false,
+      "img_size": [
+        4284,
+        5712
+      ]
+    },
+    {
+      "step": 2,
+      "photo": "IMG_1435.jpg",
+      "detections": [
+        {
+          "label": "sofa",
+          "score": 0.794,
+          "box": [
+            2851.5,
+            3114.3,
+            4034.0,
+            4205.0
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "water dispenser",
+          "score": 0.684,
+          "box": [
+            1552.7,
+            2693.0,
+            1759.6,
+            2941.3
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.648,
+          "box": [
+            546.5,
+            3008.2,
+            680.4,
+            3271.8
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "plant",
+          "score": 0.593,
+          "box": [
+            3781.1,
+            2055.9,
+            4282.8,
+            2795.2
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "cabinet",
+          "score": 0.521,
+          "box": [
+            2401.1,
+            2935.0,
+            2848.4,
+            3374.7
+          ],
+          "same_entity": false
+        }
+      ],
+      "user_text": "我往前移動了幾步，請告訴我往哪裡走？",
+      "vlm_guidance": "我看到一個寬敞的公共休息區，右側有沙發和儲物櫃，左方能看見飲水機。冰箱最可能與這些實用電器（如飲水機）區域相近，位於稍靠後方的牆邊。請您繼續往前走，並留意靠近飲水機或主櫃體深處的方向。",
+      "false_positive": false,
+      "img_size": [
+        4284,
+        5712
+      ]
+    },
+    {
+      "step": 3,
+      "photo": "IMG_1436.jpg",
+      "detections": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.783,
+          "box": [
+            3071.0,
+            2727.3,
+            3193.9,
+            2983.9
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "cabinet",
+          "score": 0.561,
+          "box": [
+            4070.9,
+            2673.9,
+            4282.4,
+            3220.5
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "refrigerator fridge",
+          "score": 0.551,
+          "box": [
+            1182.3,
+            2642.4,
+            1768.0,
+            5701.3
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "cabinet",
+          "score": 0.505,
+          "box": [
+            1796.0,
+            1774.6,
+            2191.5,
+            2565.9
+          ],
+          "same_entity": false
+        },
+        {
+          "label": "cabinet",
+          "score": 0.491,
+          "box": [
+            2010.4,
+            2913.3,
+            2402.5,
+            3778.3
+          ],
+          "same_entity": true
+        }
+      ],
+      "user_text": "我往左側移動了一點，請告訴我要往哪裡走",
+      "vlm_guidance": "您目前在一個長長的走廊，我看到前方展櫃的牆面上有個冰箱機。請維持現在的位置並繼續往直行方向前進。冰箱就在前方展櫃群組的中間偏遠處。",
+      "false_positive": true,
+      "img_size": [
+        4284,
+        5712
+      ]
+    }
+  ],
+  "best_goal_score": 0.0,
+  "best_goal_step": null,
+  "arrived": false,
+  "false_positives": [
+    3
+  ],
+  "corrections": [
+    "步驟 3 的目標宣告是誤判，繼續搜索 冰箱"
+  ]
+}

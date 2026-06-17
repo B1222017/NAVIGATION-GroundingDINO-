@@ -1,0 +1,7911 @@
+{
+  "goal": "find office",
+  "photos": [
+    {
+      "filename": "IMG_1432.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.64,
+          "box": [
+            2318.7,
+            2427.1,
+            2483.8,
+            2553.0
+          ]
+        },
+        {
+          "label": "chair sofa",
+          "score": 0.532,
+          "box": [
+            2627.8,
+            2451.5,
+            2974.3,
+            2778.8
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.513,
+          "box": [
+            2280.2,
+            2543.2,
+            2506.4,
+            2766.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.425,
+          "box": [
+            13.8,
+            16.2,
+            4271.6,
+            5691.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.392,
+          "box": [
+            2004.3,
+            2390.7,
+            2898.0,
+            2661.2
+          ]
+        }
+      ],
+      "summary": "plant(0.64), chair sofa(0.532), desk(0.513), reception(0.425), cabinet bookshelf(0.392)"
+    },
+    {
+      "filename": "IMG_1433.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.738,
+          "box": [
+            2697.0,
+            2520.1,
+            3130.2,
+            2920.7
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.68,
+          "box": [
+            3066.6,
+            2029.7,
+            3336.6,
+            2346.5
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.633,
+          "box": [
+            3286.0,
+            2244.4,
+            4280.8,
+            3883.5
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.49,
+          "box": [
+            2331.1,
+            2493.5,
+            2530.0,
+            2642.8
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.479,
+          "box": [
+            109.8,
+            871.4,
+            774.2,
+            5180.8
+          ]
+        }
+      ],
+      "summary": "sofa(0.738), plant(0.68), cabinet bookshelf(0.633), plant(0.49), window(0.479)"
+    },
+    {
+      "filename": "IMG_1434.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.82,
+          "box": [
+            1051.5,
+            2710.1,
+            1146.1,
+            2911.7
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.742,
+          "box": [
+            2729.7,
+            2765.1,
+            3392.2,
+            3376.7
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.733,
+          "box": [
+            3288.3,
+            2071.4,
+            3697.0,
+            2541.6
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.556,
+          "box": [
+            2155.9,
+            2923.5,
+            2554.4,
+            3329.5
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.469,
+          "box": [
+            3910.6,
+            2447.6,
+            4282.9,
+            4502.0
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.82), sofa(0.742), plant(0.733), desk(0.556), cabinet bookshelf(0.469)"
+    },
+    {
+      "filename": "IMG_1435.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.801,
+          "box": [
+            546.8,
+            3006.8,
+            679.7,
+            3271.5
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.795,
+          "box": [
+            2850.7,
+            3114.1,
+            4036.5,
+            4205.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.517,
+          "box": [
+            3780.8,
+            2056.8,
+            4282.7,
+            2785.3
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.468,
+          "box": [
+            2400.6,
+            2934.4,
+            2849.0,
+            3374.7
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.442,
+          "box": [
+            1984.2,
+            3372.1,
+            2618.2,
+            4076.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.801), sofa(0.795), plant(0.517), cabinet(0.468), table desk(0.442)"
+    },
+    {
+      "filename": "IMG_1436.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.793,
+          "box": [
+            3070.9,
+            2726.6,
+            3194.1,
+            2983.3
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.493,
+          "box": [
+            4069.7,
+            2671.6,
+            4281.8,
+            3219.5
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.459,
+          "box": [
+            1794.1,
+            1776.3,
+            2193.0,
+            2565.3
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.395,
+          "box": [
+            1263.0,
+            1668.9,
+            1799.9,
+            2588.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.39,
+          "box": [
+            2010.4,
+            2912.0,
+            2403.0,
+            3772.3
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.793), cabinet bookshelf(0.493), cabinet(0.459), cabinet(0.395), cabinet(0.39)"
+    },
+    {
+      "filename": "IMG_1437.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.801,
+          "box": [
+            2430.9,
+            2827.2,
+            2928.6,
+            3393.3
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.584,
+          "box": [
+            875.0,
+            1898.1,
+            1515.5,
+            2606.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.575,
+          "box": [
+            2433.7,
+            2077.2,
+            2648.0,
+            2970.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.476,
+          "box": [
+            3232.2,
+            1991.5,
+            3580.6,
+            2762.9
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.46,
+          "box": [
+            1594.6,
+            2682.8,
+            2307.0,
+            3104.7
+          ]
+        }
+      ],
+      "summary": "sofa(0.801), plant(0.584), door(0.575), door(0.476), cabinet(0.46)"
+    },
+    {
+      "filename": "IMG_1438.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.72,
+          "box": [
+            2446.2,
+            2998.6,
+            2598.7,
+            3336.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.632,
+          "box": [
+            1.0,
+            1109.1,
+            895.8,
+            2758.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.45,
+          "box": [
+            3785.0,
+            2967.3,
+            4282.6,
+            3733.7
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.414,
+          "box": [
+            3.5,
+            3412.9,
+            1267.8,
+            5687.1
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.393,
+          "box": [
+            5.2,
+            19.1,
+            4278.5,
+            5690.9
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.72), cabinet(0.632), cabinet bookshelf(0.45), cabinet bookshelf(0.414), reception(0.393)"
+    },
+    {
+      "filename": "IMG_1439.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.782,
+          "box": [
+            1538.0,
+            3065.8,
+            1694.9,
+            3445.8
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.507,
+          "box": [
+            2958.8,
+            2998.8,
+            4280.7,
+            3796.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.389,
+          "box": [
+            224.1,
+            1025.8,
+            845.8,
+            3597.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.383,
+          "box": [
+            7.5,
+            19.1,
+            4276.8,
+            5690.2
+          ]
+        },
+        {
+          "label": "cabinet desk",
+          "score": 0.355,
+          "box": [
+            1.4,
+            3735.6,
+            690.2,
+            5707.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.782), cabinet bookshelf(0.507), door(0.389), reception(0.383), cabinet desk(0.355)"
+    },
+    {
+      "filename": "IMG_1440.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.903,
+          "box": [
+            806.6,
+            3145.1,
+            1438.2,
+            3755.7
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.817,
+          "box": [
+            1307.7,
+            3196.7,
+            1814.3,
+            3773.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.774,
+          "box": [
+            2868.8,
+            3163.0,
+            3470.4,
+            4018.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.633,
+          "box": [
+            1642.0,
+            2237.8,
+            2088.1,
+            3416.3
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.481,
+          "box": [
+            1.0,
+            2100.1,
+            537.3,
+            3030.9
+          ]
+        }
+      ],
+      "summary": "sofa(0.903), plant(0.817), chair(0.774), door(0.633), plant(0.481)"
+    },
+    {
+      "filename": "IMG_1441.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.606,
+          "box": [
+            3470.0,
+            3411.2,
+            4281.3,
+            4750.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.431,
+          "box": [
+            3289.0,
+            2570.5,
+            4281.4,
+            3427.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.405,
+          "box": [
+            1461.5,
+            1907.3,
+            1686.2,
+            4040.8
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.402,
+          "box": [
+            1322.7,
+            3534.0,
+            1504.9,
+            4064.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.401,
+          "box": [
+            6.5,
+            22.0,
+            4277.4,
+            5685.4
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.606), bulletin board board(0.431), door(0.405), fire extinguisher(0.402), reception(0.401)"
+    },
+    {
+      "filename": "IMG_1442.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.713,
+          "box": [
+            2387.8,
+            690.6,
+            3518.1,
+            5700.7
+          ]
+        },
+        {
+          "label": "sign bulletin board",
+          "score": 0.445,
+          "box": [
+            555.3,
+            1161.5,
+            1811.7,
+            1772.7
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.411,
+          "box": [
+            2.1,
+            2172.2,
+            863.1,
+            3026.4
+          ]
+        },
+        {
+          "label": "table desk counter",
+          "score": 0.354,
+          "box": [
+            182.9,
+            4831.4,
+            2340.8,
+            5706.0
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.318,
+          "box": [
+            955.1,
+            2218.0,
+            1773.9,
+            2853.9
+          ]
+        }
+      ],
+      "summary": "door(0.713), sign bulletin board(0.445), bulletin board notice board(0.411), table desk counter(0.354), window(0.318)"
+    },
+    {
+      "filename": "IMG_1443.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.881,
+          "box": [
+            686.0,
+            3063.6,
+            1553.0,
+            3737.8
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.624,
+          "box": [
+            2055.0,
+            3694.2,
+            2909.7,
+            4827.2
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.623,
+          "box": [
+            1337.7,
+            3462.5,
+            2054.2,
+            4518.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.532,
+          "box": [
+            2130.2,
+            3202.4,
+            2684.9,
+            3720.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.525,
+          "box": [
+            3222.3,
+            6.3,
+            4139.2,
+            5701.2
+          ]
+        }
+      ],
+      "summary": "sofa(0.881), chair(0.624), chair(0.623), chair(0.532), door(0.525)"
+    },
+    {
+      "filename": "IMG_1444.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.573,
+          "box": [
+            1531.1,
+            3468.5,
+            1761.3,
+            4115.8
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.438,
+          "box": [
+            1706.2,
+            3431.6,
+            1836.4,
+            3985.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.396,
+          "box": [
+            10.6,
+            11.3,
+            4274.7,
+            5698.3
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.374,
+          "box": [
+            123.2,
+            1070.1,
+            727.3,
+            1662.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.374,
+          "box": [
+            1693.9,
+            1199.9,
+            1975.2,
+            3884.1
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.573), fire extinguisher(0.438), reception(0.396), bulletin board notice board(0.374), door(0.374)"
+    },
+    {
+      "filename": "IMG_1445.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.468,
+          "box": [
+            500.4,
+            7.3,
+            2293.7,
+            5705.6
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.344,
+          "box": [
+            3001.4,
+            1217.7,
+            3506.8,
+            1673.2
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.325,
+          "box": [
+            2170.0,
+            11.8,
+            2537.9,
+            3674.8
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.316,
+          "box": [
+            4228.5,
+            3492.9,
+            4281.4,
+            4197.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.316,
+          "box": [
+            2907.0,
+            1154.2,
+            3601.2,
+            1770.9
+          ]
+        }
+      ],
+      "summary": "door(0.468), sign bulletin board notice board(0.344), window(0.325), fire extinguisher(0.316), bulletin board board(0.316)"
+    },
+    {
+      "filename": "IMG_1446.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.809,
+          "box": [
+            1328.6,
+            2871.4,
+            2889.7,
+            3657.6
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.634,
+          "box": [
+            2396.2,
+            3416.5,
+            3235.2,
+            4711.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.57,
+          "box": [
+            2871.7,
+            3153.2,
+            3579.3,
+            4178.6
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.552,
+          "box": [
+            3452.2,
+            3175.1,
+            4214.8,
+            4017.0
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.531,
+          "box": [
+            3.3,
+            3267.0,
+            1955.9,
+            4568.4
+          ]
+        }
+      ],
+      "summary": "sofa(0.809), chair(0.634), chair(0.57), chair(0.552), sofa(0.531)"
+    },
+    {
+      "filename": "IMG_1447.jpg",
+      "objects": [
+        {
+          "label": "monitor",
+          "score": 0.691,
+          "box": [
+            1888.0,
+            2415.2,
+            2091.0,
+            2649.7
+          ]
+        },
+        {
+          "label": "printer",
+          "score": 0.575,
+          "box": [
+            1.0,
+            2864.6,
+            301.7,
+            3656.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.498,
+          "box": [
+            260.0,
+            2769.1,
+            981.7,
+            3738.7
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.496,
+          "box": [
+            2331.8,
+            2834.4,
+            2942.7,
+            3187.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.473,
+          "box": [
+            1139.4,
+            2645.7,
+            2345.3,
+            3592.7
+          ]
+        }
+      ],
+      "summary": "monitor(0.691), printer(0.575), cabinet bookshelf(0.498), desk counter(0.496), cabinet bookshelf(0.473)"
+    },
+    {
+      "filename": "IMG_1448.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.764,
+          "box": [
+            2312.9,
+            2927.6,
+            2714.0,
+            3467.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.76,
+          "box": [
+            1178.5,
+            2082.9,
+            1859.3,
+            2824.3
+          ]
+        },
+        {
+          "label": "monitor computer",
+          "score": 0.694,
+          "box": [
+            2662.8,
+            2772.1,
+            2900.4,
+            3015.9
+          ]
+        },
+        {
+          "label": "printer",
+          "score": 0.632,
+          "box": [
+            2844.7,
+            2890.7,
+            3186.2,
+            3545.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.613,
+          "box": [
+            1620.7,
+            2239.7,
+            1936.2,
+            2802.5
+          ]
+        }
+      ],
+      "summary": "chair(0.764), plant(0.76), monitor computer(0.694), printer(0.632), door(0.613)"
+    },
+    {
+      "filename": "IMG_1449.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.708,
+          "box": [
+            2166.1,
+            2294.2,
+            2549.3,
+            3292.1
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.616,
+          "box": [
+            3221.0,
+            3426.3,
+            4280.1,
+            4745.1
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.485,
+          "box": [
+            3515.3,
+            2953.6,
+            4282.7,
+            3456.3
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.432,
+          "box": [
+            3313.6,
+            2475.8,
+            3714.7,
+            2937.0
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.406,
+          "box": [
+            2507.1,
+            3734.1,
+            3339.3,
+            4613.6
+          ]
+        }
+      ],
+      "summary": "door(0.708), sofa(0.616), cabinet(0.485), plant(0.432), table desk(0.406)"
+    },
+    {
+      "filename": "IMG_1450.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.838,
+          "box": [
+            3242.2,
+            3354.5,
+            4280.6,
+            4387.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.773,
+          "box": [
+            2236.2,
+            2129.7,
+            2808.9,
+            3631.6
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.504,
+          "box": [
+            3.3,
+            3176.8,
+            1408.1,
+            5540.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.388,
+          "box": [
+            5.9,
+            26.1,
+            4278.4,
+            5690.1
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.384,
+          "box": [
+            3831.3,
+            4208.2,
+            4282.1,
+            5708.8
+          ]
+        }
+      ],
+      "summary": "sofa(0.838), door(0.773), cabinet bookshelf(0.504), reception(0.388), desk(0.384)"
+    },
+    {
+      "filename": "IMG_1451.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.887,
+          "box": [
+            1313.4,
+            2883.4,
+            3284.3,
+            3939.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.826,
+          "box": [
+            3067.0,
+            2924.7,
+            3848.9,
+            3623.7
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.616,
+          "box": [
+            3798.8,
+            2987.6,
+            4280.5,
+            5705.2
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.563,
+          "box": [
+            2315.1,
+            4288.4,
+            3845.0,
+            5705.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.478,
+          "box": [
+            2116.1,
+            1790.5,
+            2557.4,
+            2943.9
+          ]
+        }
+      ],
+      "summary": "sofa(0.887), plant(0.826), cabinet bookshelf(0.616), chair(0.563), door(0.478)"
+    },
+    {
+      "filename": "IMG_1452.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.802,
+          "box": [
+            6.4,
+            3996.5,
+            3397.3,
+            5704.5
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.782,
+          "box": [
+            2731.3,
+            3901.0,
+            4069.6,
+            5279.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.654,
+          "box": [
+            2474.2,
+            2542.8,
+            2769.1,
+            3854.3
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.55,
+          "box": [
+            3202.5,
+            3085.3,
+            3928.6,
+            4099.4
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.528,
+          "box": [
+            4027.7,
+            3477.7,
+            4282.1,
+            4259.9
+          ]
+        }
+      ],
+      "summary": "sofa(0.802), plant(0.782), door(0.654), cabinet bookshelf(0.55), desk(0.528)"
+    },
+    {
+      "filename": "IMG_1453.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.783,
+          "box": [
+            247.7,
+            3453.8,
+            1255.7,
+            5004.8
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.641,
+          "box": [
+            0.7,
+            3094.6,
+            263.9,
+            3709.9
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.59,
+          "box": [
+            3777.7,
+            2085.3,
+            4282.4,
+            2849.1
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.526,
+          "box": [
+            3295.5,
+            2316.3,
+            3712.7,
+            2721.7
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.515,
+          "box": [
+            2890.8,
+            2936.1,
+            3294.5,
+            3331.1
+          ]
+        }
+      ],
+      "summary": "chair(0.783), monitor(0.641), plant(0.59), cabinet(0.526), cabinet(0.515)"
+    },
+    {
+      "filename": "IMG_1454.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.895,
+          "box": [
+            2210.3,
+            3139.1,
+            2312.1,
+            3372.5
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.688,
+          "box": [
+            222.8,
+            3336.5,
+            1120.2,
+            4375.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.615,
+          "box": [
+            3144.3,
+            1749.1,
+            3564.6,
+            4371.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.402,
+          "box": [
+            26.2,
+            19.0,
+            4266.5,
+            5687.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.393,
+          "box": [
+            206.7,
+            3140.1,
+            1407.7,
+            3612.3
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.895), sofa(0.688), door(0.615), reception(0.402), cabinet bookshelf(0.393)"
+    },
+    {
+      "filename": "IMG_1455.jpg",
+      "objects": [
+        {
+          "label": "sign board",
+          "score": 0.471,
+          "box": [
+            2382.5,
+            1796.5,
+            3180.0,
+            2161.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.453,
+          "box": [
+            3464.7,
+            534.3,
+            4280.4,
+            5705.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.41,
+          "box": [
+            3.0,
+            1239.1,
+            579.5,
+            5024.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.347,
+          "box": [
+            15.5,
+            35.1,
+            4270.9,
+            5696.0
+          ]
+        }
+      ],
+      "summary": "sign board(0.471), door(0.453), door(0.41), reception(0.347)"
+    },
+    {
+      "filename": "IMG_1456.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.767,
+          "box": [
+            1349.7,
+            3121.8,
+            1480.9,
+            3398.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.633,
+          "box": [
+            3077.4,
+            1280.6,
+            3825.8,
+            4960.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.506,
+          "box": [
+            0.5,
+            3155.2,
+            310.0,
+            3774.2
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.414,
+          "box": [
+            1.1,
+            2639.3,
+            343.9,
+            3171.2
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.389,
+          "box": [
+            9.5,
+            19.6,
+            4274.8,
+            5687.9
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.767), door(0.633), cabinet bookshelf(0.506), bulletin board board(0.414), reception(0.389)"
+    },
+    {
+      "filename": "IMG_1457.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.544,
+          "box": [
+            1823.0,
+            3534.9,
+            2012.4,
+            4092.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.475,
+          "box": [
+            1449.7,
+            1774.1,
+            1776.9,
+            4118.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.471,
+          "box": [
+            3375.8,
+            1663.1,
+            4281.1,
+            3680.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.398,
+          "box": [
+            2596.7,
+            1933.4,
+            2972.8,
+            2237.5
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.39,
+          "box": [
+            1734.6,
+            3499.3,
+            1866.9,
+            4022.2
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.544), door(0.475), bulletin board board(0.471), sign(0.398), fire extinguisher(0.39)"
+    },
+    {
+      "filename": "IMG_1458.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.396,
+          "box": [
+            2913.7,
+            805.6,
+            3613.3,
+            5331.3
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.394,
+          "box": [
+            13.7,
+            9.1,
+            4271.3,
+            5701.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.346,
+          "box": [
+            2767.0,
+            504.9,
+            3655.3,
+            5346.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.333,
+          "box": [
+            1740.1,
+            1844.9,
+            1973.3,
+            3868.2
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.332,
+          "box": [
+            2495.1,
+            1980.2,
+            2726.8,
+            2228.7
+          ]
+        }
+      ],
+      "summary": "door(0.396), reception(0.394), door(0.346), door(0.333), sign(0.332)"
+    },
+    {
+      "filename": "IMG_1459.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.405,
+          "box": [
+            14.1,
+            13.2,
+            4272.0,
+            5697.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.321,
+          "box": [
+            1611.7,
+            2107.5,
+            1713.8,
+            3514.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.316,
+          "box": [
+            3696.3,
+            330.0,
+            4279.9,
+            5716.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.305,
+          "box": [
+            595.1,
+            2004.7,
+            802.0,
+            3597.7
+          ]
+        }
+      ],
+      "summary": "reception(0.405), door(0.321), door(0.316), cabinet bookshelf(0.305)"
+    },
+    {
+      "filename": "IMG_1460.jpg",
+      "objects": [
+        {
+          "label": "monitor",
+          "score": 0.734,
+          "box": [
+            4069.6,
+            2852.8,
+            4283.2,
+            3270.7
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.622,
+          "box": [
+            2449.4,
+            3314.5,
+            3010.0,
+            4455.6
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.527,
+          "box": [
+            3101.6,
+            1957.0,
+            3453.1,
+            2574.3
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.475,
+          "box": [
+            2449.5,
+            3170.9,
+            4175.7,
+            4454.6
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.452,
+          "box": [
+            1185.4,
+            1211.7,
+            1900.0,
+            1721.8
+          ]
+        }
+      ],
+      "summary": "monitor(0.734), chair(0.622), cabinet bookshelf(0.527), desk(0.475), bulletin board notice board(0.452)"
+    },
+    {
+      "filename": "IMG_1461.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.699,
+          "box": [
+            847.5,
+            15.3,
+            1984.9,
+            5706.1
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.404,
+          "box": [
+            1157.3,
+            3054.4,
+            1674.9,
+            3813.6
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.309,
+          "box": [
+            2209.0,
+            1841.7,
+            2506.1,
+            2194.3
+          ]
+        }
+      ],
+      "summary": "door(0.699), bulletin board notice board(0.404), sign(0.309)"
+    },
+    {
+      "filename": "IMG_1462.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.559,
+          "box": [
+            1990.7,
+            32.4,
+            3211.3,
+            5693.1
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.393,
+          "box": [
+            1501.1,
+            1596.7,
+            1832.8,
+            1909.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.353,
+          "box": [
+            15.5,
+            8.4,
+            4267.1,
+            5702.7
+          ]
+        }
+      ],
+      "summary": "door(0.559), sign board(0.393), reception(0.353)"
+    },
+    {
+      "filename": "IMG_1463.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.615,
+          "box": [
+            2821.7,
+            155.3,
+            3996.7,
+            5708.5
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.381,
+          "box": [
+            2301.4,
+            1894.8,
+            2622.5,
+            2192.1
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.357,
+          "box": [
+            13.2,
+            10.9,
+            4210.0,
+            5702.1
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.32,
+          "box": [
+            1515.1,
+            2135.7,
+            1607.7,
+            3084.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.306,
+          "box": [
+            2383.9,
+            2313.3,
+            2588.2,
+            2641.0
+          ]
+        }
+      ],
+      "summary": "door(0.615), sign(0.381), reception(0.357), fire extinguisher(0.32), bulletin board board(0.306)"
+    },
+    {
+      "filename": "IMG_1464.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.523,
+          "box": [
+            2951.6,
+            1383.7,
+            3405.4,
+            4212.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.39,
+          "box": [
+            14.4,
+            12.6,
+            4270.0,
+            5699.2
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.323,
+          "box": [
+            2883.6,
+            2119.0,
+            3050.9,
+            2557.1
+          ]
+        }
+      ],
+      "summary": "door(0.523), reception(0.39), bulletin board board(0.323)"
+    },
+    {
+      "filename": "IMG_1465.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.624,
+          "box": [
+            2499.8,
+            5.9,
+            3869.1,
+            5707.3
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.396,
+          "box": [
+            2908.9,
+            1872.0,
+            3494.7,
+            3695.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.378,
+          "box": [
+            2017.4,
+            1966.5,
+            2444.2,
+            2605.9
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.336,
+          "box": [
+            3120.7,
+            1301.4,
+            3306.9,
+            1940.2
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.307,
+          "box": [
+            19.1,
+            3.3,
+            4241.0,
+            5709.2
+          ]
+        }
+      ],
+      "summary": "door(0.624), bulletin board notice board(0.396), bulletin board board(0.378), sign(0.336), reception(0.307)"
+    },
+    {
+      "filename": "IMG_1466.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.424,
+          "box": [
+            2833.5,
+            2718.6,
+            2910.6,
+            3010.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.388,
+          "box": [
+            4.7,
+            12.4,
+            2903.1,
+            5697.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.371,
+          "box": [
+            15.1,
+            12.7,
+            4267.9,
+            5695.3
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.357,
+          "box": [
+            2875.7,
+            1994.0,
+            3056.9,
+            2064.4
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.331,
+          "box": [
+            3633.5,
+            2169.0,
+            3741.4,
+            2370.3
+          ]
+        }
+      ],
+      "summary": "chair(0.424), cabinet bookshelf(0.388), reception(0.371), sign(0.357), fire extinguisher(0.331)"
+    },
+    {
+      "filename": "IMG_1467.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.41,
+          "box": [
+            14.5,
+            10.4,
+            4269.5,
+            5699.7
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.386,
+          "box": [
+            2067.1,
+            2678.2,
+            2114.2,
+            2798.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.315,
+          "box": [
+            2337.1,
+            2384.1,
+            2476.6,
+            2741.2
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.308,
+          "box": [
+            3723.0,
+            3975.0,
+            4172.9,
+            4880.3
+          ]
+        }
+      ],
+      "summary": "reception(0.41), fire extinguisher(0.386), cabinet bookshelf(0.315), sign bulletin board board(0.308)"
+    },
+    {
+      "filename": "IMG_1468.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.454,
+          "box": [
+            1458.6,
+            1327.1,
+            3021.6,
+            3094.0
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.39,
+          "box": [
+            1683.0,
+            1412.9,
+            1866.7,
+            2222.2
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.382,
+          "box": [
+            2105.7,
+            1440.8,
+            2421.1,
+            2195.4
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.357,
+          "box": [
+            5.0,
+            14.6,
+            3019.7,
+            4015.8
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.348,
+          "box": [
+            2427.7,
+            1511.5,
+            2662.4,
+            2148.2
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.454), window(0.39), cabinet(0.382), reception(0.357), cabinet(0.348)"
+    },
+    {
+      "filename": "IMG_1469.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.396,
+          "box": [
+            3.7,
+            330.6,
+            1668.7,
+            5700.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.395,
+          "box": [
+            11.7,
+            18.7,
+            4267.8,
+            5695.0
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.365,
+          "box": [
+            1693.2,
+            2196.3,
+            1946.9,
+            2281.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.328,
+          "box": [
+            414.3,
+            823.2,
+            855.9,
+            3458.3
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.396), reception(0.395), sign(0.365), door(0.328)"
+    },
+    {
+      "filename": "IMG_1470.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.442,
+          "box": [
+            2929.0,
+            379.7,
+            4277.5,
+            5701.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.391,
+          "box": [
+            14.6,
+            18.1,
+            4271.8,
+            5695.2
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.369,
+          "box": [
+            2599.2,
+            2183.9,
+            2931.9,
+            2430.0
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.367,
+          "box": [
+            2571.5,
+            2101.4,
+            2959.9,
+            2472.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.345,
+          "box": [
+            3646.6,
+            938.9,
+            3909.8,
+            3262.8
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.442), reception(0.391), bulletin board notice board(0.369), bulletin board board(0.367), door(0.345)"
+    },
+    {
+      "filename": "IMG_1471.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.45,
+          "box": [
+            3045.3,
+            485.3,
+            4276.5,
+            5700.2
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.393,
+          "box": [
+            15.1,
+            18.5,
+            4269.5,
+            5693.3
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.387,
+          "box": [
+            2682.0,
+            2059.5,
+            3077.1,
+            2433.8
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.341,
+          "box": [
+            2713.7,
+            2147.4,
+            3047.3,
+            2388.8
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.309,
+          "box": [
+            3707.1,
+            3206.0,
+            4280.3,
+            5706.6
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.45), reception(0.393), bulletin board board(0.387), sign bulletin board notice board(0.341), cabinet(0.309)"
+    },
+    {
+      "filename": "IMG_1472.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.61,
+          "box": [
+            3204.0,
+            2665.8,
+            3406.5,
+            3293.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.368,
+          "box": [
+            3625.7,
+            2263.5,
+            4034.7,
+            3670.2
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.357,
+          "box": [
+            3217.2,
+            2122.6,
+            3544.6,
+            2313.5
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.346,
+          "box": [
+            17.4,
+            21.9,
+            4268.4,
+            5684.1
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.322,
+          "box": [
+            3209.4,
+            1876.1,
+            3597.3,
+            2328.3
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.61), door(0.368), sign(0.357), reception(0.346), bulletin board board(0.322)"
+    },
+    {
+      "filename": "IMG_1473.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.377,
+          "box": [
+            1908.3,
+            37.3,
+            3103.5,
+            5104.2
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.347,
+          "box": [
+            3297.7,
+            842.6,
+            4263.1,
+            1476.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.341,
+          "box": [
+            2099.7,
+            251.7,
+            3045.2,
+            5085.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.333,
+          "box": [
+            13.4,
+            7.0,
+            4268.2,
+            5700.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.311,
+          "box": [
+            3259.8,
+            1614.2,
+            3887.1,
+            2192.4
+          ]
+        }
+      ],
+      "summary": "door(0.377), sign bulletin board board(0.347), door(0.341), reception(0.333), bulletin board board(0.311)"
+    },
+    {
+      "filename": "IMG_1474.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.724,
+          "box": [
+            688.3,
+            2806.0,
+            751.2,
+            2970.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.482,
+          "box": [
+            2227.1,
+            521.9,
+            3054.2,
+            5086.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.406,
+          "box": [
+            518.4,
+            2431.8,
+            655.0,
+            2632.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.392,
+          "box": [
+            1292.8,
+            1742.4,
+            1528.4,
+            3692.9
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.377,
+          "box": [
+            3189.7,
+            1296.0,
+            3846.2,
+            1821.1
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.724), door(0.482), cabinet bookshelf(0.406), door(0.392), sign(0.377)"
+    },
+    {
+      "filename": "IMG_1475.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.586,
+          "box": [
+            2118.2,
+            2665.1,
+            2170.4,
+            2818.0
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.425,
+          "box": [
+            3437.0,
+            1960.5,
+            3931.1,
+            3550.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.403,
+          "box": [
+            14.3,
+            12.7,
+            4271.6,
+            5698.2
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.4,
+          "box": [
+            1937.3,
+            2571.6,
+            2082.2,
+            2801.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.381,
+          "box": [
+            1980.7,
+            2302.2,
+            2093.1,
+            2490.3
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.586), bulletin board board(0.425), reception(0.403), desk counter(0.4), cabinet bookshelf(0.381)"
+    },
+    {
+      "filename": "IMG_1476.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.705,
+          "box": [
+            1447.8,
+            3125.9,
+            1513.3,
+            3296.8
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.443,
+          "box": [
+            1244.4,
+            2706.4,
+            1389.2,
+            2924.7
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.442,
+          "box": [
+            1200.0,
+            3014.9,
+            1375.2,
+            3291.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.43,
+          "box": [
+            2618.5,
+            1030.4,
+            3465.8,
+            5359.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.383,
+          "box": [
+            12.1,
+            8.3,
+            4273.1,
+            5701.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.705), cabinet bookshelf(0.443), desk counter(0.442), door(0.43), reception(0.383)"
+    },
+    {
+      "filename": "IMG_1477.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.495,
+          "box": [
+            1797.7,
+            761.5,
+            2411.5,
+            5185.4
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.43,
+          "box": [
+            1276.5,
+            1596.8,
+            1759.6,
+            2043.3
+          ]
+        },
+        {
+          "label": "door window",
+          "score": 0.382,
+          "box": [
+            3333.3,
+            2257.9,
+            3437.5,
+            3514.2
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.38,
+          "box": [
+            4153.6,
+            2398.8,
+            4282.9,
+            2647.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.376,
+          "box": [
+            12.9,
+            8.3,
+            4273.1,
+            5701.7
+          ]
+        }
+      ],
+      "summary": "door(0.495), sign board(0.43), door window(0.382), cabinet bookshelf(0.38), reception(0.376)"
+    },
+    {
+      "filename": "IMG_1478.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.786,
+          "box": [
+            2612.4,
+            2698.4,
+            2701.0,
+            2919.5
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.475,
+          "box": [
+            2374.5,
+            2168.1,
+            2536.8,
+            2427.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.423,
+          "box": [
+            3533.7,
+            1116.8,
+            3871.7,
+            2460.1
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.409,
+          "box": [
+            2306.8,
+            2533.9,
+            2520.8,
+            2866.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.378,
+          "box": [
+            11.3,
+            13.2,
+            4274.1,
+            5698.1
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.786), cabinet bookshelf(0.475), bulletin board board(0.423), desk counter(0.409), reception(0.378)"
+    },
+    {
+      "filename": "IMG_1479.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.773,
+          "box": [
+            419.2,
+            2989.8,
+            533.6,
+            3245.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.503,
+          "box": [
+            48.1,
+            2396.7,
+            261.7,
+            2689.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.414,
+          "box": [
+            1921.2,
+            481.8,
+            2864.1,
+            5374.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.361,
+          "box": [
+            855.6,
+            1741.2,
+            1136.5,
+            3784.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.35,
+          "box": [
+            14.1,
+            4.2,
+            4270.1,
+            5704.7
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.773), cabinet bookshelf(0.503), door(0.414), door(0.361), reception(0.35)"
+    },
+    {
+      "filename": "IMG_1480.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.773,
+          "box": [
+            3269.6,
+            2875.9,
+            3379.2,
+            3150.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.56,
+          "box": [
+            2986.0,
+            2264.9,
+            3169.2,
+            2558.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.484,
+          "box": [
+            1844.3,
+            1821.9,
+            2116.6,
+            4254.8
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.378,
+          "box": [
+            2915.4,
+            2680.0,
+            3152.9,
+            3056.0
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.362,
+          "box": [
+            4024.9,
+            1884.8,
+            4204.4,
+            2123.4
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.773), cabinet bookshelf(0.56), door(0.484), desk counter(0.378), sign(0.362)"
+    },
+    {
+      "filename": "IMG_1481.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.774,
+          "box": [
+            539.1,
+            2877.0,
+            706.0,
+            3232.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.553,
+          "box": [
+            1827.9,
+            1018.1,
+            2287.5,
+            4400.2
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.551,
+          "box": [
+            1.2,
+            2067.4,
+            256.2,
+            2445.9
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.375,
+          "box": [
+            2421.2,
+            1299.2,
+            2957.9,
+            1746.5
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.357,
+          "box": [
+            12.0,
+            7.7,
+            4270.5,
+            5703.7
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.774), door(0.553), cabinet bookshelf(0.551), bulletin board notice board(0.375), reception(0.357)"
+    },
+    {
+      "filename": "IMG_1482.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.524,
+          "box": [
+            3530.5,
+            1838.4,
+            3784.3,
+            2209.7
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.511,
+          "box": [
+            4027.3,
+            2671.2,
+            4200.8,
+            3046.5
+          ]
+        },
+        {
+          "label": "door window",
+          "score": 0.412,
+          "box": [
+            979.7,
+            133.4,
+            2244.2,
+            5700.7
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.338,
+          "box": [
+            3438.1,
+            2336.5,
+            3768.7,
+            2829.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.323,
+          "box": [
+            14.8,
+            4.9,
+            4268.3,
+            5704.4
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.524), fire extinguisher(0.511), door window(0.412), desk counter(0.338), reception(0.323)"
+    },
+    {
+      "filename": "IMG_1483.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.618,
+          "box": [
+            1965.2,
+            2105.1,
+            2236.8,
+            2546.6
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.52,
+          "box": [
+            2626.7,
+            3241.7,
+            2819.9,
+            3816.2
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.49,
+          "box": [
+            1047.3,
+            2331.3,
+            1262.0,
+            2714.2
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.422,
+          "box": [
+            853.7,
+            2643.4,
+            1049.8,
+            2857.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.404,
+          "box": [
+            2346.1,
+            1688.1,
+            2474.0,
+            3469.2
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.618), fire extinguisher(0.52), bulletin board board(0.49), desk counter(0.422), door(0.404)"
+    },
+    {
+      "filename": "IMG_1484.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.494,
+          "box": [
+            1236.2,
+            174.2,
+            2329.3,
+            5710.3
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.464,
+          "box": [
+            481.3,
+            3987.3,
+            791.6,
+            4753.1
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.418,
+          "box": [
+            440.2,
+            3148.7,
+            908.3,
+            3441.7
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.409,
+          "box": [
+            2668.4,
+            907.1,
+            3795.1,
+            1621.1
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.357,
+          "box": [
+            289.3,
+            3907.6,
+            530.2,
+            4617.9
+          ]
+        }
+      ],
+      "summary": "door(0.494), fire extinguisher(0.464), sign(0.418), bulletin board notice board(0.409), fire extinguisher(0.357)"
+    },
+    {
+      "filename": "IMG_1485.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.647,
+          "box": [
+            709.7,
+            3885.1,
+            947.5,
+            4634.7
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.613,
+          "box": [
+            392.4,
+            4004.3,
+            701.5,
+            4837.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.585,
+          "box": [
+            995.0,
+            1255.5,
+            1536.7,
+            4637.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.416,
+          "box": [
+            222.6,
+            3173.7,
+            869.5,
+            3516.1
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.404,
+          "box": [
+            2744.7,
+            2140.6,
+            2829.5,
+            2629.9
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.647), fire extinguisher(0.613), door(0.585), sign(0.416), bulletin board board(0.404)"
+    },
+    {
+      "filename": "IMG_1486.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.8,
+          "box": [
+            1913.8,
+            2453.8,
+            2317.3,
+            3060.4
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.772,
+          "box": [
+            681.6,
+            1316.0,
+            1594.0,
+            2348.5
+          ]
+        },
+        {
+          "label": "printer",
+          "score": 0.725,
+          "box": [
+            2510.8,
+            2292.7,
+            2959.7,
+            3124.8
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.678,
+          "box": [
+            2.8,
+            2921.8,
+            2086.1,
+            5269.4
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.649,
+          "box": [
+            2258.5,
+            2264.2,
+            2514.5,
+            2522.5
+          ]
+        }
+      ],
+      "summary": "chair(0.8), plant(0.772), printer(0.725), sofa(0.678), monitor(0.649)"
+    },
+    {
+      "filename": "IMG_1487.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.734,
+          "box": [
+            270.8,
+            2077.8,
+            1396.6,
+            3027.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.696,
+          "box": [
+            875.4,
+            1465.7,
+            1225.6,
+            1858.4
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.629,
+          "box": [
+            2341.5,
+            1663.2,
+            2418.6,
+            1770.8
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.598,
+          "box": [
+            1343.0,
+            1909.8,
+            1499.3,
+            2131.4
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.57,
+          "box": [
+            1205.9,
+            2405.4,
+            1831.7,
+            3224.8
+          ]
+        }
+      ],
+      "summary": "sofa(0.734), plant(0.696), monitor(0.629), chair(0.598), table desk(0.57)"
+    },
+    {
+      "filename": "IMG_1491.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.763,
+          "box": [
+            847.0,
+            2962.8,
+            946.2,
+            3160.5
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.74,
+          "box": [
+            2455.5,
+            3086.7,
+            3106.6,
+            3800.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.698,
+          "box": [
+            3010.2,
+            2363.2,
+            3453.5,
+            2865.6
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.52,
+          "box": [
+            3521.5,
+            2844.9,
+            4279.7,
+            5704.8
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.431,
+          "box": [
+            1795.8,
+            3244.0,
+            2228.6,
+            3703.9
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.763), sofa(0.74), plant(0.698), cabinet bookshelf(0.52), table desk(0.431)"
+    },
+    {
+      "filename": "IMG_1492.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.925,
+          "box": [
+            1.6,
+            3000.7,
+            1188.6,
+            3754.3
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.896,
+          "box": [
+            937.1,
+            3103.5,
+            1609.6,
+            3796.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.812,
+          "box": [
+            2891.3,
+            3158.0,
+            3640.6,
+            4306.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.63,
+          "box": [
+            1532.2,
+            1995.1,
+            2007.6,
+            3288.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.5,
+          "box": [
+            2905.7,
+            1996.1,
+            3428.5,
+            3329.4
+          ]
+        }
+      ],
+      "summary": "sofa(0.925), plant(0.896), chair(0.812), door(0.63), door(0.5)"
+    },
+    {
+      "filename": "IMG_1493.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.706,
+          "box": [
+            2921.0,
+            3053.9,
+            4280.2,
+            5705.0
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.431,
+          "box": [
+            2055.4,
+            2635.0,
+            2642.3,
+            3206.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.427,
+          "box": [
+            3583.5,
+            2457.9,
+            4282.1,
+            3300.6
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.422,
+          "box": [
+            2901.5,
+            3240.1,
+            3660.5,
+            3819.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.389,
+          "box": [
+            780.8,
+            2583.3,
+            3609.1,
+            3305.5
+          ]
+        }
+      ],
+      "summary": "sofa(0.706), cabinet(0.431), cabinet bookshelf(0.427), desk(0.422), cabinet bookshelf(0.389)"
+    },
+    {
+      "filename": "IMG_1494.jpg",
+      "objects": [
+        {
+          "label": "cabinet",
+          "score": 0.465,
+          "box": [
+            2316.6,
+            1746.5,
+            3164.3,
+            2573.0
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.461,
+          "box": [
+            3493.1,
+            3146.1,
+            4281.0,
+            4702.5
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.431,
+          "box": [
+            3145.8,
+            1729.9,
+            4014.4,
+            2561.4
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.416,
+          "box": [
+            1421.2,
+            3129.3,
+            3236.0,
+            5304.8
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.415,
+          "box": [
+            3482.1,
+            2592.8,
+            4280.9,
+            3386.0
+          ]
+        }
+      ],
+      "summary": "cabinet(0.465), sofa(0.461), cabinet(0.431), table desk(0.416), desk(0.415)"
+    },
+    {
+      "filename": "IMG_1495.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.582,
+          "box": [
+            3742.5,
+            2750.3,
+            4282.2,
+            3566.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.548,
+          "box": [
+            1526.9,
+            1411.2,
+            1931.0,
+            3623.3
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.417,
+          "box": [
+            1.3,
+            1154.1,
+            222.1,
+            2448.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.417,
+          "box": [
+            806.5,
+            1381.4,
+            1303.6,
+            3707.1
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.388,
+          "box": [
+            287.3,
+            1697.6,
+            683.5,
+            1919.0
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.582), door(0.548), window(0.417), door(0.417), sign(0.388)"
+    },
+    {
+      "filename": "IMG_1496.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.643,
+          "box": [
+            387.4,
+            1157.6,
+            993.3,
+            5100.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.565,
+          "box": [
+            3483.7,
+            3201.0,
+            4281.6,
+            4311.8
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.403,
+          "box": [
+            1689.2,
+            3367.9,
+            1837.0,
+            3737.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.394,
+          "box": [
+            11.2,
+            25.1,
+            4274.4,
+            5685.1
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.354,
+          "box": [
+            3329.9,
+            2484.9,
+            4282.2,
+            3219.4
+          ]
+        }
+      ],
+      "summary": "door(0.643), cabinet bookshelf(0.565), fire extinguisher(0.403), reception(0.394), bulletin board board(0.354)"
+    },
+    {
+      "filename": "IMG_1497.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.525,
+          "box": [
+            3330.9,
+            1289.1,
+            3818.5,
+            5061.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.482,
+          "box": [
+            2.5,
+            5.6,
+            436.9,
+            3340.3
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.453,
+          "box": [
+            409.5,
+            2261.6,
+            1193.2,
+            3010.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.433,
+          "box": [
+            2118.1,
+            1180.0,
+            2892.3,
+            5317.8
+          ]
+        },
+        {
+          "label": "sign bulletin",
+          "score": 0.42,
+          "box": [
+            982.0,
+            1465.1,
+            1851.1,
+            1994.4
+          ]
+        }
+      ],
+      "summary": "door(0.525), cabinet bookshelf(0.482), bulletin board notice board(0.453), door(0.433), sign bulletin(0.42)"
+    },
+    {
+      "filename": "IMG_1498.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.59,
+          "box": [
+            3774.3,
+            3166.6,
+            4280.2,
+            4943.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.542,
+          "box": [
+            1302.0,
+            1287.6,
+            1645.1,
+            3915.4
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.506,
+          "box": [
+            1137.5,
+            3328.7,
+            1349.4,
+            3921.1
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.448,
+          "box": [
+            1309.9,
+            3281.9,
+            1444.9,
+            3813.2
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.423,
+          "box": [
+            9.3,
+            16.6,
+            4275.1,
+            5694.8
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.59), door(0.542), fire extinguisher(0.506), fire extinguisher(0.448), reception(0.423)"
+    },
+    {
+      "filename": "IMG_1499.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.599,
+          "box": [
+            3458.0,
+            3272.6,
+            3696.7,
+            3881.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.508,
+          "box": [
+            3703.1,
+            1099.2,
+            4038.2,
+            3848.2
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.356,
+          "box": [
+            3404.3,
+            2737.2,
+            3664.0,
+            2945.9
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.338,
+          "box": [
+            2268.1,
+            1328.4,
+            2722.1,
+            1702.1
+          ]
+        },
+        {
+          "label": "bulletin board",
+          "score": 0.338,
+          "box": [
+            143.4,
+            6.7,
+            2074.6,
+            5704.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.599), door(0.508), sign(0.356), sign board(0.338), bulletin board(0.338)"
+    },
+    {
+      "filename": "IMG_1500.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.41,
+          "box": [
+            3271.1,
+            1789.1,
+            3425.8,
+            3629.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.383,
+          "box": [
+            9.3,
+            8.3,
+            4276.5,
+            5701.5
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.326,
+          "box": [
+            1981.3,
+            1861.8,
+            2067.7,
+            2460.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.303,
+          "box": [
+            744.5,
+            1516.5,
+            1062.0,
+            1878.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.303,
+          "box": [
+            3193.9,
+            1659.0,
+            3445.4,
+            3657.2
+          ]
+        }
+      ],
+      "summary": "door(0.41), reception(0.383), bulletin board board(0.326), sign(0.303), door(0.303)"
+    },
+    {
+      "filename": "IMG_1501.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.527,
+          "box": [
+            773.7,
+            7.9,
+            1931.0,
+            5707.0
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.347,
+          "box": [
+            1.7,
+            3801.2,
+            558.0,
+            4512.2
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.32,
+          "box": [
+            3241.3,
+            1870.5,
+            3313.0,
+            2487.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.309,
+          "box": [
+            17.6,
+            -0.1,
+            4269.4,
+            5708.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.306,
+          "box": [
+            2917.9,
+            1408.9,
+            3115.6,
+            3746.1
+          ]
+        }
+      ],
+      "summary": "door(0.527), sign(0.347), bulletin board board(0.32), reception(0.309), door(0.306)"
+    },
+    {
+      "filename": "IMG_1502.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.399,
+          "box": [
+            10.6,
+            13.3,
+            4270.1,
+            5696.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.376,
+          "box": [
+            2846.8,
+            1491.2,
+            3204.6,
+            4536.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.375,
+          "box": [
+            2812.5,
+            1192.0,
+            3533.6,
+            4921.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.367,
+          "box": [
+            3184.5,
+            1302.7,
+            3525.3,
+            4916.6
+          ]
+        },
+        {
+          "label": "bookshelf",
+          "score": 0.326,
+          "box": [
+            1.5,
+            2925.5,
+            268.7,
+            4543.0
+          ]
+        }
+      ],
+      "summary": "reception(0.399), door(0.376), door(0.375), door(0.367), bookshelf(0.326)"
+    },
+    {
+      "filename": "IMG_1503.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.436,
+          "box": [
+            1131.6,
+            1934.6,
+            1560.2,
+            3435.7
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.384,
+          "box": [
+            2265.7,
+            1766.1,
+            2410.8,
+            2680.6
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.358,
+          "box": [
+            1165.7,
+            3760.5,
+            1582.1,
+            4553.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.344,
+          "box": [
+            15.0,
+            10.0,
+            4271.0,
+            5696.6
+          ]
+        },
+        {
+          "label": "chair sofa",
+          "score": 0.316,
+          "box": [
+            1166.1,
+            3362.5,
+            1581.5,
+            4555.4
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.436), bulletin board board(0.384), sofa(0.358), reception(0.344), chair sofa(0.316)"
+    },
+    {
+      "filename": "IMG_1504.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.354,
+          "box": [
+            15.4,
+            7.1,
+            4270.4,
+            5703.0
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.34,
+          "box": [
+            2718.3,
+            2454.6,
+            2816.1,
+            3101.7
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.332,
+          "box": [
+            853.5,
+            1329.0,
+            1381.8,
+            1895.5
+          ]
+        },
+        {
+          "label": "door window",
+          "score": 0.327,
+          "box": [
+            2284.8,
+            1432.3,
+            2563.5,
+            4149.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.308,
+          "box": [
+            3.2,
+            12.2,
+            490.6,
+            5702.7
+          ]
+        }
+      ],
+      "summary": "reception(0.354), whiteboard bulletin board board(0.34), sign board(0.332), door window(0.327), door(0.308)"
+    },
+    {
+      "filename": "IMG_1505.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.597,
+          "box": [
+            2042.5,
+            10.2,
+            3443.5,
+            5703.6
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.491,
+          "box": [
+            1346.7,
+            1541.4,
+            1737.0,
+            1923.9
+          ]
+        },
+        {
+          "label": "bulletin board",
+          "score": 0.314,
+          "box": [
+            3.5,
+            2.9,
+            1848.2,
+            1720.3
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.311,
+          "box": [
+            18.1,
+            6.3,
+            4264.5,
+            5704.6
+          ]
+        },
+        {
+          "label": "bulletin board",
+          "score": 0.308,
+          "box": [
+            6.6,
+            20.8,
+            2071.8,
+            5662.9
+          ]
+        }
+      ],
+      "summary": "door(0.597), sign board(0.491), bulletin board(0.314), reception(0.311), bulletin board(0.308)"
+    },
+    {
+      "filename": "IMG_1506.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.393,
+          "box": [
+            646.0,
+            69.2,
+            1436.7,
+            5705.0
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.336,
+          "box": [
+            2259.2,
+            2215.9,
+            2420.7,
+            3212.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.328,
+          "box": [
+            20.2,
+            5.9,
+            4268.0,
+            5702.6
+          ]
+        },
+        {
+          "label": "whiteboard",
+          "score": 0.301,
+          "box": [
+            772.0,
+            1991.8,
+            1098.4,
+            2499.3
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.301,
+          "box": [
+            1709.2,
+            1691.3,
+            1949.6,
+            2014.4
+          ]
+        }
+      ],
+      "summary": "door(0.393), whiteboard bulletin board board(0.336), reception(0.328), whiteboard(0.301), sign(0.301)"
+    },
+    {
+      "filename": "IMG_1507.jpg",
+      "objects": [
+        {
+          "label": "bulletin board notice board",
+          "score": 0.403,
+          "box": [
+            103.9,
+            1304.5,
+            1625.9,
+            4922.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.371,
+          "box": [
+            3166.7,
+            1368.6,
+            3372.5,
+            4026.2
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.342,
+          "box": [
+            2147.5,
+            1400.2,
+            2508.8,
+            1857.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.314,
+          "box": [
+            9.7,
+            9.5,
+            2020.6,
+            5709.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.302,
+          "box": [
+            19.2,
+            4.1,
+            4268.2,
+            5708.6
+          ]
+        }
+      ],
+      "summary": "bulletin board notice board(0.403), door(0.371), sign board(0.342), door(0.314), reception(0.302)"
+    },
+    {
+      "filename": "IMG_1508.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.371,
+          "box": [
+            12.9,
+            7.9,
+            4272.7,
+            5701.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.365,
+          "box": [
+            1357.7,
+            1319.3,
+            1654.8,
+            3945.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.354,
+          "box": [
+            191.4,
+            1939.3,
+            720.7,
+            2804.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.345,
+          "box": [
+            1357.2,
+            1307.2,
+            1653.7,
+            4209.6
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.328,
+          "box": [
+            246.1,
+            1220.6,
+            685.2,
+            1749.6
+          ]
+        }
+      ],
+      "summary": "reception(0.371), door(0.365), bulletin board board(0.354), door(0.345), sign bulletin board board(0.328)"
+    },
+    {
+      "filename": "IMG_1509.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.619,
+          "box": [
+            0.3,
+            2566.3,
+            55.0,
+            2714.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.461,
+          "box": [
+            1957.7,
+            668.8,
+            2575.8,
+            4810.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.349,
+          "box": [
+            12.8,
+            2.3,
+            4269.6,
+            5705.9
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.332,
+          "box": [
+            2785.5,
+            732.3,
+            3649.9,
+            1444.9
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.323,
+          "box": [
+            2742.8,
+            1589.8,
+            3307.5,
+            2224.3
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.619), door(0.461), reception(0.349), sign bulletin board notice board(0.332), whiteboard bulletin board board(0.323)"
+    },
+    {
+      "filename": "IMG_1510.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.763,
+          "box": [
+            23.2,
+            3321.1,
+            772.4,
+            4361.0
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.727,
+          "box": [
+            1.0,
+            2799.3,
+            482.3,
+            3198.4
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.474,
+          "box": [
+            1.3,
+            3182.9,
+            639.3,
+            4097.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.449,
+          "box": [
+            118.7,
+            1788.8,
+            1048.8,
+            3725.4
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.39,
+          "box": [
+            1402.0,
+            1537.9,
+            1840.8,
+            1912.2
+          ]
+        }
+      ],
+      "summary": "chair(0.763), monitor(0.727), desk(0.474), cabinet bookshelf(0.449), sign bulletin board board(0.39)"
+    },
+    {
+      "filename": "IMG_1511.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.478,
+          "box": [
+            150.1,
+            1590.4,
+            1534.1,
+            3225.8
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.344,
+          "box": [
+            2749.6,
+            2063.4,
+            2812.0,
+            2173.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.336,
+          "box": [
+            9.4,
+            15.6,
+            3015.3,
+            4017.1
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.316,
+          "box": [
+            2938.6,
+            2130.1,
+            2971.5,
+            2199.2
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.303,
+          "box": [
+            1757.2,
+            2439.3,
+            1913.8,
+            2599.7
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.478), whiteboard bulletin board board(0.344), reception(0.336), fire extinguisher(0.316), sign(0.303)"
+    },
+    {
+      "filename": "IMG_1512.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.483,
+          "box": [
+            210.1,
+            1461.1,
+            1570.8,
+            3218.1
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.365,
+          "box": [
+            77.2,
+            1934.1,
+            210.7,
+            2022.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.331,
+          "box": [
+            8.6,
+            16.4,
+            3015.4,
+            4016.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.302,
+          "box": [
+            2752.4,
+            1917.5,
+            2787.6,
+            2219.5
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.483), bulletin board notice board(0.365), reception(0.331), door(0.302)"
+    },
+    {
+      "filename": "IMG_1513.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.425,
+          "box": [
+            2324.4,
+            534.1,
+            4279.6,
+            5698.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.402,
+          "box": [
+            6.6,
+            26.7,
+            4279.0,
+            5693.7
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.343,
+          "box": [
+            2159.3,
+            2349.3,
+            2361.7,
+            2497.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.327,
+          "box": [
+            3637.3,
+            815.4,
+            4015.8,
+            3374.6
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.425), reception(0.402), sign bulletin board notice board(0.343), door(0.327)"
+    },
+    {
+      "filename": "IMG_1514.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.558,
+          "box": [
+            2783.4,
+            2592.3,
+            2832.6,
+            2732.6
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.409,
+          "box": [
+            2729.6,
+            2735.7,
+            2864.5,
+            2932.5
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.399,
+          "box": [
+            14.6,
+            13.7,
+            4266.9,
+            5693.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.357,
+          "box": [
+            3990.1,
+            129.5,
+            4280.8,
+            5680.0
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.558), chair(0.409), reception(0.399), door(0.357)"
+    },
+    {
+      "filename": "IMG_1515.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.412,
+          "box": [
+            5.1,
+            5.3,
+            1957.5,
+            5703.3
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.408,
+          "box": [
+            11.8,
+            8.3,
+            4272.9,
+            5701.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.37,
+          "box": [
+            1914.9,
+            2323.7,
+            2060.6,
+            2393.5
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.366,
+          "box": [
+            2661.1,
+            2496.2,
+            2910.8,
+            3621.9
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.321,
+          "box": [
+            400.1,
+            11.0,
+            868.9,
+            4018.4
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.412), reception(0.408), sign(0.37), bulletin board board(0.366), window(0.321)"
+    },
+    {
+      "filename": "IMG_1516.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.784,
+          "box": [
+            902.7,
+            2166.0,
+            951.6,
+            2284.2
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.41,
+          "box": [
+            2292.4,
+            875.8,
+            2743.6,
+            1404.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.373,
+          "box": [
+            1165.0,
+            1910.5,
+            1297.5,
+            2196.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.358,
+          "box": [
+            10.2,
+            4.8,
+            3013.7,
+            4026.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.304,
+          "box": [
+            1357.3,
+            1738.1,
+            1420.5,
+            2511.1
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.784), bulletin board notice board(0.41), cabinet bookshelf(0.373), reception(0.358), door(0.304)"
+    },
+    {
+      "filename": "IMG_1517.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.434,
+          "box": [
+            914.9,
+            374.8,
+            1768.3,
+            3995.1
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.354,
+          "box": [
+            137.3,
+            973.8,
+            809.9,
+            1378.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.35,
+          "box": [
+            8.9,
+            6.6,
+            3016.3,
+            4023.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.304,
+          "box": [
+            2527.0,
+            1276.9,
+            2735.8,
+            2830.8
+          ]
+        }
+      ],
+      "summary": "door(0.434), sign bulletin board notice board(0.354), reception(0.35), door(0.304)"
+    },
+    {
+      "filename": "IMG_1518.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.812,
+          "box": [
+            2619.9,
+            2028.1,
+            2684.8,
+            2190.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.58,
+          "box": [
+            1227.3,
+            589.4,
+            1709.6,
+            3538.4
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.382,
+          "box": [
+            786.4,
+            1117.2,
+            1189.6,
+            1414.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.37,
+          "box": [
+            10.1,
+            7.7,
+            3015.3,
+            4022.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.812), door(0.58), sign bulletin board notice board(0.382), reception(0.37)"
+    },
+    {
+      "filename": "IMG_1519.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.77,
+          "box": [
+            1846.4,
+            1986.1,
+            1904.4,
+            2133.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.406,
+          "box": [
+            621.6,
+            534.6,
+            1110.5,
+            3446.9
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.389,
+          "box": [
+            207.6,
+            1035.8,
+            597.2,
+            1348.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.384,
+          "box": [
+            11.7,
+            6.2,
+            3013.5,
+            4024.5
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.361,
+          "box": [
+            2196.8,
+            1687.0,
+            2352.8,
+            2023.0
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.77), door(0.406), sign bulletin board notice board(0.389), reception(0.384), cabinet bookshelf(0.361)"
+    },
+    {
+      "filename": "IMG_1520.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.675,
+          "box": [
+            1038.7,
+            1956.8,
+            1108.9,
+            2140.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.464,
+          "box": [
+            1974.3,
+            1033.1,
+            2441.4,
+            3326.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.378,
+          "box": [
+            10.4,
+            7.4,
+            3012.1,
+            4023.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.347,
+          "box": [
+            1624.3,
+            1754.8,
+            1656.4,
+            2008.2
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.342,
+          "box": [
+            2500.3,
+            990.5,
+            2794.4,
+            1305.4
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.675), door(0.464), reception(0.378), cabinet bookshelf(0.347), sign bulletin board board(0.342)"
+    },
+    {
+      "filename": "IMG_1521.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.391,
+          "box": [
+            1311.5,
+            2412.8,
+            1418.3,
+            2728.4
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.362,
+          "box": [
+            10.0,
+            6.9,
+            3006.3,
+            4024.3
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.346,
+          "box": [
+            1395.5,
+            2365.4,
+            1463.1,
+            2680.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.338,
+          "box": [
+            2200.5,
+            1823.2,
+            2337.6,
+            2120.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.328,
+          "box": [
+            1288.1,
+            2160.8,
+            1402.5,
+            2261.0
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.391), reception(0.362), fire extinguisher(0.346), door(0.338), sign(0.328)"
+    },
+    {
+      "filename": "IMG_1522.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.49,
+          "box": [
+            2811.8,
+            1891.1,
+            3021.0,
+            2335.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.383,
+          "box": [
+            9.9,
+            13.0,
+            3015.8,
+            4018.6
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.361,
+          "box": [
+            840.2,
+            1463.6,
+            1158.3,
+            2337.2
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.357,
+          "box": [
+            419.2,
+            1284.5,
+            756.9,
+            1525.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.32,
+          "box": [
+            2378.3,
+            1671.8,
+            2539.9,
+            2027.9
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.49), reception(0.383), bulletin board board(0.361), sign board(0.357), door(0.32)"
+    },
+    {
+      "filename": "IMG_1523.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.841,
+          "box": [
+            1380.3,
+            2263.7,
+            2277.8,
+            3033.1
+          ]
+        },
+        {
+          "label": "monitor computer",
+          "score": 0.725,
+          "box": [
+            1664.3,
+            2014.3,
+            1818.9,
+            2141.4
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.706,
+          "box": [
+            1708.2,
+            2098.6,
+            1911.3,
+            2384.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.604,
+          "box": [
+            1225.8,
+            1977.1,
+            1507.0,
+            2381.2
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.545,
+          "box": [
+            2120.0,
+            1973.7,
+            2379.3,
+            2356.1
+          ]
+        }
+      ],
+      "summary": "sofa(0.841), monitor computer(0.725), chair(0.706), cabinet bookshelf(0.604), cabinet(0.545)"
+    },
+    {
+      "filename": "IMG_1524.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.818,
+          "box": [
+            1145.8,
+            2031.1,
+            2097.8,
+            2535.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.791,
+          "box": [
+            2715.9,
+            1433.7,
+            3006.3,
+            2133.9
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.698,
+          "box": [
+            1238.8,
+            1540.2,
+            1495.0,
+            1838.4
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.617,
+          "box": [
+            681.4,
+            1600.1,
+            1058.0,
+            1898.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.617,
+          "box": [
+            0.8,
+            2003.3,
+            235.2,
+            2349.3
+          ]
+        }
+      ],
+      "summary": "sofa(0.818), door(0.791), plant(0.698), bulletin board notice board(0.617), chair(0.617)"
+    },
+    {
+      "filename": "IMG_1525.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.846,
+          "box": [
+            2186.6,
+            2388.3,
+            3020.4,
+            3557.2
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.818,
+          "box": [
+            2472.9,
+            2178.4,
+            2747.5,
+            2496.7
+          ]
+        },
+        {
+          "label": "monitor computer",
+          "score": 0.638,
+          "box": [
+            2411.7,
+            2069.4,
+            2606.1,
+            2219.2
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.581,
+          "box": [
+            1891.3,
+            2031.2,
+            2228.4,
+            2463.8
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.552,
+          "box": [
+            2228.8,
+            2189.9,
+            2792.6,
+            2423.2
+          ]
+        }
+      ],
+      "summary": "sofa(0.846), chair(0.818), monitor computer(0.638), cabinet bookshelf(0.581), desk(0.552)"
+    },
+    {
+      "filename": "IMG_1526.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.413,
+          "box": [
+            880.8,
+            1031.7,
+            1347.0,
+            3423.7
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.357,
+          "box": [
+            8.0,
+            12.7,
+            3018.2,
+            4018.0
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.322,
+          "box": [
+            636.5,
+            1793.9,
+            852.7,
+            2019.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.318,
+          "box": [
+            2632.4,
+            1765.2,
+            2851.3,
+            2199.0
+          ]
+        },
+        {
+          "label": "sign bulletin board",
+          "score": 0.318,
+          "box": [
+            527.3,
+            1486.1,
+            850.0,
+            1694.3
+          ]
+        }
+      ],
+      "summary": "door(0.413), reception(0.357), window(0.322), cabinet bookshelf(0.318), sign bulletin board(0.318)"
+    },
+    {
+      "filename": "IMG_1527.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.901,
+          "box": [
+            1315.4,
+            2364.7,
+            3662.0,
+            3527.2
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.845,
+          "box": [
+            3690.9,
+            2000.0,
+            3788.5,
+            2202.5
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.743,
+          "box": [
+            970.6,
+            1178.6,
+            1694.1,
+            1935.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.675,
+          "box": [
+            2676.8,
+            1282.7,
+            3074.3,
+            1914.0
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.585,
+          "box": [
+            1950.1,
+            2995.5,
+            4006.3,
+            4249.8
+          ]
+        }
+      ],
+      "summary": "sofa(0.901), fire extinguisher(0.845), plant(0.743), door(0.675), table desk(0.585)"
+    },
+    {
+      "filename": "IMG_1528.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.834,
+          "box": [
+            2583.3,
+            2230.4,
+            3368.4,
+            3329.9
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.829,
+          "box": [
+            2335.9,
+            1895.2,
+            2788.6,
+            2320.7
+          ]
+        },
+        {
+          "label": "computer",
+          "score": 0.715,
+          "box": [
+            1858.0,
+            1875.1,
+            2351.0,
+            2439.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.633,
+          "box": [
+            518.0,
+            1811.4,
+            1836.1,
+            3605.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.56,
+          "box": [
+            3624.1,
+            1223.0,
+            4279.4,
+            1894.5
+          ]
+        }
+      ],
+      "summary": "chair(0.834), monitor(0.829), computer(0.715), cabinet bookshelf(0.633), bulletin board board(0.56)"
+    },
+    {
+      "filename": "IMG_1529.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.475,
+          "box": [
+            2042.1,
+            687.9,
+            2531.3,
+            3985.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.433,
+          "box": [
+            4092.1,
+            1251.5,
+            4329.4,
+            3674.8
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.391,
+          "box": [
+            1583.5,
+            1239.5,
+            1989.2,
+            1528.3
+          ]
+        },
+        {
+          "label": "bookshelf",
+          "score": 0.389,
+          "box": [
+            5260.1,
+            2365.0,
+            5415.8,
+            3088.5
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.351,
+          "box": [
+            18.1,
+            18.9,
+            5693.4,
+            4264.2
+          ]
+        }
+      ],
+      "summary": "door(0.475), door(0.433), sign board(0.391), bookshelf(0.389), reception(0.351)"
+    },
+    {
+      "filename": "IMG_1638.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.639,
+          "box": [
+            1217.4,
+            3411.1,
+            1440.7,
+            4086.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.55,
+          "box": [
+            1410.6,
+            974.4,
+            2075.4,
+            4152.0
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.539,
+          "box": [
+            940.8,
+            3512.8,
+            1206.4,
+            4222.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.414,
+          "box": [
+            760.7,
+            2818.5,
+            1365.4,
+            3096.5
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.406,
+          "box": [
+            4067.4,
+            1663.7,
+            4281.2,
+            3652.6
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.639), door(0.55), fire extinguisher(0.539), sign(0.414), bulletin board board(0.406)"
+    },
+    {
+      "filename": "IMG_1639.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.382,
+          "box": [
+            11.7,
+            10.6,
+            4268.7,
+            5700.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.364,
+          "box": [
+            3.0,
+            37.3,
+            732.2,
+            5423.1
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.356,
+          "box": [
+            2165.6,
+            1807.8,
+            2245.4,
+            2374.1
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.311,
+          "box": [
+            928.2,
+            1475.9,
+            1203.8,
+            1781.1
+          ]
+        }
+      ],
+      "summary": "reception(0.382), door(0.364), bulletin board board(0.356), sign(0.311)"
+    },
+    {
+      "filename": "IMG_1640.jpg",
+      "objects": [
+        {
+          "label": "bulletin board board",
+          "score": 0.399,
+          "box": [
+            1753.4,
+            1627.5,
+            1931.8,
+            2576.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.394,
+          "box": [
+            105.9,
+            286.3,
+            1004.2,
+            5623.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.394,
+          "box": [
+            20.6,
+            10.5,
+            4270.3,
+            5699.2
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.348,
+          "box": [
+            3853.6,
+            1300.2,
+            4278.8,
+            5326.3
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.348,
+          "box": [
+            3851.9,
+            1333.8,
+            4268.2,
+            5042.4
+          ]
+        }
+      ],
+      "summary": "bulletin board board(0.399), door(0.394), reception(0.394), window(0.348), window(0.348)"
+    },
+    {
+      "filename": "IMG_1641.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.4,
+          "box": [
+            1894.8,
+            1466.9,
+            2089.1,
+            3671.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.395,
+          "box": [
+            12.1,
+            9.3,
+            4270.1,
+            5702.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.379,
+          "box": [
+            2.7,
+            128.8,
+            914.1,
+            5525.2
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.358,
+          "box": [
+            2244.9,
+            2234.5,
+            2320.8,
+            2766.3
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.319,
+          "box": [
+            1074.0,
+            1616.6,
+            1335.0,
+            1906.2
+          ]
+        }
+      ],
+      "summary": "door(0.4), reception(0.395), door(0.379), bulletin board board(0.358), sign(0.319)"
+    },
+    {
+      "filename": "IMG_1642.jpg",
+      "objects": [
+        {
+          "label": "reception",
+          "score": 0.375,
+          "box": [
+            19.0,
+            8.9,
+            4262.4,
+            5701.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.37,
+          "box": [
+            1603.3,
+            2254.8,
+            1765.6,
+            3064.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.354,
+          "box": [
+            365.4,
+            535.4,
+            1094.7,
+            5024.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.321,
+          "box": [
+            449.5,
+            857.3,
+            1020.5,
+            4978.7
+          ]
+        }
+      ],
+      "summary": "reception(0.375), bulletin board board(0.37), door(0.354), door(0.321)"
+    },
+    {
+      "filename": "IMG_1643.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.536,
+          "box": [
+            1039.3,
+            691.3,
+            1754.7,
+            5133.0
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.384,
+          "box": [
+            2495.7,
+            2289.8,
+            2683.0,
+            3129.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.346,
+          "box": [
+            12.0,
+            7.8,
+            4275.1,
+            5701.0
+          ]
+        }
+      ],
+      "summary": "door(0.536), whiteboard bulletin board board(0.384), reception(0.346)"
+    },
+    {
+      "filename": "IMG_1644.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.571,
+          "box": [
+            2912.6,
+            9.8,
+            3759.8,
+            5688.1
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.402,
+          "box": [
+            584.4,
+            2177.0,
+            657.5,
+            2423.2
+          ]
+        },
+        {
+          "label": "whiteboard bulletin board board",
+          "score": 0.371,
+          "box": [
+            281.3,
+            2028.8,
+            480.9,
+            2977.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.358,
+          "box": [
+            13.6,
+            10.1,
+            4266.1,
+            5699.9
+          ]
+        }
+      ],
+      "summary": "door(0.571), fire extinguisher(0.402), whiteboard bulletin board board(0.371), reception(0.358)"
+    },
+    {
+      "filename": "IMG_1645.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.45,
+          "box": [
+            1868.0,
+            1632.2,
+            2035.3,
+            3577.1
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.434,
+          "box": [
+            2.0,
+            1752.0,
+            608.2,
+            3959.1
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.364,
+          "box": [
+            12.7,
+            6.5,
+            4268.6,
+            5704.8
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.336,
+          "box": [
+            711.6,
+            2686.0,
+            1083.7,
+            4211.9
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.316,
+          "box": [
+            1293.7,
+            1798.0,
+            1479.4,
+            2032.2
+          ]
+        }
+      ],
+      "summary": "door(0.45), bulletin board board(0.434), reception(0.364), cabinet bookshelf(0.336), sign(0.316)"
+    },
+    {
+      "filename": "IMG_1646.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.522,
+          "box": [
+            2950.6,
+            1520.7,
+            3168.6,
+            3623.8
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.432,
+          "box": [
+            2.3,
+            1683.3,
+            1209.6,
+            4013.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.361,
+          "box": [
+            5.9,
+            8.7,
+            4278.9,
+            5699.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.344,
+          "box": [
+            1248.9,
+            1795.6,
+            1855.8,
+            3606.7
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.329,
+          "box": [
+            2137.0,
+            1733.8,
+            2379.0,
+            1971.4
+          ]
+        }
+      ],
+      "summary": "door(0.522), bulletin board board(0.432), reception(0.361), cabinet bookshelf(0.344), sign(0.329)"
+    },
+    {
+      "filename": "IMG_1647.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.475,
+          "box": [
+            991.0,
+            1182.4,
+            1197.1,
+            3294.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.396,
+          "box": [
+            8.9,
+            7.9,
+            4272.4,
+            5701.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.338,
+          "box": [
+            425.9,
+            1709.9,
+            667.0,
+            2250.2
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.326,
+          "box": [
+            0.3,
+            2371.1,
+            267.1,
+            3868.1
+          ]
+        }
+      ],
+      "summary": "door(0.475), reception(0.396), bulletin board board(0.338), cabinet bookshelf(0.326)"
+    },
+    {
+      "filename": "IMG_1648.jpg",
+      "objects": [
+        {
+          "label": "door window",
+          "score": 0.444,
+          "box": [
+            1905.9,
+            189.2,
+            2759.3,
+            5046.1
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.35,
+          "box": [
+            2815.0,
+            1660.5,
+            3050.2,
+            1909.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.347,
+          "box": [
+            1975.9,
+            375.1,
+            2610.0,
+            5024.8
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.323,
+          "box": [
+            14.1,
+            8.6,
+            4270.7,
+            5700.0
+          ]
+        }
+      ],
+      "summary": "door window(0.444), sign board(0.35), door(0.347), reception(0.323)"
+    },
+    {
+      "filename": "IMG_1649.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.607,
+          "box": [
+            203.7,
+            244.1,
+            948.4,
+            5116.4
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.349,
+          "box": [
+            3641.6,
+            3445.1,
+            3899.1,
+            3966.4
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.348,
+          "box": [
+            1060.9,
+            1747.5,
+            1268.6,
+            1990.2
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.343,
+          "box": [
+            28.7,
+            10.8,
+            4250.3,
+            5701.7
+          ]
+        }
+      ],
+      "summary": "door(0.607), bulletin board notice board(0.349), sign(0.348), reception(0.343)"
+    },
+    {
+      "filename": "IMG_1650.jpg",
+      "objects": [
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.448,
+          "box": [
+            2541.4,
+            2104.6,
+            2955.7,
+            3884.5
+          ]
+        },
+        {
+          "label": "sign bulletin board notice board",
+          "score": 0.427,
+          "box": [
+            3069.4,
+            3599.4,
+            3663.9,
+            4331.5
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.366,
+          "box": [
+            12.4,
+            10.2,
+            4271.5,
+            5699.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.345,
+          "box": [
+            2890.5,
+            1.4,
+            4281.3,
+            5704.0
+          ]
+        }
+      ],
+      "summary": "cabinet bookshelf(0.448), sign bulletin board notice board(0.427), reception(0.366), door(0.345)"
+    },
+    {
+      "filename": "IMG_1651.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.476,
+          "box": [
+            2532.3,
+            2868.2,
+            3211.8,
+            4366.9
+          ]
+        },
+        {
+          "label": "bookshelf",
+          "score": 0.384,
+          "box": [
+            2083.8,
+            2185.1,
+            3225.7,
+            4487.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.321,
+          "box": [
+            17.7,
+            19.9,
+            4249.1,
+            5693.4
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.309,
+          "box": [
+            2530.5,
+            2193.4,
+            3220.3,
+            2896.0
+          ]
+        }
+      ],
+      "summary": "door(0.476), bookshelf(0.384), reception(0.321), bulletin board board(0.309)"
+    },
+    {
+      "filename": "IMG_1652.jpg",
+      "objects": [
+        {
+          "label": "bulletin board board",
+          "score": 0.383,
+          "box": [
+            379.1,
+            1.5,
+            4276.9,
+            871.9
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.378,
+          "box": [
+            18.2,
+            11.7,
+            4269.7,
+            5695.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.371,
+          "box": [
+            4104.3,
+            2132.6,
+            4280.6,
+            4341.2
+          ]
+        }
+      ],
+      "summary": "bulletin board board(0.383), reception(0.378), door(0.371)"
+    },
+    {
+      "filename": "IMG_1653.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.677,
+          "box": [
+            1697.3,
+            1928.5,
+            1792.4,
+            2199.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.44,
+          "box": [
+            1900.2,
+            1626.2,
+            2060.7,
+            2362.7
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.439,
+          "box": [
+            807.2,
+            1483.3,
+            1600.8,
+            3008.6
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.378,
+          "box": [
+            10.9,
+            23.4,
+            3012.9,
+            4017.5
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.375,
+          "box": [
+            1232.4,
+            1489.3,
+            1578.5,
+            1966.6
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.677), door(0.44), cabinet bookshelf(0.439), reception(0.378), bulletin board notice board(0.375)"
+    },
+    {
+      "filename": "IMG_1654.jpg",
+      "objects": [
+        {
+          "label": "window",
+          "score": 0.48,
+          "box": [
+            2539.1,
+            284.2,
+            2815.9,
+            2313.5
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.436,
+          "box": [
+            1970.3,
+            25.0,
+            3018.0,
+            4017.1
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.434,
+          "box": [
+            7.8,
+            17.8,
+            3015.3,
+            4015.4
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.431,
+          "box": [
+            1125.8,
+            1914.9,
+            1188.1,
+            2311.5
+          ]
+        },
+        {
+          "label": "sign bulletin board board",
+          "score": 0.302,
+          "box": [
+            1895.3,
+            1552.5,
+            1996.6,
+            1662.5
+          ]
+        }
+      ],
+      "summary": "window(0.48), cabinet bookshelf(0.436), reception(0.434), fire extinguisher(0.431), sign bulletin board board(0.302)"
+    },
+    {
+      "filename": "IMG_1655.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.756,
+          "box": [
+            2276.5,
+            2263.4,
+            2499.4,
+            2468.2
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.729,
+          "box": [
+            1730.8,
+            1941.6,
+            1939.1,
+            2179.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.705,
+          "box": [
+            2496.5,
+            1915.9,
+            2700.8,
+            2380.6
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.67,
+          "box": [
+            2016.7,
+            2231.2,
+            2359.3,
+            2446.9
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.656,
+          "box": [
+            1327.1,
+            2289.4,
+            1899.3,
+            2719.4
+          ]
+        }
+      ],
+      "summary": "plant(0.756), plant(0.729), door(0.705), sofa(0.67), sofa(0.656)"
+    },
+    {
+      "filename": "IMG_1656.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.806,
+          "box": [
+            2445.8,
+            2282.5,
+            3022.3,
+            2869.7
+          ]
+        },
+        {
+          "label": "printer",
+          "score": 0.669,
+          "box": [
+            188.2,
+            2445.8,
+            697.7,
+            2895.0
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.616,
+          "box": [
+            1121.4,
+            2180.7,
+            1167.1,
+            2310.4
+          ]
+        },
+        {
+          "label": "counter",
+          "score": 0.432,
+          "box": [
+            2.9,
+            2324.2,
+            1146.3,
+            4026.2
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.409,
+          "box": [
+            2212.9,
+            2426.1,
+            2580.6,
+            2809.3
+          ]
+        }
+      ],
+      "summary": "sofa(0.806), printer(0.669), fire extinguisher(0.616), counter(0.432), table desk(0.409)"
+    },
+    {
+      "filename": "IMG_1657.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.741,
+          "box": [
+            1903.6,
+            2145.9,
+            1983.0,
+            2419.8
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.682,
+          "box": [
+            1236.8,
+            2113.8,
+            1520.5,
+            2295.4
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.66,
+          "box": [
+            407.4,
+            2211.5,
+            1123.9,
+            2645.6
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.659,
+          "box": [
+            1622.5,
+            1837.9,
+            1760.0,
+            2214.5
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.646,
+          "box": [
+            944.2,
+            1821.0,
+            1188.9,
+            2073.3
+          ]
+        }
+      ],
+      "summary": "chair(0.741), sofa(0.682), sofa(0.66), door(0.659), plant(0.646)"
+    },
+    {
+      "filename": "IMG_1658.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.767,
+          "box": [
+            153.6,
+            2026.3,
+            483.9,
+            2409.1
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.73,
+          "box": [
+            1893.0,
+            1596.5,
+            2060.2,
+            1764.7
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.544,
+          "box": [
+            1248.2,
+            1759.2,
+            2246.7,
+            2465.1
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.505,
+          "box": [
+            628.6,
+            1428.3,
+            780.6,
+            1797.1
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.488,
+          "box": [
+            239.0,
+            2036.5,
+            601.5,
+            2401.5
+          ]
+        }
+      ],
+      "summary": "chair(0.767), monitor(0.73), cabinet bookshelf(0.544), bulletin board notice board(0.505), desk counter(0.488)"
+    },
+    {
+      "filename": "IMG_1659.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.752,
+          "box": [
+            871.8,
+            2201.9,
+            2224.0,
+            3035.3
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.741,
+          "box": [
+            1763.9,
+            1470.3,
+            2172.1,
+            1943.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.566,
+          "box": [
+            2726.3,
+            1535.0,
+            3002.9,
+            2173.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.504,
+          "box": [
+            2054.4,
+            1552.5,
+            2298.3,
+            1940.1
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.476,
+          "box": [
+            1245.2,
+            1951.0,
+            1739.9,
+            2232.3
+          ]
+        }
+      ],
+      "summary": "sofa(0.752), plant(0.741), door(0.566), door(0.504), cabinet(0.476)"
+    },
+    {
+      "filename": "IMG_1660.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.846,
+          "box": [
+            566.1,
+            2221.2,
+            685.0,
+            2501.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.439,
+          "box": [
+            1.6,
+            1048.4,
+            208.6,
+            3330.1
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.397,
+          "box": [
+            2481.2,
+            2198.2,
+            2870.7,
+            2613.6
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.369,
+          "box": [
+            1568.0,
+            2171.8,
+            2483.2,
+            2701.0
+          ]
+        },
+        {
+          "label": "reception",
+          "score": 0.349,
+          "box": [
+            6.5,
+            15.5,
+            3017.6,
+            4014.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.846), door(0.439), cabinet(0.397), cabinet bookshelf(0.369), reception(0.349)"
+    },
+    {
+      "filename": "IMG_1661.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.417,
+          "box": [
+            2638.7,
+            1017.0,
+            2928.7,
+            3186.1
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.415,
+          "box": [
+            3.7,
+            3.9,
+            1318.2,
+            2484.9
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.373,
+          "box": [
+            1319.6,
+            1633.1,
+            1568.6,
+            2049.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.369,
+          "box": [
+            2038.3,
+            925.1,
+            2444.6,
+            3132.8
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.369,
+          "box": [
+            1474.0,
+            1121.2,
+            1931.6,
+            1433.6
+          ]
+        }
+      ],
+      "summary": "door(0.417), window(0.415), bulletin board notice board(0.373), door(0.369), sign(0.369)"
+    },
+    {
+      "filename": "IMG_1662.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.708,
+          "box": [
+            4315.8,
+            2897.3,
+            5706.9,
+            4278.9
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.701,
+          "box": [
+            685.7,
+            1218.3,
+            1122.8,
+            1718.1
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.663,
+          "box": [
+            4276.7,
+            2249.6,
+            5709.2,
+            3884.7
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.561,
+          "box": [
+            311.6,
+            2105.7,
+            2377.4,
+            3673.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.545,
+          "box": [
+            5203.8,
+            996.8,
+            5456.3,
+            2098.4
+          ]
+        }
+      ],
+      "summary": "plant(0.708), plant(0.701), sofa(0.663), sofa(0.561), door(0.545)"
+    },
+    {
+      "filename": "IMG_1663.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.843,
+          "box": [
+            2784.4,
+            1608.6,
+            2833.3,
+            1721.4
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.752,
+          "box": [
+            967.3,
+            1625.3,
+            1571.0,
+            1957.7
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.74,
+          "box": [
+            813.2,
+            1286.6,
+            990.0,
+            1527.9
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.705,
+          "box": [
+            1595.7,
+            1741.8,
+            1971.5,
+            2129.7
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.592,
+          "box": [
+            3315.8,
+            815.3,
+            3635.0,
+            2456.5
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.843), sofa(0.752), plant(0.74), plant(0.705), door(0.592)"
+    },
+    {
+      "filename": "IMG_1664.jpg",
+      "objects": [
+        {
+          "label": "fire extinguisher",
+          "score": 0.84,
+          "box": [
+            2409.8,
+            2097.5,
+            2462.4,
+            2219.2
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.798,
+          "box": [
+            1187.3,
+            2278.5,
+            1545.9,
+            2629.6
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.778,
+          "box": [
+            598.6,
+            2147.1,
+            1173.7,
+            2470.5
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.753,
+          "box": [
+            462.1,
+            1839.5,
+            627.5,
+            2065.5
+          ]
+        },
+        {
+          "label": "chair sofa",
+          "score": 0.504,
+          "box": [
+            1409.2,
+            2171.3,
+            1842.2,
+            2603.0
+          ]
+        }
+      ],
+      "summary": "fire extinguisher(0.84), plant(0.798), sofa(0.778), plant(0.753), chair sofa(0.504)"
+    },
+    {
+      "filename": "IMG_1665.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.765,
+          "box": [
+            1223.4,
+            2332.6,
+            1596.9,
+            2716.0
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.702,
+          "box": [
+            0.9,
+            2378.6,
+            319.4,
+            2924.9
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.671,
+          "box": [
+            971.2,
+            2202.6,
+            1492.5,
+            2493.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.536,
+          "box": [
+            1112.1,
+            2015.7,
+            1202.1,
+            2107.0
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.525,
+          "box": [
+            1496.8,
+            2267.3,
+            2136.2,
+            2749.5
+          ]
+        }
+      ],
+      "summary": "plant(0.765), chair(0.702), sofa(0.671), plant(0.536), sofa(0.525)"
+    },
+    {
+      "filename": "IMG_1666.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.751,
+          "box": [
+            2286.8,
+            1632.7,
+            2852.9,
+            1947.2
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.657,
+          "box": [
+            2344.0,
+            1359.8,
+            2486.0,
+            1524.3
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.652,
+          "box": [
+            1361.4,
+            1532.9,
+            1570.2,
+            1803.0
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.537,
+          "box": [
+            2587.7,
+            1349.3,
+            2965.9,
+            1486.1
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.482,
+          "box": [
+            2025.7,
+            1374.7,
+            2232.6,
+            1543.0
+          ]
+        }
+      ],
+      "summary": "sofa(0.751), plant(0.657), cabinet bookshelf(0.652), cabinet(0.537), bulletin board notice board(0.482)"
+    },
+    {
+      "filename": "IMG_1667.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.821,
+          "box": [
+            1757.3,
+            2151.9,
+            2325.4,
+            2452.1
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.763,
+          "box": [
+            1827.7,
+            1876.8,
+            1958.2,
+            2045.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.563,
+          "box": [
+            827.3,
+            2059.2,
+            1037.6,
+            2330.9
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.551,
+          "box": [
+            507.4,
+            1884.1,
+            762.4,
+            2350.3
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.532,
+          "box": [
+            2231.2,
+            1995.3,
+            2310.1,
+            2052.5
+          ]
+        }
+      ],
+      "summary": "sofa(0.821), plant(0.763), cabinet bookshelf(0.563), door(0.551), monitor(0.532)"
+    },
+    {
+      "filename": "IMG_1668.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.834,
+          "box": [
+            1491.4,
+            1797.7,
+            1673.6,
+            2003.0
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.823,
+          "box": [
+            1467.2,
+            2137.6,
+            2137.1,
+            2493.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.779,
+          "box": [
+            2507.9,
+            1713.0,
+            2722.1,
+            2205.2
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.632,
+          "box": [
+            492.4,
+            2306.9,
+            1502.2,
+            2947.8
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.615,
+          "box": [
+            64.4,
+            2044.3,
+            412.7,
+            2457.2
+          ]
+        }
+      ],
+      "summary": "plant(0.834), sofa(0.823), door(0.779), sofa(0.632), cabinet bookshelf(0.615)"
+    },
+    {
+      "filename": "IMG_1669.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.828,
+          "box": [
+            2418.5,
+            1727.9,
+            2653.0,
+            1970.2
+          ]
+        },
+        {
+          "label": "monitor computer",
+          "score": 0.671,
+          "box": [
+            1472.4,
+            1992.6,
+            1594.8,
+            2091.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.651,
+          "box": [
+            1116.5,
+            1976.1,
+            1363.0,
+            2308.0
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.588,
+          "box": [
+            1527.4,
+            2057.1,
+            1687.6,
+            2262.4
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.55,
+          "box": [
+            2194.6,
+            2284.7,
+            2905.3,
+            2673.0
+          ]
+        }
+      ],
+      "summary": "plant(0.828), monitor computer(0.671), cabinet bookshelf(0.651), chair(0.588), table desk(0.55)"
+    },
+    {
+      "filename": "IMG_1670.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.807,
+          "box": [
+            1985.6,
+            1185.8,
+            2167.3,
+            1500.8
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.797,
+          "box": [
+            345.5,
+            1390.7,
+            1624.2,
+            2696.2
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.793,
+          "box": [
+            1364.1,
+            1308.2,
+            1821.5,
+            1769.3
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.783,
+          "box": [
+            2788.6,
+            1396.6,
+            4028.9,
+            2645.8
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.555,
+          "box": [
+            2998.8,
+            811.8,
+            3374.1,
+            1131.0
+          ]
+        }
+      ],
+      "summary": "chair(0.807), sofa(0.797), plant(0.793), sofa(0.783), bulletin board notice board(0.555)"
+    },
+    {
+      "filename": "IMG_1671.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.71,
+          "box": [
+            488.7,
+            2253.4,
+            1431.0,
+            3317.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.513,
+          "box": [
+            2844.9,
+            1520.4,
+            3023.1,
+            1870.0
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.498,
+          "box": [
+            1911.1,
+            1654.8,
+            2051.4,
+            2020.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.453,
+          "box": [
+            2540.3,
+            2011.1,
+            2694.5,
+            2317.6
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.451,
+          "box": [
+            1187.4,
+            1886.1,
+            1446.0,
+            2293.9
+          ]
+        }
+      ],
+      "summary": "sofa(0.71), cabinet(0.513), bulletin board notice board(0.498), cabinet(0.453), cabinet bookshelf(0.451)"
+    },
+    {
+      "filename": "IMG_1672.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.9,
+          "box": [
+            1904.2,
+            2063.0,
+            2821.6,
+            2453.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.587,
+          "box": [
+            2240.6,
+            1550.3,
+            2492.1,
+            2076.8
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.579,
+          "box": [
+            1438.0,
+            1544.2,
+            1689.2,
+            2200.8
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.563,
+          "box": [
+            2342.0,
+            2519.7,
+            2890.0,
+            3348.1
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.468,
+          "box": [
+            2685.4,
+            2153.3,
+            2908.2,
+            2358.0
+          ]
+        }
+      ],
+      "summary": "sofa(0.9), door(0.587), door(0.579), chair(0.563), plant(0.468)"
+    },
+    {
+      "filename": "IMG_1673.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.626,
+          "box": [
+            1127.3,
+            1555.5,
+            1472.4,
+            1758.1
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.618,
+          "box": [
+            1701.3,
+            1612.0,
+            2202.7,
+            1924.0
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.596,
+          "box": [
+            747.4,
+            1250.8,
+            954.5,
+            1692.9
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.557,
+          "box": [
+            1879.2,
+            1309.7,
+            2004.6,
+            1485.9
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.457,
+          "box": [
+            2127.4,
+            1298.8,
+            2219.4,
+            1455.8
+          ]
+        }
+      ],
+      "summary": "sofa(0.626), sofa(0.618), door(0.596), plant(0.557), bulletin board notice board(0.457)"
+    },
+    {
+      "filename": "IMG_1674.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.599,
+          "box": [
+            491.9,
+            2116.6,
+            857.7,
+            2333.9
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.579,
+          "box": [
+            1094.0,
+            2154.9,
+            1597.9,
+            2474.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.509,
+          "box": [
+            68.5,
+            1821.3,
+            298.2,
+            2236.6
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.501,
+          "box": [
+            1994.6,
+            1907.5,
+            2055.5,
+            1975.4
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.484,
+          "box": [
+            1258.8,
+            1856.6,
+            1385.9,
+            2008.6
+          ]
+        }
+      ],
+      "summary": "sofa(0.599), sofa(0.579), door(0.509), monitor(0.501), plant(0.484)"
+    },
+    {
+      "filename": "IMG_1675.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.767,
+          "box": [
+            3010.4,
+            2256.4,
+            3417.6,
+            2778.1
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.643,
+          "box": [
+            2561.4,
+            3084.1,
+            4027.7,
+            3947.8
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.614,
+          "box": [
+            1211.5,
+            2945.6,
+            1997.7,
+            3435.1
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.568,
+          "box": [
+            1612.7,
+            2298.4,
+            1915.7,
+            2978.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.527,
+          "box": [
+            405.8,
+            2265.2,
+            831.3,
+            3251.6
+          ]
+        }
+      ],
+      "summary": "plant(0.767), sofa(0.643), sofa(0.614), door(0.568), door(0.527)"
+    },
+    {
+      "filename": "IMG_1676.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.804,
+          "box": [
+            2.1,
+            3077.0,
+            1032.7,
+            4039.0
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.664,
+          "box": [
+            3.7,
+            2252.9,
+            341.8,
+            2804.6
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.582,
+          "box": [
+            1872.7,
+            2401.2,
+            1998.5,
+            2566.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.545,
+          "box": [
+            1.0,
+            2763.7,
+            601.5,
+            3181.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.488,
+          "box": [
+            1475.6,
+            2557.6,
+            2209.2,
+            3215.1
+          ]
+        }
+      ],
+      "summary": "sofa(0.804), plant(0.664), monitor(0.582), cabinet(0.545), cabinet bookshelf(0.488)"
+    },
+    {
+      "filename": "IMG_1677.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.756,
+          "box": [
+            1203.5,
+            2083.2,
+            1884.3,
+            2461.6
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.597,
+          "box": [
+            1664.1,
+            2285.8,
+            2041.6,
+            2829.9
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.518,
+          "box": [
+            2106.9,
+            2369.0,
+            2356.6,
+            2921.1
+          ]
+        },
+        {
+          "label": "desk",
+          "score": 0.458,
+          "box": [
+            1981.9,
+            2211.6,
+            2351.2,
+            2738.5
+          ]
+        },
+        {
+          "label": "sign board",
+          "score": 0.436,
+          "box": [
+            440.4,
+            1216.8,
+            885.7,
+            1455.2
+          ]
+        }
+      ],
+      "summary": "sofa(0.756), chair(0.597), chair(0.518), desk(0.458), sign board(0.436)"
+    },
+    {
+      "filename": "IMG_1678.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.715,
+          "box": [
+            840.5,
+            2341.4,
+            1011.5,
+            2720.3
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.692,
+          "box": [
+            1730.8,
+            1088.5,
+            2295.3,
+            3180.1
+          ]
+        },
+        {
+          "label": "window",
+          "score": 0.524,
+          "box": [
+            807.5,
+            1588.4,
+            1096.5,
+            2264.4
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.474,
+          "box": [
+            1143.0,
+            1109.8,
+            1569.2,
+            3247.7
+          ]
+        },
+        {
+          "label": "sign",
+          "score": 0.409,
+          "box": [
+            68.1,
+            1450.7,
+            597.9,
+            1642.2
+          ]
+        }
+      ],
+      "summary": "chair(0.715), door(0.692), window(0.524), door(0.474), sign(0.409)"
+    },
+    {
+      "filename": "IMG_1679.jpg",
+      "objects": [
+        {
+          "label": "door",
+          "score": 0.794,
+          "box": [
+            1605.6,
+            1315.6,
+            2306.1,
+            3232.4
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.777,
+          "box": [
+            840.1,
+            2231.5,
+            1121.3,
+            2491.2
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.63,
+          "box": [
+            999.3,
+            2350.4,
+            1246.3,
+            2694.1
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.603,
+          "box": [
+            1249.9,
+            2377.2,
+            1436.1,
+            2711.5
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.511,
+          "box": [
+            1126.8,
+            2278.2,
+            1313.7,
+            2597.8
+          ]
+        }
+      ],
+      "summary": "door(0.794), sofa(0.777), chair(0.63), chair(0.603), chair(0.511)"
+    },
+    {
+      "filename": "IMG_1680.jpg",
+      "objects": [
+        {
+          "label": "cabinet",
+          "score": 0.467,
+          "box": [
+            1302.7,
+            1615.3,
+            1496.5,
+            2010.9
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.444,
+          "box": [
+            248.8,
+            1686.5,
+            392.1,
+            2192.2
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.422,
+          "box": [
+            1498.0,
+            1550.4,
+            1771.8,
+            2031.1
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.397,
+          "box": [
+            1295.1,
+            1450.2,
+            2356.9,
+            2054.9
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.395,
+          "box": [
+            1010.3,
+            2164.5,
+            1160.3,
+            2535.8
+          ]
+        }
+      ],
+      "summary": "cabinet(0.467), bulletin board board(0.444), cabinet(0.422), cabinet bookshelf(0.397), cabinet(0.395)"
+    },
+    {
+      "filename": "IMG_1681.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.594,
+          "box": [
+            2.0,
+            2317.6,
+            1007.6,
+            4026.2
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.487,
+          "box": [
+            1507.3,
+            1683.4,
+            1628.0,
+            1986.1
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.484,
+          "box": [
+            1222.9,
+            2633.1,
+            2007.7,
+            3545.9
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.472,
+          "box": [
+            1.1,
+            1938.0,
+            399.8,
+            2469.9
+          ]
+        },
+        {
+          "label": "bulletin board board",
+          "score": 0.471,
+          "box": [
+            1859.0,
+            1526.6,
+            2017.7,
+            1984.1
+          ]
+        }
+      ],
+      "summary": "sofa(0.594), door(0.487), table desk(0.484), cabinet(0.472), bulletin board board(0.471)"
+    },
+    {
+      "filename": "IMG_1682.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.71,
+          "box": [
+            670.3,
+            2239.2,
+            995.4,
+            2489.2
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.658,
+          "box": [
+            1384.8,
+            2130.9,
+            1492.5,
+            2359.5
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.657,
+          "box": [
+            1.4,
+            2249.8,
+            772.1,
+            2870.9
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.515,
+          "box": [
+            1142.1,
+            2033.9,
+            1341.4,
+            2312.9
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.498,
+          "box": [
+            2619.2,
+            1780.4,
+            2830.8,
+            2117.3
+          ]
+        }
+      ],
+      "summary": "plant(0.71), chair(0.658), sofa(0.657), cabinet bookshelf(0.515), bulletin board notice board(0.498)"
+    },
+    {
+      "filename": "IMG_1683.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.688,
+          "box": [
+            2863.5,
+            1841.5,
+            2972.5,
+            2033.6
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.682,
+          "box": [
+            1288.5,
+            1996.9,
+            1459.5,
+            2350.8
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.623,
+          "box": [
+            172.4,
+            2143.3,
+            681.8,
+            2516.4
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.56,
+          "box": [
+            1506.0,
+            1828.5,
+            1731.0,
+            2169.2
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.531,
+          "box": [
+            356.2,
+            2468.8,
+            1353.8,
+            3943.5
+          ]
+        }
+      ],
+      "summary": "chair(0.688), chair(0.682), plant(0.623), monitor(0.56), sofa(0.531)"
+    },
+    {
+      "filename": "IMG_1684.jpg",
+      "objects": [
+        {
+          "label": "bulletin board board",
+          "score": 0.539,
+          "box": [
+            345.1,
+            1685.9,
+            494.6,
+            2203.8
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.484,
+          "box": [
+            1421.3,
+            1554.7,
+            1652.3,
+            1983.7
+          ]
+        },
+        {
+          "label": "notice board",
+          "score": 0.435,
+          "box": [
+            2775.4,
+            1739.0,
+            3021.6,
+            1947.8
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.425,
+          "box": [
+            1650.7,
+            1462.5,
+            1973.7,
+            1994.6
+          ]
+        },
+        {
+          "label": "cabinet",
+          "score": 0.412,
+          "box": [
+            1118.4,
+            2149.3,
+            1288.9,
+            2531.1
+          ]
+        }
+      ],
+      "summary": "bulletin board board(0.539), cabinet(0.484), notice board(0.435), cabinet(0.425), cabinet(0.412)"
+    },
+    {
+      "filename": "IMG_1685.jpg",
+      "objects": [
+        {
+          "label": "chair",
+          "score": 0.794,
+          "box": [
+            276.7,
+            2284.5,
+            630.9,
+            2740.8
+          ]
+        },
+        {
+          "label": "monitor",
+          "score": 0.676,
+          "box": [
+            2071.0,
+            1845.8,
+            2195.8,
+            2013.4
+          ]
+        },
+        {
+          "label": "cabinet bookshelf",
+          "score": 0.529,
+          "box": [
+            1578.1,
+            2007.4,
+            2389.0,
+            2791.3
+          ]
+        },
+        {
+          "label": "bulletin board notice board",
+          "score": 0.524,
+          "box": [
+            816.9,
+            1640.4,
+            1000.2,
+            2029.7
+          ]
+        },
+        {
+          "label": "desk counter",
+          "score": 0.492,
+          "box": [
+            2377.3,
+            2109.3,
+            2739.9,
+            2362.4
+          ]
+        }
+      ],
+      "summary": "chair(0.794), monitor(0.676), cabinet bookshelf(0.529), bulletin board notice board(0.524), desk counter(0.492)"
+    },
+    {
+      "filename": "IMG_1686.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.838,
+          "box": [
+            1.7,
+            2459.3,
+            848.7,
+            3770.7
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.786,
+          "box": [
+            177.0,
+            1408.5,
+            800.1,
+            2045.1
+          ]
+        },
+        {
+          "label": "chair",
+          "score": 0.759,
+          "box": [
+            1812.6,
+            2082.0,
+            2110.9,
+            2495.0
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.639,
+          "box": [
+            967.4,
+            2084.2,
+            1188.6,
+            2395.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.616,
+          "box": [
+            1005.1,
+            1622.4,
+            1235.8,
+            2198.3
+          ]
+        }
+      ],
+      "summary": "sofa(0.838), plant(0.786), chair(0.759), plant(0.639), door(0.616)"
+    },
+    {
+      "filename": "IMG_1687.jpg",
+      "objects": [
+        {
+          "label": "plant",
+          "score": 0.76,
+          "box": [
+            1279.3,
+            1756.2,
+            1640.1,
+            2189.3
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.694,
+          "box": [
+            2548.6,
+            2315.7,
+            3023.0,
+            2814.7
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.521,
+          "box": [
+            2796.8,
+            2202.1,
+            2884.8,
+            2318.9
+          ]
+        },
+        {
+          "label": "sofa",
+          "score": 0.455,
+          "box": [
+            736.8,
+            2340.0,
+            1314.0,
+            3105.5
+          ]
+        },
+        {
+          "label": "door",
+          "score": 0.453,
+          "box": [
+            2656.3,
+            1821.7,
+            2787.1,
+            2354.0
+          ]
+        }
+      ],
+      "summary": "plant(0.76), sofa(0.694), fire extinguisher(0.521), sofa(0.455), door(0.453)"
+    },
+    {
+      "filename": "IMG_1688.jpg",
+      "objects": [
+        {
+          "label": "sofa",
+          "score": 0.757,
+          "box": [
+            2358.8,
+            2254.1,
+            3022.6,
+            2652.4
+          ]
+        },
+        {
+          "label": "plant",
+          "score": 0.729,
+          "box": [
+            1360.1,
+            1814.9,
+            1639.6,
+            2152.9
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.571,
+          "box": [
+            2555.5,
+            2168.5,
+            2626.9,
+            2259.2
+          ]
+        },
+        {
+          "label": "table desk",
+          "score": 0.414,
+          "box": [
+            529.2,
+            2394.1,
+            866.1,
+            2769.8
+          ]
+        },
+        {
+          "label": "fire extinguisher",
+          "score": 0.4,
+          "box": [
+            362.1,
+            2175.7,
+            409.5,
+            2278.9
+          ]
+        }
+      ],
+      "summary": "sofa(0.757), plant(0.729), fire extinguisher(0.571), table desk(0.414), fire extinguisher(0.4)"
+    }
+  ]
+}
