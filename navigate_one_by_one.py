@@ -31,26 +31,88 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 
-# ── Navigation goal ──────────────────────────────────────────────────────
+# ── Navigation goal (set dynamically via --goal, never hardcode here) ─────
 
-GOAL_TEXT    = "尋找系辦內的冰箱"
-GOAL_TARGET  = "冰箱"
-GOAL_PLACE   = "系辦"
+GOAL_TEXT    = ""   # "尋找{GOAL_TARGET}"
+GOAL_TARGET  = ""   # the raw goal string, e.g. "電腦" or "吳世琳辦公室"
+GOAL_PLACE   = "室內"
+GOAL_OCR_NAME  = ""
+GOAL_OCR_PARTS: list[str] = []
+TARGET_KEYWORDS: set[str] = set()
+SIMILAR_KEYWORDS: set[str] = set()   # intentionally empty — orange category removed
+DETECT_CLASSES: list[str] = []
 
-DETECT_CLASSES = [
-    "refrigerator", "fridge", "freezer",
-    "vending machine", "water dispenser", "water cooler", "microwave",
-    "door", "sign", "fire extinguisher",
-    "sofa", "chair", "table", "cabinet", "desk",
-    "plant", "counter", "bulletin board",
+# Environment/landmark objects that are always detected (no goal dependency)
+_BASE_CLASSES = [
+    "door", "office door", "nameplate", "name plate", "door sign",
+    "sign", "plaque", "room sign", "office sign",
+    "bulletin board", "notice board", "whiteboard", "poster", "notice",
+    "fire extinguisher", "trash can", "trash", "garbage can",
+    "water dispenser", "water cooler", "water fountain",
+    "refrigerator",
+    "chair", "table", "desk", "counter", "reception desk", "reception",
+    "cabinet", "bookshelf", "shelf", "locker", "printer",
+    "plant", "sofa", "window", "elevator", "staircase",
 ]
 
-TARGET_KEYWORDS  = {"refrigerator", "fridge", "freezer"}
-# Keywords that look like goal but are NOT (flagged for VLM verification)
-SIMILAR_KEYWORDS = {"vending machine", "water dispenser", "water cooler"}
+# Known goal → detection classes + OCR confirmation keywords
+_GOAL_CLASS_MAP: dict[str, dict] = {
+    "電腦": {
+        "classes":   ["電腦", "桌上型電腦", "筆記型電腦", "螢幕", "鍵盤", "滑鼠",
+                      "computer", "laptop", "desktop computer", "monitor",
+                      "keyboard", "mouse", "screen"],
+        "ocr_parts": ["電腦", "桌機", "筆電", "本機", "computer", "PC", "desktop", "laptop"],
+    },
+    "冰箱": {
+        "classes":   ["冰箱", "refrigerator", "fridge", "冷藏"],
+        "ocr_parts": ["冰箱", "refrigerator", "fridge"],
+    },
+    "飲水機": {
+        "classes":   ["飲水機", "water dispenser", "water cooler", "water fountain"],
+        "ocr_parts": ["飲水機", "water dispenser"],
+    },
+    "印表機": {
+        "classes":   ["印表機", "printer", "laser printer"],
+        "ocr_parts": ["印表機", "printer"],
+    },
+    "辦公室": {
+        "classes":   ["辦公室", "教師辦公室", "office", "nameplate", "name plate",
+                      "door sign", "plaque", "office door"],
+        "ocr_parts": [],  # augmented with person name at runtime
+    },
+}
 
-ARRIVE_THRESHOLD  = 0.45   # confidence to trigger ARRIVED
-VERIFY_THRESHOLD  = 0.35   # confidence to trigger VLM verification (informational) before ARRIVED
+
+def setup_goal(goal_text: str) -> None:
+    """Derive all goal-dependent globals from the goal string."""
+    global GOAL_TEXT, GOAL_TARGET, GOAL_OCR_NAME, GOAL_OCR_PARTS
+    global TARGET_KEYWORDS, DETECT_CLASSES
+
+    GOAL_TARGET   = goal_text
+    GOAL_TEXT     = f"尋找{goal_text}"
+    GOAL_OCR_NAME = goal_text
+
+    # Look up known goal entries (one or more keys may match)
+    extra_classes: list[str] = []
+    extra_ocr: list[str] = []
+    for key, info in _GOAL_CLASS_MAP.items():
+        if key in goal_text:
+            extra_classes.extend(info["classes"])
+            extra_ocr.extend(info["ocr_parts"])
+
+    # Always treat the raw goal text itself as a class and OCR token
+    if goal_text not in extra_classes:
+        extra_classes.insert(0, goal_text)
+    if goal_text not in extra_ocr:
+        extra_ocr.insert(0, goal_text)
+
+    GOAL_OCR_PARTS  = list(dict.fromkeys(extra_ocr))     # dedup, preserve order
+    TARGET_KEYWORDS = set(extra_classes)
+    DETECT_CLASSES  = [c for c in extra_classes if c not in _BASE_CLASSES] + _BASE_CLASSES
+
+ARRIVE_THRESHOLD  = 0.40   # GroundingDINO confidence for nameplate/door-sign detection
+OCR_ARRIVE_CONF   = 0.40   # OCR confidence to trust name match as ARRIVED
+VERIFY_THRESHOLD  = 0.30   # confidence to trigger informational VLM verification
 
 OLLAMA_URL        = "http://127.0.0.1:11434"
 OLLAMA_MODEL      = "gemma4:latest"        # vision model (llama3.2-vision unsupported arch)
@@ -66,12 +128,13 @@ def load_session() -> dict:
             return json.load(f)
     return {
         "step": 0,
+        "goal": "",
         "observations": [],
         "best_goal_score": 0.0,
         "best_goal_step": None,
         "arrived": False,
-        "false_positives": [],   # steps where ARRIVED was wrong
-        "corrections": [],       # user correction messages
+        "false_positives": [],
+        "corrections": [],
     }
 
 def save_session(state: dict) -> None:
@@ -127,7 +190,7 @@ def ask_vlm_text_only(prompt: str, timeout: int = 45) -> str:
 def verify_goal_with_vlm(photo_path: str, box: list[float],
                           goal_label: str) -> tuple[bool, str]:
     """
-    Crop the detection box and ask VLM whether it's actually the goal.
+    Crop the detection box and ask VLM whether it matches the goal.
     Returns (is_correct, vlm_explanation).
     """
     from PIL import Image
@@ -143,11 +206,10 @@ def verify_goal_with_vlm(photo_path: str, box: list[float],
 
     prompt = (
         f"請仔細看這張裁切圖片。\n"
-        f"問題：這個物品是「{goal_label}（冰箱/refrigerator）」嗎？\n"
-        f"如果不是，它最可能是什麼？\n"
+        f"問題：圖中有沒有「{GOAL_TARGET}」？\n"
         f"請用繁體中文回答，格式：\n"
         f"是否為目標：是/否\n"
-        f"實際物品：[物品名稱]\n"
+        f"實際內容：[描述圖中內容]\n"
         f"理由：[一句話說明]\n"
     )
     print(f"\n  [VLM 驗證] 裁切框 ({x1},{y1})→({x2},{y2})，詢問模型...")
@@ -166,31 +228,38 @@ def ask_navigation_guidance(photo_path: str,
                              prev_detections: list[dict],
                              user_text: str,
                              step: int,
-                             state: dict) -> str:
+                             state: dict,
+                             ocr_texts: list[str] | None = None) -> str:
     """
     Send current photo + text query to VLM and return navigation guidance.
+    ocr_texts: list of OCR-recognized strings from current photo.
     """
     img_b64 = _encode_image(photo_path)
 
-    det_str = ", ".join(f"{d['label']}({d['score']:.2f})" for d in detections) or "無偵測結果"
+    def _det_label(d):
+        ctx = d.get("context", "")
+        return f"{d['label']}{'(' + ctx + ')' if ctx else ''}({d['score']:.2f})"
+
+    det_str  = ", ".join(_det_label(d) for d in detections) or "無偵測結果"
     prev_str = ", ".join(f"{d['label']}({d['score']:.2f})" for d in prev_detections) or "無"
+    ocr_str  = "、".join(ocr_texts) if ocr_texts else "（無可讀文字）"
 
     false_pos_note = ""
-    if state.get("false_positives"):
-        fp_steps = state["false_positives"]
-        false_pos_note = f"\n注意：步驟 {fp_steps} 的「抵達」宣告已被用戶確認為誤判（飲水機非冰箱），目前在繼續搜索。"
+    if state.get("corrections"):
+        false_pos_note = f"\n注意：{state['corrections'][-1]}"
 
     prompt = (
         f"你是一個室內導航助手，正在幫助用戶尋找目標：{GOAL_TEXT}。\n\n"
         f"當前步驟 {step} 的照片已附上。\n"
-        f"當前偵測到的物件：{det_str}\n"
+        f"當前偵測到的物件（含位置描述）：{det_str}\n"
         f"上一步偵測到的物件：{prev_str}\n"
+        f"本張照片 OCR 讀出的文字：{ocr_str}\n"
         f"{false_pos_note}\n"
         f"用戶說：「{user_text}」\n\n"
-        f"請根據照片內容和用戶的描述，用繁體中文回答：\n"
-        f"1. 你看到了什麼（根據照片）\n"
-        f"2. 目前最可能的冰箱位置判斷\n"
-        f"3. 具體的移動建議（往前/往左/往右/折返/停止）\n"
+        f"請根據照片內容、偵測物件和文字辨識結果，用繁體中文回答：\n"
+        f"1. 你看到了什麼（特別注意任何與「{GOAL_TARGET}」相關的物品或標示）\n"
+        f"2. 是否看到「{GOAL_TARGET}」或任何相關線索\n"
+        f"3. 具體的移動建議（往前/往左/往右/折返）\n"
         f"請直接給出建議，不要說「根據照片」等冗詞，回答控制在3句內。\n"
     )
 
@@ -224,23 +293,50 @@ def _norm_center(box: list, img_w: int, img_h: int) -> tuple[float, float]:
     return ((box[0] + box[2]) / (2 * img_w),
             (box[1] + box[3]) / (2 * img_h))
 
+def _norm_iou(a: list, b: list, wa: int, ha: int, wb: int, hb: int) -> float:
+    """IoU between two boxes each given in absolute pixels of their respective images,
+    normalized to [0,1] coordinates before comparison."""
+    a_n = [a[0]/wa, a[1]/ha, a[2]/wa, a[3]/ha]
+    b_n = [b[0]/wb, b[1]/hb, b[2]/wb, b[3]/hb]
+    ix1, iy1 = max(a_n[0], b_n[0]), max(a_n[1], b_n[1])
+    ix2, iy2 = min(a_n[2], b_n[2]), min(a_n[3], b_n[3])
+    inter = max(0.0, ix2 - ix1) * max(0.0, iy2 - iy1)
+    ua = (a_n[2]-a_n[0])*(a_n[3]-a_n[1]) + (b_n[2]-b_n[0])*(b_n[3]-b_n[1]) - inter
+    return inter / ua if ua > 0 else 0.0
+
+
+def _label_matches(a: str, b: str) -> bool:
+    """True if labels refer to the same object class (handles compound labels like 'chair sofa')."""
+    if a == b:
+        return True
+    # Allow match if one label is a subset of the other (e.g. 'sofa' ⊂ 'chair sofa')
+    a_words = set(a.lower().split())
+    b_words = set(b.lower().split())
+    return bool(a_words & b_words)   # any word in common
+
+
 def tag_same_entity(detections: list[dict], img_w: int, img_h: int,
                     prev_dets: list[dict], prev_w: int, prev_h: int,
-                    pos_thresh: float = 0.15) -> None:
+                    pos_thresh: float = 0.25) -> None:
     """
     Mark each detection as same_entity=True if it matches a detection in the
-    PREVIOUS observation by label AND normalized bounding-box center distance.
-    'Same entity' means the same physical object, re-photographed from a nearby
-    angle — NOT just the same object category.
+    PREVIOUS observation by label AND either:
+      - Normalised bounding-box center is within pos_thresh (0.25), OR
+      - Normalised IoU > 0.05 (boxes overlap in the image)
+    Handles merged boxes (shifted centres) and compound labels ('chair sofa').
     """
     for det in detections:
         nc = _norm_center(det["box"], img_w, img_h)
         for pd in prev_dets:
-            if pd["label"] == det["label"]:
-                pnc = _norm_center(pd["box"], prev_w, prev_h)
-                if abs(nc[0] - pnc[0]) < pos_thresh and abs(nc[1] - pnc[1]) < pos_thresh:
-                    det["same_entity"] = True
-                    break
+            if not _label_matches(det["label"], pd["label"]):
+                continue
+            pnc = _norm_center(pd["box"], prev_w, prev_h)
+            center_ok = (abs(nc[0] - pnc[0]) < pos_thresh
+                         and abs(nc[1] - pnc[1]) < pos_thresh)
+            iou_ok = _norm_iou(det["box"], pd["box"], img_w, img_h, prev_w, prev_h) > 0.05
+            if center_ok or iou_ok:
+                det["same_entity"] = True
+                break
 
 def is_goal(label: str) -> bool:
     return any(kw in label.lower() for kw in TARGET_KEYWORDS)
@@ -248,14 +344,316 @@ def is_goal(label: str) -> bool:
 def is_similar_to_goal(label: str) -> bool:
     return any(kw in label.lower() for kw in SIMILAR_KEYWORDS)
 
+# ── NMS (deduplicate overlapping boxes) ───────────────────────────────────
+
+def _iou(a: list, b: list) -> float:
+    ix1, iy1 = max(a[0], b[0]), max(a[1], b[1])
+    ix2, iy2 = min(a[2], b[2]), min(a[3], b[3])
+    inter = max(0, ix2 - ix1) * max(0, iy2 - iy1)
+    ua = (a[2]-a[0])*(a[3]-a[1]) + (b[2]-b[0])*(b[3]-b[1]) - inter
+    return inter / ua if ua else 0.0
+
+def apply_nms(detections: list[dict], iou_thr: float = 0.50) -> list[dict]:
+    """Remove lower-confidence boxes that overlap significantly with a higher-confidence one."""
+    keep, suppressed = [], set()
+    for i, d in enumerate(detections):   # already sorted by score desc
+        if i in suppressed:
+            continue
+        keep.append(d)
+        for j in range(i + 1, len(detections)):
+            if j in suppressed:
+                continue
+            if _iou(d["box"], detections[j]["box"]) > iou_thr:
+                suppressed.add(j)
+    return keep
+
+
+def _boxes_nearby(a: list, b: list, gap_ratio: float = 0.6) -> bool:
+    """True if boxes overlap or the gap between them is small relative to their size."""
+    h_gap = max(0.0, max(a[0], b[0]) - min(a[2], b[2]))
+    v_gap = max(0.0, max(a[1], b[1]) - min(a[3], b[3]))
+    min_side = min(a[2]-a[0], a[3]-a[1], b[2]-b[0], b[3]-b[1])
+    thr = gap_ratio * min_side
+    return h_gap <= thr and v_gap <= thr
+
+
+def merge_adjacent_same_label(detections: list[dict]) -> list[dict]:
+    """
+    Merge detections of the same label whose boxes are adjacent or overlapping.
+    Keeps the highest-confidence score; bounding box becomes the union of merged boxes.
+    """
+    from collections import defaultdict
+    by_label: dict[str, list[int]] = defaultdict(list)
+    for i, d in enumerate(detections):
+        by_label[d["label"]].append(i)
+
+    used = set()
+    result = []
+
+    for label, idxs in by_label.items():
+        # Build clusters of nearby boxes (greedy single-linkage)
+        clusters: list[list[int]] = []
+        for idx in idxs:
+            merged_into = None
+            for cluster in clusters:
+                if any(_boxes_nearby(detections[idx]["box"], detections[c]["box"]) for c in cluster):
+                    cluster.append(idx)
+                    merged_into = cluster
+                    break
+            if merged_into is None:
+                clusters.append([idx])
+
+        for cluster in clusters:
+            if len(cluster) == 1:
+                result.append(detections[cluster[0]])
+            else:
+                boxes = [detections[i]["box"] for i in cluster]
+                merged_box = [
+                    min(b[0] for b in boxes), min(b[1] for b in boxes),
+                    max(b[2] for b in boxes), max(b[3] for b in boxes),
+                ]
+                best = max(cluster, key=lambda i: detections[i]["score"])
+                merged_det = dict(detections[best])
+                merged_det["box"] = [round(x, 1) for x in merged_box]
+                result.append(merged_det)
+
+    result.sort(key=lambda d: -d["score"])
+    return result
+
+
+def _nameplate_id(nameplate_text: str) -> str:
+    """
+    Extract a meaningful id from OCR nameplate text.
+    Looks for sequences of 2+ consecutive Chinese characters (name + title).
+    e.g. '陳仁暉 Ph.D. 助理教授' → '陳仁暉助理教授'
+    """
+    import re
+    segments = re.findall(r'[一-鿿]{2,}', nameplate_text)
+    if segments:
+        # Join first 1-2 segments (likely name + title), cap at 8 chars
+        return "".join(segments[:2])[:8]
+    # Fallback: strip ASCII noise
+    cleaned = re.sub(r'[A-Za-z0-9\s\.%\"\'_,\-]+', '', nameplate_text).strip()
+    return cleaned[:8]
+
+
+def assign_detection_ids(detections: list[dict]) -> None:
+    """
+    Add a unique 'id' field to each detection in-place.
+    - Doors/signs with OCR nameplate text → use that text as id (e.g. '陳仁暉教授')
+    - Single occurrences of a label keep the label as id
+    - Duplicates without nameplate text get _1, _2, ... suffix
+    """
+    from collections import Counter
+    label_count = Counter(d["label"] for d in detections)
+    label_idx: dict[str, int] = {}
+    used_ids: set[str] = set()
+
+    for d in detections:
+        lbl = d["label"]
+        nameplate = d.get("nameplate_text", "")
+
+        # Doors/nameplates with readable OCR text → use OCR as id
+        if nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS | {"sign", "plaque", "nameplate"}):
+            base_id = _nameplate_id(nameplate) or lbl   # fallback to label if no Chinese found
+            if base_id and base_id not in used_ids:
+                d["id"] = base_id
+                used_ids.add(base_id)
+                continue
+            # Fallback: nameplate text is already used → append label suffix
+            suffix = 1
+            while f"{base_id}_{suffix}" in used_ids:
+                suffix += 1
+            d["id"] = f"{base_id}_{suffix}"
+            used_ids.add(d["id"])
+            continue
+
+        # No nameplate: single label → keep as-is; duplicates → _N suffix
+        if label_count[lbl] == 1:
+            d["id"] = lbl
+        else:
+            label_idx[lbl] = label_idx.get(lbl, 0) + 1
+            d["id"] = f"{lbl}_{label_idx[lbl]}"
+        used_ids.add(d["id"])
+
+# ── OCR ──────────────────────────────────────────────────────────────────
+
+def _get_ocr_reader():
+    if not hasattr(_get_ocr_reader, "_r"):
+        import easyocr
+        print("  [OCR] 初始化 EasyOCR（首次較慢）...")
+        _get_ocr_reader._r = easyocr.Reader(["ch_tra", "en"], verbose=False)
+    return _get_ocr_reader._r
+
+def run_ocr_with_bbox(photo_path: str) -> list[tuple[list[float], str, float]]:
+    """Run EasyOCR. Returns [(xyxy_box, text, confidence), ...] sorted by conf desc."""
+    try:
+        reader = _get_ocr_reader()
+        raw = reader.readtext(str(photo_path))
+        out = []
+        for pts, text, conf in raw:
+            text = text.strip()
+            if not text or conf < 0.25:
+                continue
+            xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+            out.append(([float(min(xs)), float(min(ys)),
+                         float(max(xs)), float(max(ys))], text, float(conf)))
+        return sorted(out, key=lambda x: -x[2])
+    except Exception as e:
+        print(f"  [OCR] 失敗: {e}")
+        return []
+
+def run_ocr(photo_path: str) -> list[tuple[str, float]]:
+    """Convenience wrapper — strips bboxes."""
+    return [(t, c) for _, t, c in run_ocr_with_bbox(photo_path)]
+
+def ocr_contains_name(ocr_results: list[tuple[str, float]]) -> tuple[bool, str, float]:
+    """Check if OCR results contain the professor's name (or partial match).
+    Returns (found, matched_text, confidence)."""
+    best_text, best_conf = "", 0.0
+    for text, conf in ocr_results:
+        for part in GOAL_OCR_PARTS:
+            if part in text and conf > best_conf:
+                best_text, best_conf = text, conf
+    if best_text:
+        return True, best_text, best_conf
+    return False, "", 0.0
+
+# ── Spatial context inference ─────────────────────────────────────────────
+
+_SURFACE_KEYWORDS = {"table", "desk", "cabinet", "counter", "shelf",
+                     "sofa", "chair", "glass table", "windowsill"}
+
+def infer_spatial_context(detections: list[dict]) -> None:
+    """Add 'context' field to each detection describing what it sits on.
+    E.g. plant → 'plant (在 cabinet 上)'.
+    Modifies detections in-place."""
+    for det in detections:
+        det.setdefault("context", "")
+        lbl_lower = det["label"].lower()
+        # Surfaces don't need a context
+        if any(s in lbl_lower for s in _SURFACE_KEYWORDS):
+            continue
+        x1a, y1a, x2a, y2a = det["box"]
+        cx_a = (x1a + x2a) / 2
+        best_surface, best_overlap = None, 0.0
+        for other in detections:
+            if other is det:
+                continue
+            if not any(s in other["label"].lower() for s in _SURFACE_KEYWORDS):
+                continue
+            x1b, y1b, x2b, y2b = other["box"]
+            # A is "on" B if A's horizontal center is within B's horizontal range
+            # and A's bottom is inside or just above B
+            if not (x1b < cx_a < x2b):
+                continue
+            if not (y1b <= y2a <= y2b + (y2b - y1b) * 0.35):
+                continue
+            overlap = min(x2a, x2b) - max(x1a, x1b)
+            if overlap > best_overlap:
+                best_overlap = overlap
+                best_surface = other["label"]
+        if best_surface:
+            det["context"] = f"在{best_surface}上"
+
+# ── OCR → door spatial association ───────────────────────────────────────
+
+_DOOR_LABELS = {"door", "office door"}
+
+def associate_ocr_to_doors(detections: list[dict],
+                            ocr_with_bbox: list[tuple[list, str, float]]) -> None:
+    """
+    For each door detection, collect OCR text regions that are horizontally
+    adjacent (nameplate is mounted to the side of the door frame) AND at a
+    similar vertical level.  Adds 'nameplate_text' / 'nameplate_conf' to each
+    door detection so callers can display "door: 吳世琳 副教授" instead of "door".
+    Modifies detections in-place.
+
+    Key exclusions to avoid picking up posters/bulletin boards ON the door:
+      - OCR box whose centre is mostly INSIDE the door bbox → skip (it's on the door)
+      - OCR box wider than 50% of door width → too large to be a nameplate
+      - OCR box taller than 30% of door height → same reason
+    """
+    for det in detections:
+        det.setdefault("nameplate_text", "")
+        det.setdefault("nameplate_conf", 0.0)
+        if not any(kw in det["label"].lower() for kw in _DOOR_LABELS):
+            continue
+        dx1, dy1, dx2, dy2 = det["box"]
+        door_h = dy2 - dy1
+        door_w = dx2 - dx1
+
+        texts, best_conf = [], 0.0
+        for bbox, text, conf in ocr_with_bbox:
+            ox1, oy1, ox2, oy2 = bbox
+            ocr_w = ox2 - ox1
+            ocr_h = oy2 - oy1
+            ocr_cy = (oy1 + oy2) / 2
+
+            # ── Reject text that is ON the door (poster / bulletin board) ──
+            # If more than 50% of the OCR box overlaps with the door bbox, it's
+            # printed on the door itself, not a nameplate beside the frame.
+            overlap_x = max(0.0, min(ox2, dx2) - max(ox1, dx1))
+            overlap_y = max(0.0, min(oy2, dy2) - max(oy1, dy1))
+            overlap_ratio = (overlap_x * overlap_y) / max(ocr_w * ocr_h, 1)
+            if overlap_ratio > 0.50:
+                continue
+
+            # ── Reject oversized text boxes (posters / large signs on door) ──
+            if ocr_w > door_w * 0.50 or ocr_h > door_h * 0.30:
+                continue
+
+            # Nameplate is in the upper 70% of the door vertically
+            v_ok = dy1 <= ocr_cy <= dy1 + door_h * 0.75
+            # Horizontal gap between the two boxes (0 if they overlap horizontally)
+            h_gap = max(0.0, max(ox1 - dx2, dx1 - ox2))
+            # Within 1.5× door-width to the side — nameplates sit right beside frame
+            if h_gap < door_w * 1.5 and v_ok and conf >= 0.35:
+                texts.append(text)
+                best_conf = max(best_conf, conf)
+
+        if texts:
+            det["nameplate_text"] = " ".join(texts)
+            det["nameplate_conf"] = best_conf
+
 # ── Annotated scene image ────────────────────────────────────────────────
 
 def generate_scene_image(photo_path: str, detections: list[dict],
-                          step: int, vlm_note: str = "") -> Path:
+                          step: int, vlm_note: str = "",
+                          ocr_with_bbox: list | None = None) -> Path:
     from PIL import Image, ImageDraw
     img = Image.open(photo_path).convert("RGB")
     w, h = img.size
     draw = ImageDraw.Draw(img)
+
+    def _load_cjk_font(size: int):
+        from PIL import ImageFont
+        candidates = [
+            "/System/Library/Fonts/PingFang.ttc",
+            "/System/Library/Fonts/STHeiti Light.ttc",
+            "/System/Library/Fonts/Hiragino Sans GB.ttc",
+            "/System/Library/Fonts/STHeiti Medium.ttc",
+            "/Library/Fonts/Arial Unicode.ttf",
+        ]
+        for path in candidates:
+            try:
+                return ImageFont.truetype(path, size)
+            except Exception:
+                continue
+        return ImageFont.load_default()
+
+    # Scale proportionally to image width, using 1200px as the reference
+    # (reference image has ~14px label font at 1200px wide)
+    scale   = w / 1200
+    fs      = max(12, int(14 * scale))   # main label font (~14px at 1200px wide)
+    fs_sm   = max(10, int(11 * scale))   # OCR / banner font (~11px at 1200px wide)
+    lh      = int(fs * 1.45)
+    lh_sm   = int(fs_sm * 1.45)
+    box_lw  = max(2, int(2 * scale))     # box line width (~2px at 1200px wide)
+    char_w  = int(fs * 0.62)             # approx char width for bg rectangle
+
+    _fnt    = _load_cjk_font(fs)
+    _fnt_sm = _load_cjk_font(fs_sm)
 
     for d in detections:
         x1, y1, x2, y2 = [max(0, c) for c in d["box"]]
@@ -263,14 +661,42 @@ def generate_scene_image(photo_path: str, detections: list[dict],
         if is_goal(d["label"]):
             color = (220, 50, 50)
         elif is_similar_to_goal(d["label"]):
-            color = (255, 140, 0)    # orange — similar but not goal
+            color = (255, 140, 0)
         else:
             color = (50, 200, 80)
-        draw.rectangle([x1, y1, x2, y2], outline=color, width=4)
-        txt = f"{d['label']} {d['score']:.2f}"
-        tw = len(txt) * 7
-        draw.rectangle([x1, max(0, y1 - 22), x1 + tw, y1], fill=color)
-        draw.text((x1 + 3, max(0, y1 - 20)), txt, fill=(255, 255, 255))
+        draw.rectangle([x1, y1, x2, y2], outline=color, width=box_lw)
+
+        # Header label (unique id + confidence)
+        nameplate = d.get("nameplate_text", "")
+        hdr = f"{d.get('id', d['label'])} {d['score']:.2f}"
+        tw = len(hdr) * char_w
+        label_y0 = max(0, y1 - lh)
+        draw.rectangle([x1, label_y0, x1 + tw, y1], fill=color)
+        draw.text((x1 + int(4 * scale), label_y0 + int(3 * scale)),
+                  hdr, fill=(255, 255, 255), font=_fnt)
+
+        # Nameplate banner inside door box
+        if nameplate and any(kw in d["label"].lower() for kw in _DOOR_LABELS):
+            name_short = nameplate[:20]
+            draw.rectangle([x1 + 2, y1 + 2, x2 - 2, y1 + lh_sm + 4], fill=(0, 0, 0))
+            draw.text((x1 + int(6 * scale), y1 + int(4 * scale)),
+                      name_short, fill=(255, 255, 100), font=_fnt_sm)
+
+    # Draw OCR bounding boxes (cyan) with text + confidence
+    if ocr_with_bbox:
+        OCR_COLOR = (0, 200, 220)
+        ocr_lw = max(2, int(4 * scale))
+        for bbox, text, conf in ocr_with_bbox:
+            ox1, oy1, ox2, oy2 = [int(c) for c in bbox]
+            ox1, oy1 = max(0, ox1), max(0, oy1)
+            ox2, oy2 = min(w, ox2), min(h, oy2)
+            draw.rectangle([ox1, oy1, ox2, oy2], outline=OCR_COLOR, width=ocr_lw)
+            label_txt = f'"{text[:14]}" {conf:.0%}'
+            tw = len(label_txt) * int(fs_sm * 0.6)
+            label_y0 = max(0, oy1 - lh_sm)
+            draw.rectangle([ox1, label_y0, ox1 + tw, oy1], fill=OCR_COLOR)
+            draw.text((ox1 + int(3 * scale), label_y0 + int(2 * scale)),
+                      label_txt, fill=(0, 0, 0), font=_fnt_sm)
 
     # VLM note banner at bottom
     if vlm_note:
@@ -347,41 +773,52 @@ def render_goal_graph(step: int) -> Path:
 
 # ── Cumulative Scene Graph ────────────────────────────────────────────────
 
+def _row_h_for(n_dets: int) -> float:
+    """Dynamic row height: enough to fit n_dets nodes without overlap."""
+    NODE_H = 0.36
+    GAP    = 0.12
+    return max(2.2, n_dets * (NODE_H + GAP) + 0.5)
+
+
 def render_scene_graph(observations: list[dict], step: int,
                         corrections: list[str]) -> Path:
     fp = _cjk()
     n_obs = len(observations)
-    row_h = 2.2
-    fig_h = max(6, n_obs * row_h + 2.0)
 
-    fig, ax = plt.subplots(figsize=(14, fig_h))
+    # Dynamic per-observation row heights so nodes never overlap
+    row_heights = [_row_h_for(len(obs["detections"])) for obs in observations]
+    total_h = sum(row_heights)
+    fig_h = max(6, total_h + 2.5)
+
+    fig, ax = plt.subplots(figsize=(15, fig_h))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
-    ax.set_xlim(0, 14)
+    ax.set_xlim(0, 16)
     ax.set_ylim(0, fig_h)
     ax.axis("off")
 
-    corr_note = f"  ⚠ 用戶修正：{corrections[-1]}" if corrections else ""
+    corr_note = f"  ⚠ {corrections[-1]}" if corrections else ""
     ax.set_title(
         f"場景圖 Scene Graph — 累積至步驟 {step}{corr_note}\n"
-        f"(紅框=目標候選  橘框=相似但非目標  黃色=與前觀察點共享  虛線=跨觀察點同標籤)",
+        f"(棕=正式找到  紅=目標候選  紫=同種非目標  灰=誤判  藍=同一實體  綠=地標)",
         fontsize=10, fontweight="bold", color="#222",
         fontproperties=fp, pad=8)
 
     obs_x = 1.8
 
-    obs_y = {}
+    # Build cumulative obs_y positions from top down
+    obs_y: dict[int, float] = {}
+    y_cursor = fig_h - 1.3
     for i, obs in enumerate(observations):
-        obs_y[obs["step"]] = fig_h - 1.2 - i * row_h
+        obs_y[obs["step"]] = y_cursor
+        y_cursor -= row_heights[i]
 
-    label_sets = {obs["step"]: {d["label"] for d in obs["detections"]}
-                  for obs in observations}
-
-    node_data: list[dict] = []  # unused after arc-line removal; kept for future use
+    node_data: list[dict] = []  # reserved for future use
 
     for i, obs in enumerate(observations):
         s = obs["step"]
         y = obs_y[s]
+        rh = row_heights[i]
         is_current = (s == step)
         is_false_pos = obs.get("false_positive", False)
 
@@ -389,103 +826,229 @@ def render_scene_graph(observations: list[dict], step: int,
         ec = "#ffc107" if is_false_pos else ("#5b9bd5" if is_current else "#a0b8cc")
         lw = 2.0 if is_current else (2.0 if is_false_pos else 1.2)
 
-        box = FancyBboxPatch((obs_x - 1.3, y - 0.45), 2.6, 0.9,
+        box = FancyBboxPatch((obs_x - 1.3, y - 0.72), 2.6, 1.30,
                              boxstyle="round,pad=0.08",
                              facecolor=fc, edgecolor=ec, linewidth=lw, zorder=3)
         ax.add_patch(box)
 
-        label_txt = f"觀察點 {s}"
-        if is_false_pos:
-            label_txt += " ⚠誤判"
-        ax.text(obs_x, y + 0.1, label_txt, ha="center", va="center",
-                fontsize=9, color="#1a4a7a" if is_current else "#4a6a8a",
-                fontproperties=fp,
+        label_txt = f"觀察點 {s}" + (" ⚠誤判" if is_false_pos else "")
+        ax.text(obs_x, y + 0.30, label_txt, ha="center", va="center",
+                fontsize=9, fontproperties=fp,
+                color="#1a4a7a" if is_current else "#4a6a8a",
                 fontweight="bold" if is_current else "normal", zorder=4)
-        ax.text(obs_x, y - 0.22, obs["photo"],
+        ax.text(obs_x, y + 0.10, obs["photo"],
                 ha="center", va="center", fontsize=6.5, color="#777", zorder=4)
-        if obs.get("user_text"):
-            ax.text(obs_x, y - 0.38, f'💬 "{obs["user_text"][:28]}"',
-                    ha="center", va="center", fontsize=6, color="#a05000", zorder=4)
+
+        # User input line
+        ocr_hit = any(p in t for t in obs.get("ocr_texts", []) for p in GOAL_OCR_PARTS)
+        if ocr_hit:
+            ax.text(obs_x, y - 0.12, f"✅ OCR：{GOAL_OCR_NAME}",
+                    ha="center", va="center", fontsize=6.5,
+                    color="#155724", fontproperties=fp, zorder=4)
+        elif obs.get("user_text"):
+            ut = obs["user_text"][:22]
+            ax.text(obs_x, y - 0.12, f'💬 「{ut}」',
+                    ha="center", va="center", fontsize=6,
+                    color="#a05000", fontproperties=fp, zorder=4)
+
+        # VLM guidance — up to two lines, ~24 chars each
+        vlm = obs.get("vlm_guidance", "")
+        if vlm:
+            clean = vlm.replace("\n", " ")
+            first_sent = clean.split("。")[0]
+            L = 24
+            line1 = first_sent[:L]
+            line2 = (first_sent[L:L*2] + "…") if len(first_sent) > L else ""
+            ax.text(obs_x, y - 0.40, f'🤖 {line1}',
+                    ha="center", va="center", fontsize=5.5,
+                    color="#444", fontproperties=fp, zorder=4)
+            if line2:
+                ax.text(obs_x, y - 0.58, f'   {line2}',
+                        ha="center", va="center", fontsize=5.5,
+                        color="#444", fontproperties=fp, zorder=4)
 
         if i < n_obs - 1:
-            ny = obs_y[observations[i+1]["step"]]
-            ax.annotate("", xy=(obs_x, ny + 0.47),
-                        xytext=(obs_x, y - 0.47),
+            ny = obs_y[observations[i + 1]["step"]]
+            ax.annotate("", xy=(obs_x, ny + 0.72),
+                        xytext=(obs_x, y - 0.72),
                         arrowprops=dict(arrowstyle="->", color="#7a9fc0", lw=1.3))
 
         # Object nodes
+        # LEFT side  (x≈5) = history; RIGHT side (x≈12) = current step only
         dets = obs["detections"]
         if not dets:
             continue
 
-        ox = 9.5 if is_current else 6.2
-        spacing = row_h / (len(dets) + 1)
-        obs_img_size = obs.get("img_size", [4032, 3024])
+        ox     = 12.5 if is_current else 5.0
+        n      = len(dets)
+        spacing = rh / (n + 1)
+        node_h = min(0.36 if is_current else 0.26, spacing - 0.08)
+        node_w = 4.5 if is_current else 2.8
+        fs     = 8.5 if is_current else 6.0
 
         for j, det in enumerate(dets):
-            lbl = det["label"]
-            score = det["score"]
-            dy = y + row_h/2 - spacing * (j + 1)
+            lbl         = det["label"]
+            uid         = det.get("id", lbl)   # unique id
+            ctx         = det.get("context", "")
+            score       = det["score"]
+            dy          = y + rh / 2 - spacing * (j + 1)
             same_entity = det.get("same_entity", False)
 
-            if is_goal(lbl):
-                if obs.get("false_positive"):
-                    fc2, ec2, tc = "#ffe0b2", "#ff6d00", "#bf360c"
-                    tag = "⚠️❌"
-                else:
-                    fc2, ec2, tc = "#f8d7da", "#dc3545", "#721c24"
-                    tag = "🎯"
-            elif is_similar_to_goal(lbl):
-                fc2, ec2, tc = "#ffe0b2", "#ff9800", "#7f4400"
-                tag = "⚠"
+            nameplate = det.get("nameplate_text", "")
+            if nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS):
+                display_lbl = f"{uid}:「{nameplate[:12]}」"
+            elif ctx:
+                display_lbl = f"{uid} ({ctx})"
+            else:
+                display_lbl = uid
+
+            lbl_for_color = lbl
+            if (nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS)
+                    and any(p in nameplate for p in GOAL_OCR_PARTS)):
+                lbl_for_color = "nameplate"
+
+            # ── Node colour by confirmed state ──────────────────────────
+            # Brown  : 正式找到，導航結束
+            # Gray   : 誤判（使用者確認與目標完全無關）
+            # Purple : 同種非目標（使用者確認是同類但非目標）
+            # Red    : 目標候選（尚待確認）
+            # Blue   : 🔗 同一實體（跨步追蹤）
+            # Green  : 一般地標
+            if obs.get("arrived_here"):
+                fc2, ec2, tc = "#d7ccc8", "#6d4c41", "#3e2723"   # brown
+                tag = "✅"
+            elif obs.get("false_positive"):
+                fc2, ec2, tc = "#eeeeee", "#757575", "#424242"   # gray — 誤判
+                tag = "❌"
+            elif obs.get("wrong_instance"):
+                fc2, ec2, tc = "#e8d5f5", "#7b1fa2", "#4a0072"  # purple — 同種非目標
+                tag = "↩"
+            elif is_goal(lbl_for_color):
+                fc2, ec2, tc = "#f8d7da", "#dc3545", "#721c24"   # red — 目標候選
+                tag = "🎯"
             elif same_entity:
-                # Same physical object: same label + bbox center close to previous step
-                fc2, ec2, tc = "#cce5ff", "#004085", "#003060"
+                fc2, ec2, tc = "#cce5ff", "#004085", "#003060"   # blue — 同一實體
                 tag = "🔗"
             else:
-                fc2, ec2, tc = "#d4edda", "#28a745", "#155724"
+                fc2, ec2, tc = "#d4edda", "#28a745", "#155724"   # green — 地標
                 tag = ""
 
-            node_w = 4.6 if is_current else 3.2
-            node_h = 0.38 if is_current else 0.28
-
-            nb = FancyBboxPatch((ox - node_w/2, dy - node_h/2), node_w, node_h,
-                                boxstyle="round,pad=0.06",
+            nb = FancyBboxPatch((ox - node_w / 2, dy - node_h / 2), node_w, node_h,
+                                boxstyle="round,pad=0.05",
                                 facecolor=fc2, edgecolor=ec2,
-                                linewidth=1.5 if is_current else 0.8,
-                                alpha=1.0 if is_current else 0.55, zorder=2)
+                                linewidth=1.4 if is_current else 0.8,
+                                alpha=1.0 if is_current else 0.6, zorder=2)
             ax.add_patch(nb)
-            fs = 8.5 if is_current else 6.5
-            ax.text(ox, dy + 0.04, f"{tag} {lbl}",
-                    ha="center", va="center", fontsize=fs, color=tc, zorder=3)
-            ax.text(ox, dy - 0.14, f"conf: {score:.3f}",
-                    ha="center", va="center", fontsize=fs - 1.5, color="#999", zorder=3)
 
-            ax.annotate("", xy=(ox - node_w/2, dy),
+            label_y = dy + node_h * 0.18
+            conf_y  = dy - node_h * 0.22
+            ax.text(ox, label_y, f"{tag} {display_lbl}",
+                    ha="center", va="center", fontsize=fs,
+                    color=tc, fontproperties=fp, zorder=3)
+            ax.text(ox, conf_y, f"conf: {score:.3f}",
+                    ha="center", va="center", fontsize=fs - 1.5,
+                    color="#999", zorder=3)
+
+            # Arrow: obs node → object node
+            edge_color = "#5b9bd5" if is_current else "#ccc"
+            edge_lw    = 0.9 if is_current else 0.4
+            ax.annotate("", xy=(ox - node_w / 2, dy),
                         xytext=(obs_x + 1.3, y),
-                        arrowprops=dict(arrowstyle="->",
-                                        color="#5b9bd5" if is_current else "#ccc",
-                                        lw=1.0 if is_current else 0.5))
+                        arrowprops=dict(arrowstyle="->", color=edge_color, lw=edge_lw))
+
+            # "mentioned_or_visible" label only on current step's edges
             if is_current:
-                mx = (obs_x + 1.3 + ox - node_w/2) / 2
-                ax.text(mx, (y + dy)/2 + 0.07, "mentioned_or_visible",
-                        fontsize=5.5, color="#bbb", ha="center")
+                mid_x = (obs_x + 1.3 + ox - node_w / 2) / 2
+                mid_y = (y + dy) / 2
+                ax.text(mid_x, mid_y, "mentioned_or_visible",
+                        ha="center", va="center", fontsize=5.0,
+                        color="#5b9bd5", alpha=0.75, zorder=3)
 
-            node_data.append({
-                "label": lbl, "obs_idx": i, "step": s,
-                "box": det["box"], "img_size": obs_img_size,
-                "x": ox, "y": dy,
-            })
+            node_data.append({"label": lbl, "step": s, "x": ox, "y": dy,
+                               "node_w": node_w, "surface": ctx})
 
+    # ── Cross-step same-entity edges ─────────────────────────────────────
+    # All arcs start from RIGHT edge of the source node so they never
+    # overlap with the obs→node arrows (which land on LEFT edges).
+    for i, obs in enumerate(observations[1:], 1):
+        prev_step_n = observations[i - 1]["step"]
+        curr_step_n = obs["step"]
+        is_curr     = (curr_step_n == step)
+        for det in obs["detections"]:
+            if not det.get("same_entity"):
+                continue
+            prev_n = next((n for n in node_data
+                           if n["step"] == prev_step_n
+                           and n["label"] == det["label"]), None)
+            curr_n = next((n for n in node_data
+                           if n["step"] == curr_step_n
+                           and n["label"] == det["label"]), None)
+            if not (prev_n and curr_n):
+                continue
+
+            # Start: RIGHT edge of previous node (avoids obs→node arrow collision)
+            sx = prev_n["x"] + prev_n["node_w"] / 2
+            sy = prev_n["y"]
+
+            if is_curr:
+                # Cross-column: land on LEFT edge of current (right-column) node
+                ex = curr_n["x"] - curr_n["node_w"] / 2
+                ey = curr_n["y"]
+                cs = "arc3,rad=-0.2"
+            else:
+                # Same column: land on RIGHT edge of next non-current node
+                ex = curr_n["x"] + curr_n["node_w"] / 2
+                ey = curr_n["y"]
+                cs = "arc3,rad=0.4"
+
+            ax.annotate("",
+                xy=(ex, ey), xytext=(sx, sy),
+                arrowprops=dict(arrowstyle="->", color="#004085", lw=0.9,
+                                linestyle="dashed", alpha=0.55,
+                                connectionstyle=cs),
+                zorder=1)
+
+    # ── Spatial edges "在…上": arcs on RIGHT side of current step nodes ──
+    curr_obs_obj = next((o for o in observations if o["step"] == step), None)
+    if curr_obs_obj:
+        for det in curr_obs_obj["detections"]:
+            ctx = det.get("context", "")
+            if not ctx:
+                continue
+            surface_lbl = ctx.replace("在", "").replace("上", "").strip()
+            curr_n = next((n for n in node_data
+                           if n["step"] == step and n["label"] == det["label"]), None)
+            surf_n = next((n for n in node_data
+                           if n["step"] == step
+                           and surface_lbl in n["label"].lower()), None)
+            if curr_n and surf_n:
+                ax.annotate("",
+                    xy=(surf_n["x"] + surf_n["node_w"] / 2, surf_n["y"]),
+                    xytext=(curr_n["x"] + curr_n["node_w"] / 2, curr_n["y"]),
+                    arrowprops=dict(arrowstyle="->", color="#1a7a40", lw=0.8,
+                                    linestyle="dotted", alpha=0.65,
+                                    connectionstyle="arc3,rad=0.4"),
+                    zorder=1)
+                mid_x = max(curr_n["x"], surf_n["x"]) + curr_n["node_w"] / 2 + 0.3
+                mid_y = (curr_n["y"] + surf_n["y"]) / 2
+                ax.text(mid_x, mid_y, "在…上", fontsize=5.5,
+                        color="#1a7a40", ha="left", va="center",
+                        fontproperties=fp, zorder=2)
+
+    from matplotlib.lines import Line2D
     legend_items = [
-        mpatches.Patch(facecolor="#f8d7da", edgecolor="#dc3545", label="🎯 目標候選"),
-        mpatches.Patch(facecolor="#ffe0b2", edgecolor="#ff9800", label="⚠ 相似但非目標（如飲水機）"),
-        mpatches.Patch(facecolor="#cce5ff", edgecolor="#004085",
-                       label="🔗 同一物品（同標籤＋位置相符，同一實體）"),
-        mpatches.Patch(facecolor="#d4edda", edgecolor="#28a745", label="新偵測物件"),
-        mpatches.Patch(facecolor="#ffeeba", edgecolor="#ffc107", label="⚠ 誤判觀察點"),
+        mpatches.Patch(facecolor="#d7ccc8", edgecolor="#6d4c41", label="✅ 正式找到（導航結束）"),
+        mpatches.Patch(facecolor="#f8d7da", edgecolor="#dc3545", label="🎯 目標候選（待確認）"),
+        mpatches.Patch(facecolor="#e8d5f5", edgecolor="#7b1fa2", label="↩ 同種非目標（用戶確認）"),
+        mpatches.Patch(facecolor="#eeeeee", edgecolor="#757575", label="❌ 誤判（與目標完全無關）"),
+        mpatches.Patch(facecolor="#cce5ff", edgecolor="#004085", label="🔗 同一實體（跨步追蹤）"),
+        mpatches.Patch(facecolor="#d4edda", edgecolor="#28a745", label="地標物件"),
+        Line2D([0], [0], color="#004085", lw=1.2, linestyle="dashed",
+               label="- - 跨步同一實體追蹤"),
+        Line2D([0], [0], color="#1a7a40", lw=1.0, linestyle="dotted",
+               label="··· 空間關係（在…上）"),
     ]
-    ax.legend(handles=legend_items, loc="lower right", fontsize=7,
+    ax.legend(handles=legend_items, loc="lower right", fontsize=7.5,
               facecolor="white", edgecolor="#ccc", prop=fp)
 
     out = OUTPUT_DIR / f"step{step:02d}_scene_graph.png"
@@ -499,31 +1062,49 @@ def render_scene_graph(observations: list[dict], step: int,
 
 # ── Console table ─────────────────────────────────────────────────────────
 
-def print_table(photo: str, detections: list[dict], prev_labels: set) -> None:
-    print(f"\n{'─'*65}")
+def print_table(photo: str, detections: list[dict], prev_labels: set,
+                ocr_results: list[tuple[str, float]] | None = None) -> None:
+    print(f"\n{'─'*72}")
     print(f"  📷  {photo}")
-    print(f"{'─'*65}")
+    print(f"{'─'*72}")
     if not detections:
         print("  ⚠  No objects detected")
-        return
-    print(f"  {'#':<3} {'Label':<30} {'Conf':>6}  Entity  Type")
-    print(f"  {'─'*3} {'─'*30} {'─'*6}  {'─'*6}  {'─'*22}")
-    for i, d in enumerate(detections, 1):
-        lbl = d["label"]
-        if d.get("same_entity"):
-            sh = "🔗同一"   # same physical object (label + position match)
-        elif lbl in prev_labels:
-            sh = "↔同類"    # same category only, different position
+    else:
+        print(f"  {'#':<3} {'Label + 位置描述':<38} {'Conf':>6}  Entity  Type")
+        print(f"  {'─'*3} {'─'*38} {'─'*6}  {'─'*6}  {'─'*22}")
+        for i, d in enumerate(detections, 1):
+            uid = d.get("id", d["label"])   # unique id (e.g. door_1, door_2)
+            lbl = d["label"]
+            ctx = d.get("context", "")
+            display_lbl = f"{uid} ({ctx})" if ctx else uid
+            if d.get("same_entity"):
+                sh = "🔗同一"
+            elif lbl in prev_labels:
+                sh = "↔同類"
+            else:
+                sh = "     "
+            if is_goal(lbl):
+                tag = "🎯 目標候選"
+            else:
+                tag = "   地標"
+            print(f"  {i:<3} {display_lbl:<38} {d['score']:>6.3f}  {sh}  {tag}")
+            if d.get("nameplate_text") and any(kw in lbl.lower() for kw in _DOOR_LABELS):
+                name_hit = any(p in d["nameplate_text"] for p in GOAL_OCR_PARTS)
+                marker = "  ⭐ 目標！" if name_hit else ""
+                print(f"       └ 門旁文字：「{d['nameplate_text']}」"
+                      f"(conf={d.get('nameplate_conf', 0):.2f}){marker}")
+    # OCR results section
+    if ocr_results is not None:
+        print(f"  {'─'*70}")
+        print(f"  🔤 OCR 文字辨識：")
+        if ocr_results:
+            for text, conf in ocr_results[:8]:
+                name_hit = any(p in text for p in GOAL_OCR_PARTS)
+                marker = "  ✅ 名字符合！" if name_hit else ""
+                print(f"     「{text}」  conf={conf:.2f}{marker}")
         else:
-            sh = "     "
-        if is_goal(lbl):
-            tag = "🎯 TARGET CANDIDATE"
-        elif is_similar_to_goal(lbl):
-            tag = "⚠  similar (verify!)"
-        else:
-            tag = "   landmark"
-        print(f"  {i:<3} {lbl:<30} {d['score']:>6.3f}  {sh}  {tag}")
-    print(f"{'─'*65}")
+            print("     （未讀到文字）")
+    print(f"{'─'*72}")
 
 # ── Backtrack check ───────────────────────────────────────────────────────
 
@@ -539,15 +1120,34 @@ def check_backtrack(state: dict, current_dets: list[dict]) -> str | None:
                 f"   建議折返至步驟 {hist_step} 重新確認。")
     return None
 
+# ── Terminal input helper ─────────────────────────────────────────────────
+
+def _ask_user(prompt_text: str) -> str:
+    """Read a line from the terminal even when stdin is redirected (batch/pipe mode).
+    Falls back to empty string only if no terminal is available at all."""
+    try:
+        if sys.stdin.isatty():
+            return input(prompt_text).strip().lower()
+        # stdin is piped or redirected — open the controlling terminal directly
+        with open("/dev/tty") as tty:
+            sys.stdout.write(prompt_text)
+            sys.stdout.flush()
+            return tty.readline().strip().lower()
+    except (EOFError, OSError, KeyboardInterrupt):
+        return ""
+
 # ── Main ─────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--photo", help="Path to the photo for this step")
     parser.add_argument("--text", default="", help="Text description / question from user")
+    parser.add_argument("--goal", default="", help="Navigation goal, e.g. '電腦' or '冰箱'")
     parser.add_argument("--reset", action="store_true")
     parser.add_argument("--correct", action="store_true",
-                        help="Mark last ARRIVED as wrong and continue searching")
+                        help="Mark last ARRIVED as wrong. Add --same if same type but wrong instance.")
+    parser.add_argument("--same", action="store_true",
+                        help="Used with --correct: same type of object but wrong specific one")
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -561,6 +1161,14 @@ def main():
 
     state = load_session()
 
+    # ── Setup goal (from --goal arg, or restore from saved session) ────
+    goal_text = args.goal or state.get("goal", "")
+    if not goal_text:
+        print("❌ 請用 --goal 指定導航目標，例如：--goal 電腦")
+        return
+    setup_goal(goal_text)
+    state["goal"] = goal_text  # persist so --correct doesn't need --goal
+
     # ── Correct: reject last ARRIVED ───────────────────────────────────
     if args.correct:
         if not state.get("arrived"):
@@ -568,19 +1176,39 @@ def main():
             return
         state["arrived"] = False
         last_arrived_step = state.get("best_goal_step")
-        if last_arrived_step is not None:
-            state["false_positives"].append(last_arrived_step)
+
+        if args.same:
+            # Purple: 同種非目標 — right category, wrong instance
             for obs in state["observations"]:
                 if obs["step"] == last_arrived_step:
-                    obs["false_positive"] = True
-        correction_msg = f"步驟 {last_arrived_step} 的目標宣告是誤判，繼續搜索 {GOAL_TARGET}"
-        state["corrections"].append(correction_msg)
-        state["best_goal_score"] = 0.0
-        state["best_goal_step"] = None
-        save_session(state)
-        print(f"✅ 已標記步驟 {last_arrived_step} 為誤判（飲水機等非目標物）。")
-        print(f"   繼續搜索：請提供下一張照片。")
-        # Re-render scene graph to show false positive marking
+                    obs["wrong_instance"] = True
+                    obs["arrived_here"] = False
+            correction_msg = (f"步驟 {last_arrived_step}：是同種目標（{GOAL_TARGET}），"
+                              f"但不是要找的那個，繼續搜索")
+            state["corrections"].append(correction_msg)
+            state["best_goal_score"] = 0.0
+            state["best_goal_step"] = None
+            state["best_ocr_found"] = False
+            save_session(state)
+            print(f"✅ 了解，是同種（{GOAL_TARGET}）但非目標。場景圖標為紫色。")
+            print(f"   請提供下一張照片。")
+        else:
+            # Gray: 誤判 — completely unrelated to the goal
+            if last_arrived_step is not None:
+                state["false_positives"].append(last_arrived_step)
+                for obs in state["observations"]:
+                    if obs["step"] == last_arrived_step:
+                        obs["false_positive"] = True
+                        obs["arrived_here"] = False
+            correction_msg = f"步驟 {last_arrived_step} 的目標宣告是誤判（與目標完全無關），繼續搜索 {GOAL_TARGET}"
+            state["corrections"].append(correction_msg)
+            state["best_goal_score"] = 0.0
+            state["best_goal_step"] = None
+            state["best_ocr_found"] = False
+            save_session(state)
+            print(f"✅ 已標記步驟 {last_arrived_step} 為誤判（完全無關）。場景圖標為灰色。")
+            print(f"   繼續搜索：請提供下一張照片。")
+
         if state["observations"]:
             sg = render_scene_graph(state["observations"],
                                     state["step"], state["corrections"])
@@ -623,30 +1251,53 @@ def main():
     with _PIL.open(photo_path) as _im:
         img_w, img_h = _im.size
     detections = run_detection(str(photo_path))
+    before_nms = len(detections)
+    detections = apply_nms(detections, iou_thr=0.50)
+    detections = merge_adjacent_same_label(detections)
+    after_merge = len(detections)
+    if before_nms != after_merge:
+        print(f"    NMS+Merge: {before_nms} → {after_merge} 個框")
     if prev_obs:
         pw, ph = prev_obs.get("img_size", [4032, 3024])
         tag_same_entity(detections, img_w, img_h,
                         prev_obs["detections"], pw, ph)
-    print_table(photo_name, detections, prev_labels)
+    infer_spatial_context(detections)
 
-    # 2. VLM: navigation guidance (if user provided text)
+    # 2. OCR — run first, then associate to doors, then assign ids
+    print(f"\n[2] EasyOCR 文字辨識...")
+    ocr_with_bbox = run_ocr_with_bbox(str(photo_path))
+    ocr_results = [(t, c) for _, t, c in ocr_with_bbox]
+    ocr_texts = [t for t, _ in ocr_results]
+    print(f"    讀到 {len(ocr_results)} 段文字")
+    associate_ocr_to_doors(detections, ocr_with_bbox)
+    assign_detection_ids(detections)   # after OCR so nameplate_text is available
+
+    ocr_name_found, ocr_matched_text, ocr_name_conf = ocr_contains_name(ocr_results)
+    if ocr_name_found:
+        print(f"    ✅ OCR 發現名字符合：「{ocr_matched_text}」（conf={ocr_name_conf:.2f}）")
+
+    print_table(photo_name, detections, prev_labels, ocr_results)
+
+    # 3. VLM: navigation guidance (if user provided text)
     vlm_guidance = ""
     if user_text:
-        print(f"\n[2] VLM 導航指引（根據照片 + 用戶文字）...")
+        print(f"\n[3] VLM 導航指引（根據照片 + 用戶文字 + OCR）...")
         vlm_guidance = ask_navigation_guidance(
-            str(photo_path), detections, prev_dets, user_text, step, state)
+            str(photo_path), detections, prev_dets, user_text, step, state,
+            ocr_texts=ocr_texts)
         print(f"\n  💬 VLM 回應：\n  {vlm_guidance}\n")
     else:
-        print(f"\n[2] 未輸入文字，跳過 VLM 導航指引。")
+        print(f"\n[3] 未輸入文字，跳過 VLM 導航指引。")
 
-    # 3. Annotated scene image
-    print(f"\n[3] 生成標注圖像...")
+    # 4. Annotated scene image
+    print(f"\n[4] 生成標注圖像...")
     vlm_note = vlm_guidance[:80] if vlm_guidance else ""
-    scene_path = generate_scene_image(str(photo_path), detections, step, vlm_note)
+    scene_path = generate_scene_image(str(photo_path), detections, step, vlm_note,
+                                       ocr_with_bbox=ocr_with_bbox)
     print(f"    → {scene_path}")
 
-    # 4. Goal graph
-    print(f"\n[4] 渲染目標圖...")
+    # 5. Goal graph
+    print(f"\n[5] 渲染目標圖...")
     goal_path = render_goal_graph(step)
     print(f"    → {goal_path}")
 
@@ -655,76 +1306,128 @@ def main():
         "step": step,
         "photo": photo_name,
         "detections": detections,
+        "ocr_texts": ocr_texts,
         "user_text": user_text,
         "vlm_guidance": vlm_guidance,
         "false_positive": False,
+        "wrong_instance": False,
+        "arrived_here": False,
         "img_size": [img_w, img_h],
     }
     state["observations"].append(obs_record)
 
-    # best_goal_score is updated AFTER VLM verification (see below) so denied
-    # detections don't trigger false backtrack hints.
-
-    # 5. Scene graph
-    print(f"\n[5] 渲染累積場景圖（{step} 個觀察點）...")
+    # 6. Scene graph
+    print(f"\n[6] 渲染累積場景圖（{step} 個觀察點）...")
     sg_path = render_scene_graph(state["observations"], step, state.get("corrections", []))
     print(f"    → {sg_path}")
 
     save_session(state)
 
-    # 6. Goal detection + VLM verification
+    # 7. ARRIVED decision
+    # Primary: OCR found the professor's name at sufficient confidence
+    # Secondary: GroundingDINO detected a nameplate/sign (informational VLM check)
     goal_dets = [d for d in detections if is_goal(d["label"])]
-    vlm_verified = False
     vlm_verify_msg = ""
+
+    # Check if any door has the target name in its associated nameplate text
+    door_with_target = next(
+        (d for d in detections
+         if any(kw in d["label"].lower() for kw in _DOOR_LABELS)
+         and any(p in d.get("nameplate_text", "") for p in GOAL_OCR_PARTS)
+         and d.get("nameplate_conf", 0) >= OCR_ARRIVE_CONF),
+        None
+    )
+    if door_with_target and not ocr_name_found:
+        # Treat door-linked match same as global OCR match
+        ocr_name_found = True
+        ocr_matched_text = door_with_target["nameplate_text"]
+        ocr_name_conf = door_with_target["nameplate_conf"]
+        print(f"    ✅ 門牌綁定發現名字：「{ocr_matched_text}」→ 「{door_with_target['label']}」旁")
 
     print(f"\n{'='*65}")
     print(f"  STEP {step} 結果")
 
-    if goal_dets:
+    # Summarise what was detected
+    if ocr_name_found and ocr_name_conf >= OCR_ARRIVE_CONF:
+        print(f"  ✅ OCR 主要訊號：找到「{ocr_matched_text}」(conf={ocr_name_conf:.2f})")
+        if goal_dets:
+            best = max(goal_dets, key=lambda d: d["score"])
+            print(f"  🎯 GroundingDINO 補充：{best['label']} conf={best['score']:.3f}")
+    elif goal_dets:
         best = max(goal_dets, key=lambda d: d["score"])
-        print(f"  🎯 目標偵測：{best['label']} @ conf {best['score']:.3f}")
-
-        # VLM verification is informational only — shown to user but does NOT block ARRIVED.
-        # If the detection is wrong, user runs --correct.
-        if best["score"] >= VERIFY_THRESHOLD:
-            print(f"\n[6] VLM 參考驗證（不影響判定）...")
-            vlm_verified, verify_resp = verify_goal_with_vlm(
-                str(photo_path), best["box"], GOAL_TARGET)
-            vlm_verify_msg = verify_resp
-            verdict = "✅ VLM 參考：看起來是冰箱類設備" if vlm_verified else f"⚠ VLM 參考：{verify_resp[:80]}"
-            print(f"  {verdict}")
-
+        print(f"  🎯 GroundingDINO 偵測到：{best['label']} conf={best['score']:.3f}")
+        if ocr_name_found:
+            print(f"  ✅ OCR 補充：「{ocr_matched_text}」(conf={ocr_name_conf:.2f})")
     else:
-        print(f"  目標偵測：❌ 未偵測到 {GOAL_TARGET}")
+        print(f"  目標偵測：❌ 未偵測到「{GOAL_TARGET}」，OCR 亦無相關文字")
 
     shared = {d["label"] for d in detections} & prev_labels
     if shared:
         print(f"  與上步共享物件：{', '.join(sorted(shared))}")
 
     backtrack = check_backtrack(state, detections)
-
     print(f"{'='*65}")
 
-    # Update best_goal_score for any goal detection (VLM is informational only).
+    # Update best_goal_score for backtrack hints
     false_pos_steps = set(state.get("false_positives", []))
     if step not in false_pos_steps:
-        for d in detections:
-            if is_goal(d["label"]) and d["score"] > state.get("best_goal_score", 0.0):
-                state["best_goal_score"] = d["score"]
+        if ocr_name_found and ocr_name_conf > state.get("best_goal_score", 0.0):
+            state["best_goal_score"] = ocr_name_conf
+            state["best_goal_step"] = step
+            state["best_ocr_found"] = True
+        elif goal_dets:
+            best_s = max(d["score"] for d in goal_dets)
+            if best_s > state.get("best_goal_score", 0.0) and not state.get("best_ocr_found"):
+                state["best_goal_score"] = best_s
                 state["best_goal_step"] = step
 
-    # Decision: GroundingDINO score is the gate for ARRIVED.
-    # VLM verification is informational only. User runs --correct to reject.
-    if goal_dets and max(d["score"] for d in goal_dets) >= ARRIVE_THRESHOLD:
-        best = max(goal_dets, key=lambda d: d["score"])
-        print(f"\n🏁 早停 ARRIVED：{best['label']} conf={best['score']:.3f}")
-        print(f"   如果認為是誤判，請執行：\n   python navigate_one_by_one.py --correct")
-        state["arrived"] = True
-        save_session(state)
+    # ── Interactive confirmation whenever ANY goal candidate is detected ──
+    need_confirm = bool(goal_dets) or (ocr_name_found and ocr_name_conf >= OCR_ARRIVE_CONF)
+
+    if need_confirm:
+        best_det = max(goal_dets, key=lambda d: d["score"]) if goal_dets else None
+        print(f"\n❓ 偵測到可能是「{GOAL_TARGET}」的物品：")
+        if best_det:
+            print(f"   • {best_det['label']}  conf={best_det['score']:.3f}")
+        if ocr_name_found:
+            print(f"   • OCR：「{ocr_matched_text}」 (conf={ocr_name_conf:.2f})")
+        print(f"\n   [y] 是的，這就是我要找的！（導航完成）")
+        print(f"   [s] 是同種物品，但不是要找的那個")
+        print(f"   [n] 跟目標完全無關（誤判）")
+        print(f"   [Enter] 跳過，繼續導航")
+        answer = _ask_user("   你的選擇: ")
+
+        if answer == "y":
+            obs_record["arrived_here"] = True
+            state["arrived"] = True
+            save_session(state)
+            print(f"\n🏁 ✅ 導航完成！已找到「{GOAL_TARGET}」")
+        elif answer == "s":
+            obs_record["wrong_instance"] = True
+            state["corrections"].append(
+                f"步驟 {step}：是同種目標（{GOAL_TARGET}），但不是要找的那個，繼續搜索")
+            state["best_goal_score"] = 0.0
+            state["best_goal_step"] = None
+            save_session(state)
+            print(f"↩ 了解，標記為紫色（同種非目標），繼續搜索。")
+        elif answer == "n":
+            obs_record["false_positive"] = True
+            state["false_positives"].append(step)
+            state["corrections"].append(
+                f"步驟 {step} 的偵測是誤判（與目標完全無關），繼續搜索 {GOAL_TARGET}")
+            state["best_goal_score"] = 0.0
+            state["best_goal_step"] = None
+            save_session(state)
+            print(f"❌ 了解，標記為灰色（誤判），繼續搜索。")
+        else:
+            save_session(state)
+            print(f"⏭ 跳過，繼續導航。")
     elif backtrack:
         print(f"\n{backtrack}")
+        save_session(state)
     else:
-        print(f"\n  ➡  目標未找到，繼續前進。")
+        print(f"\n  ➡  未找到「{GOAL_TARGET}」，繼續前進。")
+        save_session(state)
 
     for p in [scene_path, goal_path, sg_path]:
         subprocess.Popen(["open", str(p)])

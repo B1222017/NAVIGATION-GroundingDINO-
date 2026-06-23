@@ -28,16 +28,46 @@ log = logging.getLogger(__name__)
 
 # ── Defaults ────────────────────────────────────────────────────────────
 DEFAULT_PHOTO_DIR = os.path.expanduser("~/Desktop/output_jpg/系辦")
-DEFAULT_GOAL      = "find office"
+DEFAULT_GOAL      = "電腦"
 DEFAULT_CLASSES   = [
     "door", "cabinet", "chair", "table", "desk", "sofa",
     "sign", "fire extinguisher", "plant", "printer",
     "whiteboard", "monitor", "computer", "bookshelf", "window",
     "counter", "reception", "bulletin board", "notice board",
+    # environment additions
+    "refrigerator", "water dispenser", "shelf", "trash can", "poster",
 ]
 OUTPUT_JSON    = "detections_incremental.json"
 OUTPUT_MAP_DIR = "topomap_step"
 SIM_THRESHOLD  = 0.25
+
+# Goal → extra detection classes (Chinese & English variants)
+GOAL_CLASS_MAP: dict[str, list[str]] = {
+    "電腦": [
+        "電腦", "桌上型電腦", "筆記型電腦", "螢幕", "鍵盤", "滑鼠",
+        "computer", "laptop", "desktop computer", "monitor", "keyboard", "mouse", "screen",
+    ],
+    "辦公室": [
+        "辦公室", "教師辦公室", "辦公區域", "房間門", "房間標牌",
+        "指示牌", "接待區", "辦公桌", "走廊", "nameplate", "office door",
+    ],
+    "冰箱": ["冰箱", "refrigerator", "fridge", "冷藏"],
+    "印表機": ["印表機", "printer", "laser printer"],
+    "飲水機": ["飲水機", "water dispenser", "water cooler"],
+}
+
+
+def goal_to_classes(goal: str) -> list[str]:
+    """Return extra detection classes relevant to the given goal string."""
+    extra: list[str] = []
+    goal_lower = goal.lower()
+    for key, classes in GOAL_CLASS_MAP.items():
+        if key in goal or key.lower() in goal_lower:
+            extra.extend(classes)
+    # Always include the raw goal text itself as a class
+    if goal not in extra:
+        extra.append(goal)
+    return extra
 
 
 # ── Photo discovery ─────────────────────────────────────────────────────
@@ -137,6 +167,9 @@ def main():
     )
     parser.add_argument("--photo-dir", default=DEFAULT_PHOTO_DIR,
                         help=f"Folder with photos (default: {DEFAULT_PHOTO_DIR})")
+    parser.add_argument("--photos", default="",
+                        help="Comma-separated photo filenames to process (e.g. IMG_1433.jpg,IMG_1435.jpg). "
+                             "If omitted, all photos in --photo-dir are used.")
     parser.add_argument("--goal", default=DEFAULT_GOAL,
                         help=f"Navigation goal (default: '{DEFAULT_GOAL}')")
     parser.add_argument("--output-json", default=OUTPUT_JSON,
@@ -165,12 +198,30 @@ def main():
     map_dir = Path(args.map_dir)
     map_dir.mkdir(exist_ok=True)
 
+    # Build combined class list: base + goal-specific
+    goal_classes = goal_to_classes(args.goal)
+    detect_classes = DEFAULT_CLASSES + [c for c in goal_classes if c not in DEFAULT_CLASSES]
+    log.info("Detection classes (%d): %s", len(detect_classes), ", ".join(detect_classes))
+
     # Discover photos
     photos = find_photos(str(photo_dir))
     if not photos:
         log.error("No images found in %s", photo_dir)
         sys.exit(1)
-    log.info("Found %d photos in %s", len(photos), photo_dir)
+
+    # Filter to specific filenames if --photos is given
+    if args.photos:
+        names = {n.strip() for n in args.photos.split(",") if n.strip()}
+        # Accept with or without .jpg extension
+        def _match(p: Path) -> bool:
+            return p.name in names or p.stem in names
+        photos = [p for p in photos if _match(p)]
+        if not photos:
+            log.error("None of the specified photos found in %s: %s", photo_dir, args.photos)
+            sys.exit(1)
+        log.info("Processing %d specified photos: %s", len(photos), [p.name for p in photos])
+    else:
+        log.info("Found %d photos in %s", len(photos), photo_dir)
 
     # Load existing state (for --resume)
     state = load_state(args.output_json)
@@ -193,7 +244,7 @@ def main():
             continue
 
         log.info("[%d/%d] ── Detecting: %s", i, len(photos), filename)
-        objects = detect_photo(perception, photo_path, DEFAULT_CLASSES)
+        objects = detect_photo(perception, photo_path, detect_classes)
 
         if objects:
             labels = ", ".join(f"{o['label']}({o['score']})" for o in objects)

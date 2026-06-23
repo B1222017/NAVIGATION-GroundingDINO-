@@ -30,7 +30,7 @@ SERVER_PORT = int(os.environ.get("SERVER_PORT", "8000"))
 # Detection thresholds
 GROUNDINGDINO_BOX_THRESHOLD = 0.30
 GROUNDINGDINO_TEXT_THRESHOLD = 0.25
-SAM_TOP_K_BOXES = 5
+SAM_TOP_K_BOXES = 20
 
 # OCR
 OCR_ENABLED = os.environ.get("OCR_ENABLED", "1") != "0"
