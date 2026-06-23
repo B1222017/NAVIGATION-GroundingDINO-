@@ -1123,12 +1123,17 @@ def check_backtrack(state: dict, current_dets: list[dict]) -> str | None:
 # ── Terminal input helper ─────────────────────────────────────────────────
 
 def _ask_user(prompt_text: str) -> str:
-    """Read a line from the terminal even when stdin is redirected (batch/pipe mode).
-    Falls back to empty string only if no terminal is available at all."""
+    """Read input from terminal, supporting interactive, batch, and Colab modes."""
+    # Colab replaces sys.stdin with a widget that supports input() directly
+    try:
+        import google.colab  # noqa: F401
+        return input(prompt_text).strip().lower()
+    except ImportError:
+        pass
     try:
         if sys.stdin.isatty():
             return input(prompt_text).strip().lower()
-        # stdin is piped or redirected — open the controlling terminal directly
+        # stdin is piped/redirected — open controlling terminal directly
         with open("/dev/tty") as tty:
             sys.stdout.write(prompt_text)
             sys.stdout.flush()
