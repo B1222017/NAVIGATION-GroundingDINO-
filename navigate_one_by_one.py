@@ -773,11 +773,14 @@ def render_goal_graph(step: int) -> Path:
 
 # ── Cumulative Scene Graph ────────────────────────────────────────────────
 
-def _row_h_for(n_dets: int) -> float:
-    """Dynamic row height: enough to fit n_dets nodes without overlap."""
-    NODE_H = 0.36
-    GAP    = 0.12
-    return max(2.2, n_dets * (NODE_H + GAP) + 0.5)
+def _row_h_for(n_dets: int, is_current: bool = False) -> float:
+    """Dynamic row height: enough to fit n_dets nodes without overlap.
+    Current-step nodes use larger font (fs=11) so need more vertical space."""
+    if is_current:
+        NODE_H, GAP, base = 0.58, 0.24, 3.2
+    else:
+        NODE_H, GAP, base = 0.44, 0.20, 2.2
+    return max(base, n_dets * (NODE_H + GAP) + 0.7)
 
 
 def render_scene_graph(observations: list[dict], step: int,
@@ -786,14 +789,15 @@ def render_scene_graph(observations: list[dict], step: int,
     n_obs = len(observations)
 
     # Dynamic per-observation row heights so nodes never overlap
-    row_heights = [_row_h_for(len(obs["detections"])) for obs in observations]
+    row_heights = [_row_h_for(len(obs["detections"]), obs["step"] == step)
+                   for obs in observations]
     total_h = sum(row_heights)
     fig_h = max(6, total_h + 2.5)
 
     fig, ax = plt.subplots(figsize=(15, fig_h))
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
-    ax.set_xlim(0, 16)
+    ax.set_xlim(0, 17)
     ax.set_ylim(0, fig_h)
     ax.axis("off")
 
@@ -801,17 +805,20 @@ def render_scene_graph(observations: list[dict], step: int,
     ax.set_title(
         f"場景圖 Scene Graph — 累積至步驟 {step}{corr_note}\n"
         f"(棕=正式找到  紅=目標候選  紫=同種非目標  灰=誤判  藍=同一實體  綠=地標)",
-        fontsize=10, fontweight="bold", color="#222",
+        fontsize=13, fontweight="bold", color="#222",
         fontproperties=fp, pad=8)
 
     obs_x = 1.8
 
-    # Build cumulative obs_y positions from top down
+    # Build cumulative obs_y positions from top down.
+    # y_cursor = TOP edge of each row so rows never overlap regardless of height.
+    # obs_y stores the ROW CENTER = top - rh/2.
     obs_y: dict[int, float] = {}
-    y_cursor = fig_h - 1.3
+    y_cursor = fig_h - 1.3          # top edge of first row (below title)
     for i, obs in enumerate(observations):
-        obs_y[obs["step"]] = y_cursor
-        y_cursor -= row_heights[i]
+        rh_i = row_heights[i]
+        obs_y[obs["step"]] = y_cursor - rh_i / 2   # centre
+        y_cursor -= rh_i                             # next row top = this row bottom
 
     node_data: list[dict] = []  # reserved for future use
 
@@ -826,29 +833,29 @@ def render_scene_graph(observations: list[dict], step: int,
         ec = "#ffc107" if is_false_pos else ("#5b9bd5" if is_current else "#a0b8cc")
         lw = 2.0 if is_current else (2.0 if is_false_pos else 1.2)
 
-        box = FancyBboxPatch((obs_x - 1.3, y - 0.72), 2.6, 1.30,
+        box = FancyBboxPatch((obs_x - 1.5, y - 0.77), 3.0, 1.54,
                              boxstyle="round,pad=0.08",
                              facecolor=fc, edgecolor=ec, linewidth=lw, zorder=3)
         ax.add_patch(box)
 
         label_txt = f"觀察點 {s}" + (" ⚠誤判" if is_false_pos else "")
         ax.text(obs_x, y + 0.30, label_txt, ha="center", va="center",
-                fontsize=9, fontproperties=fp,
+                fontsize=12, fontproperties=fp,
                 color="#1a4a7a" if is_current else "#4a6a8a",
                 fontweight="bold" if is_current else "normal", zorder=4)
         ax.text(obs_x, y + 0.10, obs["photo"],
-                ha="center", va="center", fontsize=6.5, color="#777", zorder=4)
+                ha="center", va="center", fontsize=8.5, color="#777", zorder=4)
 
         # User input line
         ocr_hit = any(p in t for t in obs.get("ocr_texts", []) for p in GOAL_OCR_PARTS)
         if ocr_hit:
             ax.text(obs_x, y - 0.12, f"✅ OCR：{GOAL_OCR_NAME}",
-                    ha="center", va="center", fontsize=6.5,
+                    ha="center", va="center", fontsize=8.5,
                     color="#155724", fontproperties=fp, zorder=4)
         elif obs.get("user_text"):
             ut = obs["user_text"][:22]
             ax.text(obs_x, y - 0.12, f'💬 「{ut}」',
-                    ha="center", va="center", fontsize=6,
+                    ha="center", va="center", fontsize=8,
                     color="#a05000", fontproperties=fp, zorder=4)
 
         # VLM guidance — up to two lines, ~24 chars each
@@ -860,17 +867,17 @@ def render_scene_graph(observations: list[dict], step: int,
             line1 = first_sent[:L]
             line2 = (first_sent[L:L*2] + "…") if len(first_sent) > L else ""
             ax.text(obs_x, y - 0.40, f'🤖 {line1}',
-                    ha="center", va="center", fontsize=5.5,
+                    ha="center", va="center", fontsize=7,
                     color="#444", fontproperties=fp, zorder=4)
             if line2:
                 ax.text(obs_x, y - 0.58, f'   {line2}',
-                        ha="center", va="center", fontsize=5.5,
+                        ha="center", va="center", fontsize=7,
                         color="#444", fontproperties=fp, zorder=4)
 
         if i < n_obs - 1:
             ny = obs_y[observations[i + 1]["step"]]
-            ax.annotate("", xy=(obs_x, ny + 0.72),
-                        xytext=(obs_x, y - 0.72),
+            ax.annotate("", xy=(obs_x, ny + 0.77),
+                        xytext=(obs_x, y - 0.77),
                         arrowprops=dict(arrowstyle="->", color="#7a9fc0", lw=1.3))
 
         # Object nodes
@@ -879,12 +886,16 @@ def render_scene_graph(observations: list[dict], step: int,
         if not dets:
             continue
 
-        ox     = 12.5 if is_current else 5.0
-        n      = len(dets)
+        ox      = 12.5 if is_current else 5.0
+        n       = len(dets)
         spacing = rh / (n + 1)
-        node_h = min(0.36 if is_current else 0.26, spacing - 0.08)
-        node_w = 4.5 if is_current else 2.8
-        fs     = 8.5 if is_current else 6.0
+        fs      = 11.0 if is_current else 8.0
+        # node_h: tall enough for label + conf lines; never exceed spacing
+        MIN_H  = 0.52 if is_current else 0.38
+        node_h = max(MIN_H, min(MIN_H * 1.2, spacing - 0.14))
+        # char_w_est: rough data-unit width per character at this fontsize
+        # (figure 15" wide, xlim 16 → 1 unit ≈ 140px; fontsize 11 ≈ 16px/char CJK)
+        char_w_est = 0.140 if is_current else 0.098
 
         for j, det in enumerate(dets):
             lbl         = det["label"]
@@ -896,11 +907,23 @@ def render_scene_graph(observations: list[dict], step: int,
 
             nameplate = det.get("nameplate_text", "")
             if nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS):
-                display_lbl = f"{uid}:「{nameplate[:12]}」"
+                display_lbl = f"{uid}:「{nameplate[:10]}」"
             elif ctx:
-                display_lbl = f"{uid} ({ctx})"
+                ctx_s = ctx if len(ctx) <= 9 else ctx[:8] + "…"
+                display_lbl = f"{uid} ({ctx_s})"
             else:
                 display_lbl = uid
+            # Hard-cap: ensures text always fits inside the node box
+            _mc = 26 if is_current else 17
+            if len(display_lbl) > _mc:
+                display_lbl = display_lbl[:_mc - 1] + "…"
+
+            # Dynamic node width: fit the label text, capped so it stays in-column
+            node_w = min(
+                6.0 if is_current else 3.4,
+                max(4.2 if is_current else 2.3,
+                    len(display_lbl) * char_w_est + 0.55)
+            )
 
             lbl_for_color = lbl
             if (nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS)
@@ -949,31 +972,26 @@ def render_scene_graph(observations: list[dict], step: int,
                     ha="center", va="center", fontsize=fs - 1.5,
                     color="#999", zorder=3)
 
-            # Arrow: obs node → object node
+            # Arrow: obs node → object node (no label on edge)
             edge_color = "#5b9bd5" if is_current else "#ccc"
             edge_lw    = 0.9 if is_current else 0.4
             ax.annotate("", xy=(ox - node_w / 2, dy),
-                        xytext=(obs_x + 1.3, y),
+                        xytext=(obs_x + 1.5, y),
                         arrowprops=dict(arrowstyle="->", color=edge_color, lw=edge_lw))
-
-            # "mentioned_or_visible" label only on current step's edges
-            if is_current:
-                mid_x = (obs_x + 1.3 + ox - node_w / 2) / 2
-                mid_y = (y + dy) / 2
-                ax.text(mid_x, mid_y, "mentioned_or_visible",
-                        ha="center", va="center", fontsize=5.0,
-                        color="#5b9bd5", alpha=0.75, zorder=3)
 
             node_data.append({"label": lbl, "step": s, "x": ox, "y": dy,
                                "node_w": node_w, "surface": ctx})
 
     # ── Cross-step same-entity edges ─────────────────────────────────────
-    # All arcs start from RIGHT edge of the source node so they never
-    # overlap with the obs→node arrows (which land on LEFT edges).
+    # Use right-bowing arcs (arc3, negative rad = bows right for downward arrows).
+    # Each unique label gets an increasingly wider arc so curves never overlap.
+    # No elbow segments → no crossing lines.
+    _label_idx: dict[str, int] = {}
+    _COLOURS = ["#004085", "#7b1fa2", "#1a7a40", "#b34700", "#005f73", "#8b0000"]
+
     for i, obs in enumerate(observations[1:], 1):
         prev_step_n = observations[i - 1]["step"]
         curr_step_n = obs["step"]
-        is_curr     = (curr_step_n == step)
         for det in obs["detections"]:
             if not det.get("same_entity"):
                 continue
@@ -986,27 +1004,31 @@ def render_scene_graph(observations: list[dict], step: int,
             if not (prev_n and curr_n):
                 continue
 
-            # Start: RIGHT edge of previous node (avoids obs→node arrow collision)
+            lbl_key = det["label"]
+            if lbl_key not in _label_idx:
+                _label_idx[lbl_key] = len(_label_idx)
+            idx    = _label_idx[lbl_key]
+            colour = _COLOURS[idx % len(_COLOURS)]
+
             sx = prev_n["x"] + prev_n["node_w"] / 2
             sy = prev_n["y"]
+            ex = curr_n["x"] + curr_n["node_w"] / 2
+            ey = curr_n["y"]
 
-            if is_curr:
-                # Cross-column: land on LEFT edge of current (right-column) node
-                ex = curr_n["x"] - curr_n["node_w"] / 2
-                ey = curr_n["y"]
-                cs = "arc3,rad=-0.2"
+            same_col = abs(prev_n["x"] - curr_n["x"]) < 1.0
+            if same_col:
+                # Right-bowing arc; negative rad bows rightward for downward arrows.
+                # Wider arc per label index so they fan out and don't overlap.
+                rad = -(0.30 + idx * 0.18)
             else:
-                # Same column: land on RIGHT edge of next non-current node
-                ex = curr_n["x"] + curr_n["node_w"] / 2
-                ey = curr_n["y"]
-                cs = "arc3,rad=0.4"
+                # Cross-column: leftward gentle curve so the arc stays in view
+                rad = -(0.08 + idx * 0.04)
 
-            ax.annotate("",
-                xy=(ex, ey), xytext=(sx, sy),
-                arrowprops=dict(arrowstyle="->", color="#004085", lw=0.9,
-                                linestyle="dashed", alpha=0.55,
-                                connectionstyle=cs),
-                zorder=1)
+            ax.annotate("", xy=(ex, ey), xytext=(sx, sy),
+                        arrowprops=dict(arrowstyle="->", color=colour, lw=1.2,
+                                        linestyle="dashed", alpha=0.75,
+                                        connectionstyle=f"arc3,rad={rad:.2f}"),
+                        zorder=1)
 
     # ── Spatial edges "在…上": arcs on RIGHT side of current step nodes ──
     curr_obs_obj = next((o for o in observations if o["step"] == step), None)
@@ -1031,7 +1053,7 @@ def render_scene_graph(observations: list[dict], step: int,
                     zorder=1)
                 mid_x = max(curr_n["x"], surf_n["x"]) + curr_n["node_w"] / 2 + 0.3
                 mid_y = (curr_n["y"] + surf_n["y"]) / 2
-                ax.text(mid_x, mid_y, "在…上", fontsize=5.5,
+                ax.text(mid_x, mid_y, "在…上", fontsize=7,
                         color="#1a7a40", ha="left", va="center",
                         fontproperties=fp, zorder=2)
 
@@ -1048,7 +1070,7 @@ def render_scene_graph(observations: list[dict], step: int,
         Line2D([0], [0], color="#1a7a40", lw=1.0, linestyle="dotted",
                label="··· 空間關係（在…上）"),
     ]
-    ax.legend(handles=legend_items, loc="lower right", fontsize=7.5,
+    ax.legend(handles=legend_items, loc="lower right", fontsize=10,
               facecolor="white", edgecolor="#ccc", prop=fp)
 
     out = OUTPUT_DIR / f"step{step:02d}_scene_graph.png"
