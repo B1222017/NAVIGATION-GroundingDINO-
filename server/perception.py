@@ -55,7 +55,7 @@ class Perception:
         parsed = self._processor.post_process_grounded_object_detection(
             outputs,
             inputs.input_ids,
-            box_threshold=GROUNDINGDINO_BOX_THRESHOLD,
+            threshold=GROUNDINGDINO_BOX_THRESHOLD,
             text_threshold=GROUNDINGDINO_TEXT_THRESHOLD,
             target_sizes=[image.size[::-1]],
         )[0]

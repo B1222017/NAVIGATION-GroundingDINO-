@@ -248,20 +248,32 @@ def ask_navigation_guidance(photo_path: str,
     if state.get("corrections"):
         false_pos_note = f"\n注意：{state['corrections'][-1]}"
 
-    prompt = (
-        f"你是一個室內導航助手，正在幫助用戶尋找目標：{GOAL_TEXT}。\n\n"
-        f"當前步驟 {step} 的照片已附上。\n"
-        f"當前偵測到的物件（含位置描述）：{det_str}\n"
-        f"上一步偵測到的物件：{prev_str}\n"
-        f"本張照片 OCR 讀出的文字：{ocr_str}\n"
-        f"{false_pos_note}\n"
-        f"用戶說：「{user_text}」\n\n"
-        f"請根據照片內容、偵測物件和文字辨識結果，用繁體中文回答：\n"
-        f"1. 你看到了什麼（特別注意任何與「{GOAL_TARGET}」相關的物品或標示）\n"
-        f"2. 是否看到「{GOAL_TARGET}」或任何相關線索\n"
-        f"3. 具體的移動建議（往前/往左/往右/折返）\n"
-        f"請直接給出建議，不要說「根據照片」等冗詞，回答控制在3句內。\n"
-    )
+    if user_text:
+        prompt = (
+            f"你是一個室內導航助手，正在幫助用戶尋找目標：{GOAL_TEXT}。\n\n"
+            f"當前照片已附上。\n"
+            f"偵測到的物件：{det_str}\n"
+            f"上一步物件：{prev_str}\n"
+            f"OCR 文字：{ocr_str}\n"
+            f"{false_pos_note}\n\n"
+            f"用戶問：「{user_text}」\n\n"
+            f"請用繁體中文直接回答用戶的問題，根據照片內容和偵測結果給出具體答案。"
+            f"不要忽略用戶的問題，不要只做場景介紹。回答控制在3句內。\n"
+        )
+    else:
+        prompt = (
+            f"你是一個室內導航助手，正在幫助用戶尋找目標：{GOAL_TEXT}。\n\n"
+            f"當前步驟 {step} 的照片已附上。\n"
+            f"當前偵測到的物件（含位置描述）：{det_str}\n"
+            f"上一步偵測到的物件：{prev_str}\n"
+            f"本張照片 OCR 讀出的文字：{ocr_str}\n"
+            f"{false_pos_note}\n\n"
+            f"請根據照片內容、偵測物件和文字辨識結果，用繁體中文回答：\n"
+            f"1. 你看到了什麼（特別注意任何與「{GOAL_TARGET}」相關的物品或標示）\n"
+            f"2. 是否看到「{GOAL_TARGET}」或任何相關線索\n"
+            f"3. 具體的移動建議（往前/往左/往右/折返）\n"
+            f"請直接給出建議，不要說「根據照片」等冗詞，回答控制在3句內。\n"
+        )
 
     print(f"\n  [VLM 導航] 詢問模型...")
     resp = ask_vlm(img_b64, prompt, timeout=90)
@@ -773,14 +785,62 @@ def render_goal_graph(step: int) -> Path:
 
 # ── Cumulative Scene Graph ────────────────────────────────────────────────
 
-def _row_h_for(n_dets: int, is_current: bool = False) -> float:
-    """Dynamic row height: enough to fit n_dets nodes without overlap.
-    Current-step nodes use larger font (fs=11) so need more vertical space."""
-    if is_current:
-        NODE_H, GAP, base = 0.58, 0.24, 3.2
+def _wrap_text(text: str, line_w: int) -> list[str]:
+    """Wrap text to line_w chars, breaking at spaces when possible."""
+    text = text.replace("\n", " ").strip()
+    lines = []
+    while len(text) > line_w:
+        pos = text.rfind(" ", 0, line_w)
+        if pos < line_w // 3:
+            pos = line_w
+        lines.append(text[:pos])
+        text = text[pos:].lstrip()
+    if text:
+        lines.append(text)
+    return lines or [""]
+
+
+def _obs_box_h(obs: dict) -> float:
+    """Compute obs node box height needed to display full VLM text."""
+    interactions = obs.get("interactions") or [
+        {"user_text": obs.get("user_text", ""), "vlm_guidance": obs.get("vlm_guidance", "")}
+    ]
+    n_int = len(interactions)
+    HEADER_H = 0.62   # 觀察點 + photo rows
+    LINE_H   = 0.20   # height per VLM text line
+    PAD      = 0.15   # bottom padding
+
+    if n_int == 1:
+        inter  = interactions[0]
+        has_ut = bool(inter.get("user_text", ""))
+        vlm    = inter.get("vlm_guidance", "").replace("\n", " ")
+        n_lines = len(_wrap_text(vlm, 22)) if vlm else 0
+        return max(1.54, HEADER_H + (0.22 if has_ut else 0) + n_lines * LINE_H + PAD)
     else:
-        NODE_H, GAP, base = 0.44, 0.20, 2.2
-    return max(base, n_dets * (NODE_H + GAP) + 0.7)
+        # Parallel: compute per-sub-node height, use maximum
+        sub_line_w = max(10, 22 // n_int)
+        max_lines  = 0
+        has_ut_any = False
+        for inter in interactions:
+            vlm    = inter.get("vlm_guidance", "").replace("\n", " ")
+            n_lines = len(_wrap_text(vlm, sub_line_w)) if vlm else 0
+            max_lines  = max(max_lines, n_lines)
+            has_ut_any = has_ut_any or bool(inter.get("user_text", ""))
+        return max(1.54, HEADER_H + (0.22 if has_ut_any else 0) + max_lines * LINE_H + PAD)
+
+
+def _row_h_for(n_dets: int, is_current: bool = False, obs_box_h: float = 1.54) -> float:
+    """Dynamic row height: enough to fit obs box AND detection nodes.
+
+    The obs box top is fixed at y+0.77 and expands *downward* to y+0.77-box_h,
+    so the row must satisfy:  rh >= 2*(box_h - 0.77) + gap  i.e. 2*box_h - 1.54 + gap.
+    """
+    if is_current:
+        NODE_H, GAP = 0.58, 0.24
+    else:
+        NODE_H, GAP = 0.44, 0.20
+    min_for_obs = max(2.20, 2 * obs_box_h - 1.54 + 0.50)
+    return max(min_for_obs, n_dets * (NODE_H + GAP) + 0.70)
 
 
 def render_scene_graph(observations: list[dict], step: int,
@@ -789,8 +849,10 @@ def render_scene_graph(observations: list[dict], step: int,
     n_obs = len(observations)
 
     # Dynamic per-observation row heights so nodes never overlap
-    row_heights = [_row_h_for(len(obs["detections"]), obs["step"] == step)
-                   for obs in observations]
+    row_heights = [
+        _row_h_for(len(obs["detections"]), obs["step"] == step, _obs_box_h(obs))
+        for obs in observations
+    ]
     total_h = sum(row_heights)
     fig_h = max(6, total_h + 2.5)
 
@@ -833,51 +895,86 @@ def render_scene_graph(observations: list[dict], step: int,
         ec = "#ffc107" if is_false_pos else ("#5b9bd5" if is_current else "#a0b8cc")
         lw = 2.0 if is_current else (2.0 if is_false_pos else 1.2)
 
-        box = FancyBboxPatch((obs_x - 1.5, y - 0.77), 3.0, 1.54,
-                             boxstyle="round,pad=0.08",
-                             facecolor=fc, edgecolor=ec, linewidth=lw, zorder=3)
-        ax.add_patch(box)
+        # Backward-compatible: derive interactions list
+        interactions = obs.get("interactions") or [
+            {"user_text": obs.get("user_text", ""), "vlm_guidance": obs.get("vlm_guidance", "")}
+        ]
+        n_int    = len(interactions)
+        ocr_hit  = any(p in t for t in obs.get("ocr_texts", []) for p in GOAL_OCR_PARTS)
+        box_h    = _obs_box_h(obs)   # dynamic height to fit full VLM text
+        box_top  = y + 0.77          # top is always fixed
+        box_bot  = box_top - box_h
+
+        # ── Horizontal parallel layout: n_int sub-nodes side by side ────
+        # Right edge must stay at 3.30 to avoid overlapping history detection nodes (ox=5.0, left≈3.3)
+        TOTAL_W      = 3.00
+        X_LEFT       = 0.30
+        GAP          = 0.10
+        sub_w        = (TOTAL_W - GAP * (n_int - 1)) / n_int
+        sub_xs       = [X_LEFT + k * (sub_w + GAP) for k in range(n_int)]
+        sub_cxs      = [xl + sub_w / 2 for xl in sub_xs]
+        box_center_y = box_top - box_h / 2
+        group_right  = X_LEFT + TOTAL_W
+        LINE_H       = 0.20    # vertical step per wrapped VLM line
+        line_w       = max(10, int(sub_w / 0.118))   # chars per line ≈ sub_w / char_width
 
         label_txt = f"觀察點 {s}" + (" ⚠誤判" if is_false_pos else "")
-        ax.text(obs_x, y + 0.30, label_txt, ha="center", va="center",
-                fontsize=12, fontproperties=fp,
-                color="#1a4a7a" if is_current else "#4a6a8a",
-                fontweight="bold" if is_current else "normal", zorder=4)
-        ax.text(obs_x, y + 0.10, obs["photo"],
-                ha="center", va="center", fontsize=8.5, color="#777", zorder=4)
 
-        # User input line
-        ocr_hit = any(p in t for t in obs.get("ocr_texts", []) for p in GOAL_OCR_PARTS)
-        if ocr_hit:
-            ax.text(obs_x, y - 0.12, f"✅ OCR：{GOAL_OCR_NAME}",
-                    ha="center", va="center", fontsize=8.5,
-                    color="#155724", fontproperties=fp, zorder=4)
-        elif obs.get("user_text"):
-            ut = obs["user_text"][:22]
-            ax.text(obs_x, y - 0.12, f'💬 「{ut}」',
-                    ha="center", va="center", fontsize=8,
-                    color="#a05000", fontproperties=fp, zorder=4)
+        for k, inter in enumerate(interactions):
+            sub_fc = fc if k == 0 else "#fff3e0"
+            sub_ec = ec if k == 0 else "#e65100"
+            sub_cx = sub_cxs[k]
 
-        # VLM guidance — up to two lines, ~24 chars each
-        vlm = obs.get("vlm_guidance", "")
-        if vlm:
-            clean = vlm.replace("\n", " ")
-            first_sent = clean.split("。")[0]
-            L = 24
-            line1 = first_sent[:L]
-            line2 = (first_sent[L:L*2] + "…") if len(first_sent) > L else ""
-            ax.text(obs_x, y - 0.40, f'🤖 {line1}',
-                    ha="center", va="center", fontsize=7,
-                    color="#444", fontproperties=fp, zorder=4)
-            if line2:
-                ax.text(obs_x, y - 0.58, f'   {line2}',
-                        ha="center", va="center", fontsize=7,
-                        color="#444", fontproperties=fp, zorder=4)
+            sub_box = FancyBboxPatch(
+                (sub_xs[k], box_bot), sub_w, box_h,
+                boxstyle="round,pad=0.06",
+                facecolor=sub_fc, edgecolor=sub_ec, linewidth=lw, zorder=3)
+            ax.add_patch(sub_box)
 
+            # ── Header (top of box) ──
+            suffix = "" if k == 0 else f" ＋{k}"
+            ax.text(sub_cx, box_top - 0.20,
+                    label_txt if k == 0 else f"觀察點 {s}{suffix}",
+                    ha="center", va="center",
+                    fontsize=9 if n_int > 1 else 12, fontproperties=fp,
+                    color="#1a4a7a" if is_current else "#4a6a8a",
+                    fontweight="bold" if is_current else "normal", zorder=4)
+            if k == 0:
+                ax.text(sub_cx, box_top - 0.38, obs["photo"],
+                        ha="center", va="center", fontsize=7.5, color="#777", zorder=4)
+            if k == 0 and ocr_hit:
+                ax.text(sub_cx, box_top - 0.55, f"✅ OCR：{GOAL_OCR_NAME}",
+                        ha="center", va="center", fontsize=7.5,
+                        color="#155724", fontproperties=fp, zorder=4)
+
+            # ── Content: user text then full VLM text ──
+            y_cursor = box_top - 0.60 - (0.18 if (k == 0 and ocr_hit) else 0)
+
+            ut = inter.get("user_text", "")
+            if ut:
+                ax.text(sub_cx, y_cursor, f'💬 「{ut}」',
+                        ha="center", va="center", fontsize=7.5,
+                        color="#a05000", fontproperties=fp, zorder=4)
+                y_cursor -= 0.22
+
+            vlm = inter.get("vlm_guidance", "")
+            if vlm:
+                wrapped = _wrap_text(vlm, line_w)
+                ax.text(sub_cx, y_cursor, "🤖",
+                        ha="center", va="center", fontsize=7, color="#444", zorder=4)
+                y_cursor -= LINE_H * 0.6
+                for line in wrapped:
+                    ax.text(sub_cx, y_cursor, line,
+                            ha="center", va="center", fontsize=7,
+                            color="#333", fontproperties=fp, zorder=4)
+                    y_cursor -= LINE_H
+
+        # Arrow to next observation node (from group centre, dynamic box bottom)
         if i < n_obs - 1:
             ny = obs_y[observations[i + 1]["step"]]
-            ax.annotate("", xy=(obs_x, ny + 0.77),
-                        xytext=(obs_x, y - 0.77),
+            group_cx = (sub_cxs[0] + sub_cxs[-1]) / 2
+            ax.annotate("", xy=(group_cx, ny + 0.77),
+                        xytext=(group_cx, box_bot),
                         arrowprops=dict(arrowstyle="->", color="#7a9fc0", lw=1.3))
 
         # Object nodes
@@ -913,14 +1010,9 @@ def render_scene_graph(observations: list[dict], step: int,
                 display_lbl = f"{uid} ({ctx_s})"
             else:
                 display_lbl = uid
-            # Hard-cap: ensures text always fits inside the node box
-            _mc = 26 if is_current else 17
-            if len(display_lbl) > _mc:
-                display_lbl = display_lbl[:_mc - 1] + "…"
-
-            # Dynamic node width: fit the label text, capped so it stays in-column
+            # Dynamic node width: expands to fit full label, capped at column boundary
             node_w = min(
-                6.0 if is_current else 3.4,
+                6.5 if is_current else 4.5,
                 max(4.2 if is_current else 2.3,
                     len(display_lbl) * char_w_est + 0.55)
             )
@@ -972,11 +1064,11 @@ def render_scene_graph(observations: list[dict], step: int,
                     ha="center", va="center", fontsize=fs - 1.5,
                     color="#999", zorder=3)
 
-            # Arrow: obs node → object node (no label on edge)
+            # Arrow: obs node group → object node
             edge_color = "#5b9bd5" if is_current else "#ccc"
             edge_lw    = 0.9 if is_current else 0.4
             ax.annotate("", xy=(ox - node_w / 2, dy),
-                        xytext=(obs_x + 1.5, y),
+                        xytext=(group_right, box_center_y),
                         arrowprops=dict(arrowstyle="->", color=edge_color, lw=edge_lw))
 
             node_data.append({"label": lbl, "uid": uid, "step": s, "x": ox, "y": dy,
@@ -1014,7 +1106,7 @@ def render_scene_graph(observations: list[dict], step: int,
 
             sx = prev_n["x"] + prev_n["node_w"] / 2
             sy = prev_n["y"]
-            ex = curr_n["x"] + curr_n["node_w"] / 2
+            ex = curr_n["x"] - curr_n["node_w"] / 2
             ey = curr_n["y"]
 
             same_col = abs(prev_n["x"] - curr_n["x"]) < 1.0
@@ -1027,10 +1119,10 @@ def render_scene_graph(observations: list[dict], step: int,
                 rad = -(0.08 + idx * 0.04)
 
             ax.annotate("", xy=(ex, ey), xytext=(sx, sy),
-                        arrowprops=dict(arrowstyle="->", color=colour, lw=1.2,
-                                        linestyle="dashed", alpha=0.75,
+                        arrowprops=dict(arrowstyle="->", color=colour, lw=1.8,
+                                        linestyle="dashed", alpha=0.90,
                                         connectionstyle=f"arc3,rad={rad:.2f}"),
-                        zorder=1)
+                        zorder=5)
 
     # ── Spatial edges "在…上": arcs on RIGHT side of current step nodes ──
     curr_obs_obj = next((o for o in observations if o["step"] == step), None)
@@ -1049,15 +1141,15 @@ def render_scene_graph(observations: list[dict], step: int,
                 ax.annotate("",
                     xy=(surf_n["x"] + surf_n["node_w"] / 2, surf_n["y"]),
                     xytext=(curr_n["x"] + curr_n["node_w"] / 2, curr_n["y"]),
-                    arrowprops=dict(arrowstyle="->", color="#1a7a40", lw=0.8,
-                                    linestyle="dotted", alpha=0.65,
+                    arrowprops=dict(arrowstyle="->", color="#1a7a40", lw=1.2,
+                                    linestyle="dotted", alpha=0.90,
                                     connectionstyle="arc3,rad=0.4"),
-                    zorder=1)
+                    zorder=5)
                 mid_x = max(curr_n["x"], surf_n["x"]) + curr_n["node_w"] / 2 + 0.3
                 mid_y = (curr_n["y"] + surf_n["y"]) / 2
                 ax.text(mid_x, mid_y, "在…上", fontsize=7,
                         color="#1a7a40", ha="left", va="center",
-                        fontproperties=fp, zorder=2)
+                        fontproperties=fp, zorder=6)
 
     from matplotlib.lines import Line2D
     legend_items = [
@@ -1258,10 +1350,39 @@ def main():
         print("🏁 已宣告抵達。如果是誤判，請執行：\n   python navigate_one_by_one.py --correct")
         return
 
-    state["step"] += 1
-    step = state["step"]
     photo_name = photo_path.name
     user_text = args.text.strip()
+
+    # ── Same-photo: merge interaction into existing node ───────────────
+    last_obs = state["observations"][-1] if state["observations"] else None
+    if last_obs is not None and last_obs["photo"] == photo_name:
+        step = last_obs["step"]
+        # Init interactions list on older obs records that predate this field
+        if "interactions" not in last_obs:
+            last_obs["interactions"] = [
+                {"user_text": last_obs.get("user_text", ""),
+                 "vlm_guidance": last_obs.get("vlm_guidance", "")}
+            ]
+        vlm_guidance = ""
+        if user_text:
+            print(f"\n🔁 同一位置（{photo_name}），合併至觀察點 {step}")
+            print(f"  用戶說：「{user_text}」")
+            print(f"\n[VLM] 根據新提問重新詢問模型...")
+            prev_dets = []
+            vlm_guidance = ask_navigation_guidance(
+                str(photo_path), last_obs["detections"], prev_dets, user_text,
+                step, state, ocr_texts=last_obs.get("ocr_texts", []))
+            print(f"\n  💬 VLM 回應：\n  {vlm_guidance}\n")
+        else:
+            print(f"\n🔁 同一位置（{photo_name}），合併至觀察點 {step}（無新提問）")
+        last_obs["interactions"].append({"user_text": user_text, "vlm_guidance": vlm_guidance})
+        save_session(state)
+        sg_path = render_scene_graph(state["observations"], step, state.get("corrections", []))
+        print(f"[場景圖] 更新 → {sg_path}")
+        return
+
+    state["step"] += 1
+    step = state["step"]
 
     print(f"\n{'='*65}")
     print(f"  STEP {step}  |  {photo_name}")
@@ -1338,6 +1459,7 @@ def main():
         "ocr_texts": ocr_texts,
         "user_text": user_text,
         "vlm_guidance": vlm_guidance,
+        "interactions": [{"user_text": user_text, "vlm_guidance": vlm_guidance}],
         "false_positive": False,
         "wrong_instance": False,
         "arrived_here": False,
