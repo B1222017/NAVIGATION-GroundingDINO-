@@ -325,19 +325,28 @@ def tag_same_entity(detections: list[dict], img_w: int, img_h: int,
       - Normalised IoU > 0.05 (boxes overlap in the image)
     Handles merged boxes (shifted centres) and compound labels ('chair sofa').
     """
+    used_prev: set[int] = set()   # one-to-one: each prev detection can only match once
     for det in detections:
         nc = _norm_center(det["box"], img_w, img_h)
-        for pd in prev_dets:
+        best_idx, best_pd, best_dist = None, None, float("inf")
+        for pi, pd in enumerate(prev_dets):
+            if pi in used_prev:
+                continue
             if not _label_matches(det["label"], pd["label"]):
                 continue
             pnc = _norm_center(pd["box"], prev_w, prev_h)
-            center_ok = (abs(nc[0] - pnc[0]) < pos_thresh
-                         and abs(nc[1] - pnc[1]) < pos_thresh)
+            dx = abs(nc[0] - pnc[0])
+            dy = abs(nc[1] - pnc[1])
+            center_ok = dx < pos_thresh and dy < pos_thresh
             iou_ok = _norm_iou(det["box"], pd["box"], img_w, img_h, prev_w, prev_h) > 0.05
             if center_ok or iou_ok:
-                det["same_entity"] = True
-                det["same_entity_prev_uid"] = pd.get("id", pd["label"])
-                break
+                dist = (dx**2 + dy**2) ** 0.5
+                if dist < best_dist:
+                    best_dist, best_idx, best_pd = dist, pi, pd
+        if best_pd is not None:
+            used_prev.add(best_idx)
+            det["same_entity"] = True
+            det["same_entity_prev_uid"] = best_pd.get("id", best_pd["label"])
 
 def is_goal(label: str) -> bool:
     return any(kw in label.lower() for kw in TARGET_KEYWORDS)
