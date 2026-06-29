@@ -443,6 +443,51 @@ def merge_adjacent_same_label(detections: list[dict]) -> list[dict]:
     return result
 
 
+def merge_adjacent_similar_label(detections: list[dict]) -> list[dict]:
+    """Merge boxes with similar labels (per _label_matches) that are adjacent or overlapping.
+    Handles cases like 'counter reception desk' + 'reception desk' detecting the same object."""
+    n = len(detections)
+    parent = list(range(n))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(x, y):
+        parent[find(x)] = find(y)
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            if (_label_matches(detections[i]["label"], detections[j]["label"]) and
+                    _boxes_nearby(detections[i]["box"], detections[j]["box"])):
+                union(i, j)
+
+    from collections import defaultdict
+    groups: dict[int, list[int]] = defaultdict(list)
+    for i in range(n):
+        groups[find(i)].append(i)
+
+    result = []
+    for idxs in groups.values():
+        if len(idxs) == 1:
+            result.append(detections[idxs[0]])
+        else:
+            boxes = [detections[i]["box"] for i in idxs]
+            merged_box = [
+                min(b[0] for b in boxes), min(b[1] for b in boxes),
+                max(b[2] for b in boxes), max(b[3] for b in boxes),
+            ]
+            best = max(idxs, key=lambda i: detections[i]["score"])
+            merged_det = dict(detections[best])
+            merged_det["box"] = [round(x, 1) for x in merged_box]
+            result.append(merged_det)
+
+    result.sort(key=lambda d: -d["score"])
+    return result
+
+
 def _nameplate_id(nameplate_text: str) -> str:
     """
     Extract a meaningful id from OCR nameplate text.
@@ -1415,6 +1460,7 @@ def main():
     before_nms = len(detections)
     detections = apply_nms(detections, iou_thr=0.50)
     detections = merge_adjacent_same_label(detections)
+    detections = merge_adjacent_similar_label(detections)
     after_merge = len(detections)
     if before_nms != after_merge:
         print(f"    NMS+Merge: {before_nms} → {after_merge} 個框")
