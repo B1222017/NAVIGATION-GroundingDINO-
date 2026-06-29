@@ -336,6 +336,7 @@ def tag_same_entity(detections: list[dict], img_w: int, img_h: int,
             iou_ok = _norm_iou(det["box"], pd["box"], img_w, img_h, prev_w, prev_h) > 0.05
             if center_ok or iou_ok:
                 det["same_entity"] = True
+                det["same_entity_prev_uid"] = pd.get("id", pd["label"])
                 break
 
 def is_goal(label: str) -> bool:
@@ -997,9 +998,10 @@ def render_scene_graph(observations: list[dict], step: int,
             if not det.get("same_entity"):
                 continue
             det_uid = det.get("id", det["label"])
+            prev_uid = det.get("same_entity_prev_uid", det["label"])
             prev_n = next((n for n in node_data
                            if n["step"] == prev_step_n
-                           and n["label"] == det["label"]), None)
+                           and n["uid"] == prev_uid), None)
             curr_n = next((n for n in node_data
                            if n["step"] == curr_step_n
                            and n["uid"] == det_uid), None)
