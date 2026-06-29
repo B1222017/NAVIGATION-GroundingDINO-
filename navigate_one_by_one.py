@@ -980,7 +980,8 @@ def render_scene_graph(observations: list[dict], step: int,
                         arrowprops=dict(arrowstyle="->", color=edge_color, lw=edge_lw))
 
             node_data.append({"label": lbl, "step": s, "x": ox, "y": dy,
-                               "node_w": node_w, "surface": ctx})
+                               "node_w": node_w, "surface": ctx,
+                               "same_entity": same_entity})
 
     # ── Cross-step same-entity edges ─────────────────────────────────────
     # Use right-bowing arcs (arc3, negative rad = bows right for downward arrows).
@@ -1000,7 +1001,8 @@ def render_scene_graph(observations: list[dict], step: int,
                            and n["label"] == det["label"]), None)
             curr_n = next((n for n in node_data
                            if n["step"] == curr_step_n
-                           and n["label"] == det["label"]), None)
+                           and n["label"] == det["label"]
+                           and n.get("same_entity")), None)
             if not (prev_n and curr_n):
                 continue
 
