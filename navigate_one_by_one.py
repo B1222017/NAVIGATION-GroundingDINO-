@@ -979,7 +979,7 @@ def render_scene_graph(observations: list[dict], step: int,
                         xytext=(obs_x + 1.5, y),
                         arrowprops=dict(arrowstyle="->", color=edge_color, lw=edge_lw))
 
-            node_data.append({"label": lbl, "step": s, "x": ox, "y": dy,
+            node_data.append({"label": lbl, "uid": uid, "step": s, "x": ox, "y": dy,
                                "node_w": node_w, "surface": ctx,
                                "same_entity": same_entity})
 
@@ -996,13 +996,13 @@ def render_scene_graph(observations: list[dict], step: int,
         for det in obs["detections"]:
             if not det.get("same_entity"):
                 continue
+            det_uid = det.get("id", det["label"])
             prev_n = next((n for n in node_data
                            if n["step"] == prev_step_n
                            and n["label"] == det["label"]), None)
             curr_n = next((n for n in node_data
                            if n["step"] == curr_step_n
-                           and n["label"] == det["label"]
-                           and n.get("same_entity")), None)
+                           and n["uid"] == det_uid), None)
             if not (prev_n and curr_n):
                 continue
 
