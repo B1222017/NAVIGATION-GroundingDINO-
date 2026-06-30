@@ -1033,12 +1033,13 @@ def render_scene_graph(observations: list[dict], step: int,
                         arrowprops=dict(arrowstyle="->", color="#7a9fc0", lw=1.3))
 
         # Object nodes
-        # LEFT side  (x≈5) = history; RIGHT side (x≈12) = current step only
+        # History:      x≈5.0
+        # Current new:  x≈8.0  (new discoveries, not seen before)
+        # Current same: x≈12.5 (same-entity, continuing from prev step)
         dets = obs["detections"]
         if not dets:
             continue
 
-        ox      = 12.5 if is_current else 5.0
         n       = len(dets)
         spacing = rh / (n + 1)
         fs      = 11.0 if is_current else 8.0
@@ -1046,7 +1047,6 @@ def render_scene_graph(observations: list[dict], step: int,
         MIN_H  = 0.52 if is_current else 0.38
         node_h = max(MIN_H, min(MIN_H * 1.2, spacing - 0.14))
         # char_w_est: rough data-unit width per character at this fontsize
-        # (figure 15" wide, xlim 16 → 1 unit ≈ 140px; fontsize 11 ≈ 16px/char CJK)
         char_w_est = 0.140 if is_current else 0.098
 
         for j, det in enumerate(dets):
@@ -1057,6 +1057,12 @@ def render_scene_graph(observations: list[dict], step: int,
             dy          = y + rh / 2 - spacing * (j + 1)
             same_entity = det.get("same_entity", False)
 
+            # Per-node x: current same-entity → right (12.5), current new → middle (8.0)
+            if is_current:
+                ox = 12.5 if same_entity else 8.0
+            else:
+                ox = 5.0
+
             nameplate = det.get("nameplate_text", "")
             if nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS):
                 display_lbl = f"{uid}:「{nameplate[:10]}」"
@@ -1065,12 +1071,21 @@ def render_scene_graph(observations: list[dict], step: int,
                 display_lbl = f"{uid} ({ctx_s})"
             else:
                 display_lbl = uid
-            # Dynamic node width: expands to fit full label, capped at column boundary
-            node_w = min(
-                6.5 if is_current else 4.5,
-                max(4.2 if is_current else 2.3,
-                    len(display_lbl) * char_w_est + 0.55)
-            )
+            # Hard-cap: ensures text always fits inside the node box
+            _mc = 26 if is_current else 17
+            if len(display_lbl) > _mc:
+                display_lbl = display_lbl[:_mc - 1] + "…"
+
+            # Dynamic node width: fit the label text, capped so it stays in-column
+            # Current same-entity (x=12.5): wider; current new (x=8.0): narrower
+            if is_current and not same_entity:
+                node_w = min(3.6, max(2.2, len(display_lbl) * char_w_est + 0.55))
+            else:
+                node_w = min(
+                    6.0 if is_current else 3.4,
+                    max(4.2 if is_current else 2.3,
+                        len(display_lbl) * char_w_est + 0.55)
+                )
 
             lbl_for_color = lbl
             if (nameplate and any(kw in lbl.lower() for kw in _DOOR_LABELS)
